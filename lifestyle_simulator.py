@@ -281,135 +281,238 @@ hr { border-color: #1c1c2e !important; margin: 28px 0 !important; }
 
 # ── Cost of living index data (national average = 100) ──────────────────────
 _CITIES_RAW = {
-    "Akron, OH":            {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.96},
-    "Albany, NY":           {"index": 108, "housing_mult": 1.22, "food_mult": 1.03, "transport_mult": 1.01, "health_mult": 1.02},
-    "Albuquerque, NM":      {"index": 107, "housing_mult": 1.20, "food_mult": 1.01, "transport_mult": 1.01, "health_mult": 1.00},
-    "Allentown, PA":        {"index": 105, "housing_mult": 1.14, "food_mult": 1.02, "transport_mult": 1.01, "health_mult": 1.01},
-    "Anchorage, AK":        {"index": 135, "housing_mult": 1.80, "food_mult": 1.28, "transport_mult": 1.15, "health_mult": 1.18},
-    "Ann Arbor, MI":        {"index": 112, "housing_mult": 1.35, "food_mult": 1.03, "transport_mult": 1.01, "health_mult": 1.02},
-    "Asheville, NC":        {"index": 108, "housing_mult": 1.22, "food_mult": 1.02, "transport_mult": 1.01, "health_mult": 1.01},
-    "Atlanta, GA":          {"index": 118, "housing_mult": 1.48, "food_mult": 1.03, "transport_mult": 1.03, "health_mult": 1.02},
-    "Augusta, GA":          {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Austin, TX":           {"index": 128, "housing_mult": 1.70, "food_mult": 1.06, "transport_mult": 1.04, "health_mult": 1.04},
-    "Baltimore, MD":        {"index": 120, "housing_mult": 1.52, "food_mult": 1.07, "transport_mult": 1.08, "health_mult": 1.07},
-    "Baton Rouge, LA":      {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Billings, MT":         {"index": 94,  "housing_mult": 0.87, "food_mult": 0.97, "transport_mult": 0.97, "health_mult": 0.96},
-    "Birmingham, AL":       {"index": 89,  "housing_mult": 0.78, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Bismarck, ND":         {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.96, "health_mult": 0.95},
-    "Boise, ID":            {"index": 118, "housing_mult": 1.48, "food_mult": 1.05, "transport_mult": 1.03, "health_mult": 1.03},
-    "Boston, MA":           {"index": 162, "housing_mult": 2.55, "food_mult": 1.16, "transport_mult": 1.12, "health_mult": 1.14},
-    "Boulder, CO":          {"index": 148, "housing_mult": 2.18, "food_mult": 1.12, "transport_mult": 1.08, "health_mult": 1.09},
-    "Bozeman, MT":          {"index": 115, "housing_mult": 1.40, "food_mult": 1.05, "transport_mult": 1.02, "health_mult": 1.03},
-    "Buffalo, NY":          {"index": 98,  "housing_mult": 0.96, "food_mult": 0.99, "transport_mult": 0.99, "health_mult": 0.98},
-    "Burlington, VT":       {"index": 128, "housing_mult": 1.70, "food_mult": 1.10, "transport_mult": 1.05, "health_mult": 1.08},
-    "Casper, WY":           {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Cedar Rapids, IA":     {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Charleston, SC":       {"index": 110, "housing_mult": 1.30, "food_mult": 1.03, "transport_mult": 1.02, "health_mult": 1.01},
-    "Charleston, WV":       {"index": 85,  "housing_mult": 0.70, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
-    "Charlotte, NC":        {"index": 108, "housing_mult": 1.25, "food_mult": 1.01, "transport_mult": 1.01, "health_mult": 1.00},
-    "Chattanooga, TN":      {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Cheyenne, WY":         {"index": 91,  "housing_mult": 0.82, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Chicago, IL":          {"index": 138, "housing_mult": 1.85, "food_mult": 1.09, "transport_mult": 1.08, "health_mult": 1.06},
-    "Cincinnati, OH":       {"index": 98,  "housing_mult": 0.95, "food_mult": 0.98, "transport_mult": 0.99, "health_mult": 0.98},
-    "Cleveland, OH":        {"index": 93,  "housing_mult": 0.85, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
-    "Colorado Springs, CO": {"index": 115, "housing_mult": 1.40, "food_mult": 1.05, "transport_mult": 1.03, "health_mult": 1.04},
-    "Columbia, SC":         {"index": 91,  "housing_mult": 0.82, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Columbus, GA":         {"index": 86,  "housing_mult": 0.72, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
-    "Columbus, OH":         {"index": 103, "housing_mult": 1.10, "food_mult": 1.00, "transport_mult": 1.00, "health_mult": 0.99},
-    "Dallas, TX":           {"index": 114, "housing_mult": 1.42, "food_mult": 1.02, "transport_mult": 1.04, "health_mult": 1.01},
-    "Denver, CO":           {"index": 135, "housing_mult": 1.80, "food_mult": 1.08, "transport_mult": 1.05, "health_mult": 1.06},
-    "Des Moines, IA":       {"index": 92,  "housing_mult": 0.84, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Detroit, MI":          {"index": 95,  "housing_mult": 0.88, "food_mult": 0.98, "transport_mult": 1.00, "health_mult": 0.97},
-    "Durham, NC":           {"index": 118, "housing_mult": 1.48, "food_mult": 1.04, "transport_mult": 1.02, "health_mult": 1.03},
-    "El Paso, TX":          {"index": 91,  "housing_mult": 0.82, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Eugene, OR":           {"index": 115, "housing_mult": 1.40, "food_mult": 1.07, "transport_mult": 1.04, "health_mult": 1.05},
-    "Evansville, IN":       {"index": 86,  "housing_mult": 0.72, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
-    "Fargo, ND":            {"index": 93,  "housing_mult": 0.85, "food_mult": 0.97, "transport_mult": 0.97, "health_mult": 0.96},
-    "Fayetteville, AR":     {"index": 83,  "housing_mult": 0.66, "food_mult": 0.92, "transport_mult": 0.93, "health_mult": 0.92},
-    "Fort Collins, CO":     {"index": 122, "housing_mult": 1.55, "food_mult": 1.07, "transport_mult": 1.04, "health_mult": 1.05},
-    "Fort Wayne, IN":       {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.95},
-    "Fort Worth, TX":       {"index": 108, "housing_mult": 1.22, "food_mult": 1.01, "transport_mult": 1.02, "health_mult": 1.00},
-    "Fresno, CA":           {"index": 115, "housing_mult": 1.40, "food_mult": 1.05, "transport_mult": 1.04, "health_mult": 1.03},
-    "Grand Rapids, MI":     {"index": 95,  "housing_mult": 0.88, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
-    "Greensboro, NC":       {"index": 93,  "housing_mult": 0.86, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
-    "Greenville, SC":       {"index": 92,  "housing_mult": 0.84, "food_mult": 0.97, "transport_mult": 0.97, "health_mult": 0.96},
-    "Hartford, CT":         {"index": 132, "housing_mult": 1.75, "food_mult": 1.10, "transport_mult": 1.08, "health_mult": 1.09},
-    "Honolulu, HI":         {"index": 191, "housing_mult": 3.35, "food_mult": 1.35, "transport_mult": 1.22, "health_mult": 1.20},
-    "Houston, TX":          {"index": 105, "housing_mult": 1.14, "food_mult": 1.02, "transport_mult": 1.04, "health_mult": 1.01},
-    "Huntsville, AL":       {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.96, "health_mult": 0.95},
-    "Indianapolis, IN":     {"index": 97,  "housing_mult": 0.90, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
-    "Jackson, MS":          {"index": 80,  "housing_mult": 0.62, "food_mult": 0.91, "transport_mult": 0.92, "health_mult": 0.91},
-    "Jacksonville, FL":     {"index": 100, "housing_mult": 1.00, "food_mult": 1.00, "transport_mult": 1.01, "health_mult": 0.99},
-    "Jersey City, NJ":      {"index": 165, "housing_mult": 2.68, "food_mult": 1.18, "transport_mult": 1.16, "health_mult": 1.13},
-    "Kansas City, MO":      {"index": 94,  "housing_mult": 0.85, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Knoxville, TN":        {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Lansing, MI":          {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Las Vegas, NV":        {"index": 112, "housing_mult": 1.35, "food_mult": 1.04, "transport_mult": 1.05, "health_mult": 1.03},
-    "Lexington, KY":        {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Lincoln, NE":          {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Little Rock, AR":      {"index": 82,  "housing_mult": 0.65, "food_mult": 0.92, "transport_mult": 0.93, "health_mult": 0.92},
-    "Los Angeles, CA":      {"index": 163, "housing_mult": 2.60, "food_mult": 1.14, "transport_mult": 1.18, "health_mult": 1.10},
-    "Louisville, KY":       {"index": 91,  "housing_mult": 0.80, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Lubbock, TX":          {"index": 86,  "housing_mult": 0.72, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.93},
-    "Madison, WI":          {"index": 108, "housing_mult": 1.22, "food_mult": 1.02, "transport_mult": 1.00, "health_mult": 1.01},
-    "Manchester, NH":       {"index": 122, "housing_mult": 1.56, "food_mult": 1.08, "transport_mult": 1.06, "health_mult": 1.07},
-    "Memphis, TN":          {"index": 88,  "housing_mult": 0.75, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
-    "Miami, FL":            {"index": 148, "housing_mult": 2.20, "food_mult": 1.10, "transport_mult": 1.08, "health_mult": 1.08},
-    "Milwaukee, WI":        {"index": 102, "housing_mult": 1.06, "food_mult": 1.00, "transport_mult": 1.00, "health_mult": 0.99},
-    "Minneapolis, MN":      {"index": 113, "housing_mult": 1.38, "food_mult": 1.04, "transport_mult": 1.01, "health_mult": 1.03},
-    "Missoula, MT":         {"index": 105, "housing_mult": 1.14, "food_mult": 1.02, "transport_mult": 1.01, "health_mult": 1.01},
-    "Montgomery, AL":       {"index": 84,  "housing_mult": 0.68, "food_mult": 0.93, "transport_mult": 0.94, "health_mult": 0.93},
-    "Nashville, TN":        {"index": 120, "housing_mult": 1.55, "food_mult": 1.04, "transport_mult": 1.02, "health_mult": 1.02},
-    "New Haven, CT":        {"index": 138, "housing_mult": 1.85, "food_mult": 1.11, "transport_mult": 1.09, "health_mult": 1.10},
-    "New Orleans, LA":      {"index": 100, "housing_mult": 1.00, "food_mult": 1.01, "transport_mult": 1.02, "health_mult": 1.00},
-    "New York City, NY":    {"index": 187, "housing_mult": 3.20, "food_mult": 1.22, "transport_mult": 1.18, "health_mult": 1.15},
-    "Newark, NJ":           {"index": 158, "housing_mult": 2.45, "food_mult": 1.16, "transport_mult": 1.15, "health_mult": 1.12},
-    "Oakland, CA":          {"index": 175, "housing_mult": 2.85, "food_mult": 1.20, "transport_mult": 1.16, "health_mult": 1.16},
-    "Oklahoma City, OK":    {"index": 87,  "housing_mult": 0.73, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
-    "Omaha, NE":            {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Orlando, FL":          {"index": 110, "housing_mult": 1.30, "food_mult": 1.02, "transport_mult": 1.02, "health_mult": 1.01},
-    "Philadelphia, PA":     {"index": 145, "housing_mult": 2.10, "food_mult": 1.12, "transport_mult": 1.12, "health_mult": 1.10},
-    "Phoenix, AZ":          {"index": 116, "housing_mult": 1.45, "food_mult": 1.02, "transport_mult": 1.03, "health_mult": 1.01},
-    "Pittsburgh, PA":       {"index": 96,  "housing_mult": 0.88, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
-    "Portland, ME":         {"index": 122, "housing_mult": 1.55, "food_mult": 1.09, "transport_mult": 1.04, "health_mult": 1.07},
-    "Portland, OR":         {"index": 127, "housing_mult": 1.68, "food_mult": 1.07, "transport_mult": 1.05, "health_mult": 1.05},
-    "Providence, RI":       {"index": 128, "housing_mult": 1.68, "food_mult": 1.09, "transport_mult": 1.07, "health_mult": 1.08},
-    "Provo, UT":            {"index": 112, "housing_mult": 1.36, "food_mult": 1.04, "transport_mult": 1.02, "health_mult": 1.02},
-    "Raleigh, NC":          {"index": 120, "housing_mult": 1.52, "food_mult": 1.05, "transport_mult": 1.03, "health_mult": 1.03},
-    "Rapid City, SD":       {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Reno, NV":             {"index": 118, "housing_mult": 1.48, "food_mult": 1.05, "transport_mult": 1.04, "health_mult": 1.04},
-    "Richmond, VA":         {"index": 113, "housing_mult": 1.36, "food_mult": 1.03, "transport_mult": 1.02, "health_mult": 1.02},
-    "Riverside, CA":        {"index": 122, "housing_mult": 1.55, "food_mult": 1.08, "transport_mult": 1.06, "health_mult": 1.04},
-    "Rochester, NY":        {"index": 96,  "housing_mult": 0.92, "food_mult": 0.98, "transport_mult": 0.99, "health_mult": 0.97},
-    "Rockford, IL":         {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.96},
-    "Sacramento, CA":       {"index": 142, "housing_mult": 2.05, "food_mult": 1.12, "transport_mult": 1.08, "health_mult": 1.08},
-    "Salem, OR":            {"index": 108, "housing_mult": 1.22, "food_mult": 1.05, "transport_mult": 1.03, "health_mult": 1.03},
-    "Salt Lake City, UT":   {"index": 124, "housing_mult": 1.60, "food_mult": 1.06, "transport_mult": 1.04, "health_mult": 1.04},
-    "San Antonio, TX":      {"index": 100, "housing_mult": 1.00, "food_mult": 0.99, "transport_mult": 1.01, "health_mult": 0.99},
-    "San Diego, CA":        {"index": 164, "housing_mult": 2.65, "food_mult": 1.16, "transport_mult": 1.14, "health_mult": 1.12},
-    "San Francisco, CA":    {"index": 182, "housing_mult": 3.10, "food_mult": 1.20, "transport_mult": 1.15, "health_mult": 1.18},
-    "San Jose, CA":         {"index": 193, "housing_mult": 3.40, "food_mult": 1.22, "transport_mult": 1.18, "health_mult": 1.18},
-    "Savannah, GA":         {"index": 98,  "housing_mult": 0.95, "food_mult": 0.99, "transport_mult": 1.00, "health_mult": 0.98},
-    "Scottsdale, AZ":       {"index": 128, "housing_mult": 1.70, "food_mult": 1.06, "transport_mult": 1.05, "health_mult": 1.04},
-    "Seattle, WA":          {"index": 158, "housing_mult": 2.45, "food_mult": 1.14, "transport_mult": 1.10, "health_mult": 1.12},
-    "Shreveport, LA":       {"index": 86,  "housing_mult": 0.72, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
-    "Sioux Falls, SD":      {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Spokane, WA":          {"index": 108, "housing_mult": 1.22, "food_mult": 1.03, "transport_mult": 1.02, "health_mult": 1.02},
-    "Springfield, IL":      {"index": 92,  "housing_mult": 0.84, "food_mult": 0.97, "transport_mult": 0.97, "health_mult": 0.96},
-    "Springfield, MO":      {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Springfield, MA":      {"index": 118, "housing_mult": 1.48, "food_mult": 1.07, "transport_mult": 1.05, "health_mult": 1.06},
-    "St. Louis, MO":        {"index": 93,  "housing_mult": 0.83, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "St. Petersburg, FL":   {"index": 110, "housing_mult": 1.30, "food_mult": 1.03, "transport_mult": 1.02, "health_mult": 1.01},
-    "Tacoma, WA":           {"index": 122, "housing_mult": 1.56, "food_mult": 1.09, "transport_mult": 1.07, "health_mult": 1.08},
-    "Tampa, FL":            {"index": 113, "housing_mult": 1.38, "food_mult": 1.03, "transport_mult": 1.03, "health_mult": 1.02},
-    "Toledo, OH":           {"index": 88,  "housing_mult": 0.74, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.96},
-    "Tucson, AZ":           {"index": 107, "housing_mult": 1.20, "food_mult": 1.01, "transport_mult": 1.02, "health_mult": 1.00},
-    "Tulsa, OK":            {"index": 85,  "housing_mult": 0.70, "food_mult": 0.93, "transport_mult": 0.94, "health_mult": 0.93},
-    "Virginia Beach, VA":   {"index": 105, "housing_mult": 1.14, "food_mult": 1.01, "transport_mult": 1.01, "health_mult": 1.00},
-    "Washington, DC":       {"index": 155, "housing_mult": 2.40, "food_mult": 1.13, "transport_mult": 1.10, "health_mult": 1.11},
-    "Wichita, KS":          {"index": 84,  "housing_mult": 0.68, "food_mult": 0.93, "transport_mult": 0.93, "health_mult": 0.93},
-    "Wilmington, DE":       {"index": 115, "housing_mult": 1.40, "food_mult": 1.05, "transport_mult": 1.04, "health_mult": 1.04},
-    "Worcester, MA":        {"index": 145, "housing_mult": 2.10, "food_mult": 1.14, "transport_mult": 1.10, "health_mult": 1.12},
+    # AK
+    "Anchorage, AK":               {"index": 135,  "housing_mult": 1.80, "food_mult": 1.28, "transport_mult": 1.15, "health_mult": 1.18},
+
+    # AL
+    "Birmingham, AL":              {"index": 89,  "housing_mult": 0.78, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
+    "Huntsville, AL":              {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.96, "health_mult": 0.95},
+    "Montgomery, AL":              {"index": 84,  "housing_mult": 0.68, "food_mult": 0.93, "transport_mult": 0.94, "health_mult": 0.93},
+
+    # AR
+    "El Dorado, AR":               {"index": 79,  "housing_mult": 0.60, "food_mult": 0.91, "transport_mult": 0.92, "health_mult": 0.91},
+    "Fayetteville, AR":            {"index": 83,  "housing_mult": 0.66, "food_mult": 0.92, "transport_mult": 0.93, "health_mult": 0.92},
+    "Little Rock, AR":             {"index": 82,  "housing_mult": 0.65, "food_mult": 0.92, "transport_mult": 0.93, "health_mult": 0.92},
+
+    # AZ
+    "Phoenix, AZ":                 {"index": 116,  "housing_mult": 1.45, "food_mult": 1.02, "transport_mult": 1.03, "health_mult": 1.01},
+    "Scottsdale, AZ":              {"index": 128,  "housing_mult": 1.70, "food_mult": 1.06, "transport_mult": 1.05, "health_mult": 1.04},
+    "Tucson, AZ":                  {"index": 107,  "housing_mult": 1.20, "food_mult": 1.01, "transport_mult": 1.02, "health_mult": 1.00},
+
+    # CA
+    "Fresno, CA":                  {"index": 115,  "housing_mult": 1.40, "food_mult": 1.05, "transport_mult": 1.04, "health_mult": 1.03},
+    "Los Angeles, CA":             {"index": 163,  "housing_mult": 2.60, "food_mult": 1.14, "transport_mult": 1.18, "health_mult": 1.10},
+    "Oakland, CA":                 {"index": 175,  "housing_mult": 2.85, "food_mult": 1.20, "transport_mult": 1.16, "health_mult": 1.16},
+    "Riverside, CA":               {"index": 122,  "housing_mult": 1.55, "food_mult": 1.08, "transport_mult": 1.06, "health_mult": 1.04},
+    "Sacramento, CA":              {"index": 142,  "housing_mult": 2.05, "food_mult": 1.12, "transport_mult": 1.08, "health_mult": 1.08},
+    "San Diego, CA":               {"index": 164,  "housing_mult": 2.65, "food_mult": 1.16, "transport_mult": 1.14, "health_mult": 1.12},
+    "San Francisco, CA":           {"index": 182,  "housing_mult": 3.10, "food_mult": 1.20, "transport_mult": 1.15, "health_mult": 1.18},
+    "San Jose, CA":                {"index": 193,  "housing_mult": 3.40, "food_mult": 1.22, "transport_mult": 1.18, "health_mult": 1.18},
+
+    # CO
+    "Boulder, CO":                 {"index": 148,  "housing_mult": 2.18, "food_mult": 1.12, "transport_mult": 1.08, "health_mult": 1.09},
+    "Colorado Springs, CO":        {"index": 115,  "housing_mult": 1.40, "food_mult": 1.05, "transport_mult": 1.03, "health_mult": 1.04},
+    "Denver, CO":                  {"index": 135,  "housing_mult": 1.80, "food_mult": 1.08, "transport_mult": 1.05, "health_mult": 1.06},
+    "Fort Collins, CO":            {"index": 122,  "housing_mult": 1.55, "food_mult": 1.07, "transport_mult": 1.04, "health_mult": 1.05},
+
+    # CT
+    "Hartford, CT":                {"index": 132,  "housing_mult": 1.75, "food_mult": 1.10, "transport_mult": 1.08, "health_mult": 1.09},
+    "New Haven, CT":               {"index": 138,  "housing_mult": 1.85, "food_mult": 1.11, "transport_mult": 1.09, "health_mult": 1.10},
+
+    # DC
+    "Washington, DC":              {"index": 155,  "housing_mult": 2.40, "food_mult": 1.13, "transport_mult": 1.10, "health_mult": 1.11},
+
+    # DE
+    "Wilmington, DE":              {"index": 115,  "housing_mult": 1.40, "food_mult": 1.05, "transport_mult": 1.04, "health_mult": 1.04},
+
+    # FL
+    "Jacksonville, FL":            {"index": 100,  "housing_mult": 1.00, "food_mult": 1.00, "transport_mult": 1.01, "health_mult": 0.99},
+    "Miami, FL":                   {"index": 148,  "housing_mult": 2.20, "food_mult": 1.10, "transport_mult": 1.08, "health_mult": 1.08},
+    "Orlando, FL":                 {"index": 110,  "housing_mult": 1.30, "food_mult": 1.02, "transport_mult": 1.02, "health_mult": 1.01},
+    "St. Petersburg, FL":          {"index": 110,  "housing_mult": 1.30, "food_mult": 1.03, "transport_mult": 1.02, "health_mult": 1.01},
+    "Tampa, FL":                   {"index": 113,  "housing_mult": 1.38, "food_mult": 1.03, "transport_mult": 1.03, "health_mult": 1.02},
+
+    # GA
+    "Atlanta, GA":                 {"index": 118,  "housing_mult": 1.48, "food_mult": 1.03, "transport_mult": 1.03, "health_mult": 1.02},
+    "Augusta, GA":                 {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
+    "Columbus, GA":                {"index": 86,  "housing_mult": 0.72, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
+    "Savannah, GA":                {"index": 98,  "housing_mult": 0.95, "food_mult": 0.99, "transport_mult": 1.00, "health_mult": 0.98},
+
+    # HI
+    "Honolulu, HI":                {"index": 191,  "housing_mult": 3.35, "food_mult": 1.35, "transport_mult": 1.22, "health_mult": 1.20},
+
+    # IA
+    "Cedar Rapids, IA":            {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
+    "Des Moines, IA":              {"index": 92,  "housing_mult": 0.84, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
+
+    # ID
+    "Boise, ID":                   {"index": 118,  "housing_mult": 1.48, "food_mult": 1.05, "transport_mult": 1.03, "health_mult": 1.03},
+
+    # IL
+    "Chicago, IL":                 {"index": 138,  "housing_mult": 1.85, "food_mult": 1.09, "transport_mult": 1.08, "health_mult": 1.06},
+    "Rockford, IL":                {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.96},
+    "Springfield, IL":             {"index": 92,  "housing_mult": 0.84, "food_mult": 0.97, "transport_mult": 0.97, "health_mult": 0.96},
+
+    # IN
+    "Evansville, IN":              {"index": 86,  "housing_mult": 0.72, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
+    "Fort Wayne, IN":              {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.95},
+    "Indianapolis, IN":            {"index": 97,  "housing_mult": 0.90, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
+
+    # KS
+    "Wichita, KS":                 {"index": 84,  "housing_mult": 0.68, "food_mult": 0.93, "transport_mult": 0.93, "health_mult": 0.93},
+
+    # KY
+    "Lexington, KY":               {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
+    "Louisville, KY":              {"index": 91,  "housing_mult": 0.80, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
+
+    # LA
+    "Baton Rouge, LA":             {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
+    "New Orleans, LA":             {"index": 100,  "housing_mult": 1.00, "food_mult": 1.01, "transport_mult": 1.02, "health_mult": 1.00},
+    "Shreveport, LA":              {"index": 86,  "housing_mult": 0.72, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
+
+    # MA
+    "Boston, MA":                  {"index": 162,  "housing_mult": 2.55, "food_mult": 1.16, "transport_mult": 1.12, "health_mult": 1.14},
+    "Springfield, MA":             {"index": 118,  "housing_mult": 1.48, "food_mult": 1.07, "transport_mult": 1.05, "health_mult": 1.06},
+    "Worcester, MA":               {"index": 145,  "housing_mult": 2.10, "food_mult": 1.14, "transport_mult": 1.10, "health_mult": 1.12},
+
+    # MD
+    "Baltimore, MD":               {"index": 120,  "housing_mult": 1.52, "food_mult": 1.07, "transport_mult": 1.08, "health_mult": 1.07},
+
+    # ME
+    "Portland, ME":                {"index": 122,  "housing_mult": 1.55, "food_mult": 1.09, "transport_mult": 1.04, "health_mult": 1.07},
+
+    # MI
+    "Ann Arbor, MI":               {"index": 112,  "housing_mult": 1.35, "food_mult": 1.03, "transport_mult": 1.01, "health_mult": 1.02},
+    "Detroit, MI":                 {"index": 95,  "housing_mult": 0.88, "food_mult": 0.98, "transport_mult": 1.00, "health_mult": 0.97},
+    "Grand Rapids, MI":            {"index": 95,  "housing_mult": 0.88, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
+    "Lansing, MI":                 {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
+
+    # MN
+    "Minneapolis, MN":             {"index": 113,  "housing_mult": 1.38, "food_mult": 1.04, "transport_mult": 1.01, "health_mult": 1.03},
+
+    # MO
+    "Kansas City, MO":             {"index": 94,  "housing_mult": 0.85, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
+    "Springfield, MO":             {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
+    "St. Louis, MO":               {"index": 93,  "housing_mult": 0.83, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
+
+    # MS
+    "Jackson, MS":                 {"index": 80,  "housing_mult": 0.62, "food_mult": 0.91, "transport_mult": 0.92, "health_mult": 0.91},
+
+    # MT
+    "Billings, MT":                {"index": 94,  "housing_mult": 0.87, "food_mult": 0.97, "transport_mult": 0.97, "health_mult": 0.96},
+    "Bozeman, MT":                 {"index": 115,  "housing_mult": 1.40, "food_mult": 1.05, "transport_mult": 1.02, "health_mult": 1.03},
+    "Missoula, MT":                {"index": 105,  "housing_mult": 1.14, "food_mult": 1.02, "transport_mult": 1.01, "health_mult": 1.01},
+
+    # NC
+    "Asheville, NC":               {"index": 108,  "housing_mult": 1.22, "food_mult": 1.02, "transport_mult": 1.01, "health_mult": 1.01},
+    "Charlotte, NC":               {"index": 108,  "housing_mult": 1.25, "food_mult": 1.01, "transport_mult": 1.01, "health_mult": 1.00},
+    "Durham, NC":                  {"index": 118,  "housing_mult": 1.48, "food_mult": 1.04, "transport_mult": 1.02, "health_mult": 1.03},
+    "Greensboro, NC":              {"index": 93,  "housing_mult": 0.86, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
+    "Raleigh, NC":                 {"index": 120,  "housing_mult": 1.52, "food_mult": 1.05, "transport_mult": 1.03, "health_mult": 1.03},
+
+    # ND
+    "Bismarck, ND":                {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.96, "health_mult": 0.95},
+    "Fargo, ND":                   {"index": 93,  "housing_mult": 0.85, "food_mult": 0.97, "transport_mult": 0.97, "health_mult": 0.96},
+
+    # NE
+    "Lincoln, NE":                 {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
+    "Omaha, NE":                   {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
+
+    # NH
+    "Manchester, NH":              {"index": 122,  "housing_mult": 1.56, "food_mult": 1.08, "transport_mult": 1.06, "health_mult": 1.07},
+
+    # NJ
+    "Jersey City, NJ":             {"index": 165,  "housing_mult": 2.68, "food_mult": 1.18, "transport_mult": 1.16, "health_mult": 1.13},
+    "Newark, NJ":                  {"index": 158,  "housing_mult": 2.45, "food_mult": 1.16, "transport_mult": 1.15, "health_mult": 1.12},
+
+    # NM
+    "Albuquerque, NM":             {"index": 107,  "housing_mult": 1.20, "food_mult": 1.01, "transport_mult": 1.01, "health_mult": 1.00},
+
+    # NV
+    "Las Vegas, NV":               {"index": 112,  "housing_mult": 1.35, "food_mult": 1.04, "transport_mult": 1.05, "health_mult": 1.03},
+    "Reno, NV":                    {"index": 118,  "housing_mult": 1.48, "food_mult": 1.05, "transport_mult": 1.04, "health_mult": 1.04},
+
+    # NY
+    "Albany, NY":                  {"index": 108,  "housing_mult": 1.22, "food_mult": 1.03, "transport_mult": 1.01, "health_mult": 1.02},
+    "Buffalo, NY":                 {"index": 98,  "housing_mult": 0.96, "food_mult": 0.99, "transport_mult": 0.99, "health_mult": 0.98},
+    "New York City, NY":           {"index": 187,  "housing_mult": 3.20, "food_mult": 1.22, "transport_mult": 1.18, "health_mult": 1.15},
+    "Rochester, NY":               {"index": 96,  "housing_mult": 0.92, "food_mult": 0.98, "transport_mult": 0.99, "health_mult": 0.97},
+
+    # OH
+    "Akron, OH":                   {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.96},
+    "Cincinnati, OH":              {"index": 98,  "housing_mult": 0.95, "food_mult": 0.98, "transport_mult": 0.99, "health_mult": 0.98},
+    "Cleveland, OH":               {"index": 93,  "housing_mult": 0.85, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
+    "Columbus, OH":                {"index": 103,  "housing_mult": 1.10, "food_mult": 1.00, "transport_mult": 1.00, "health_mult": 0.99},
+    "Toledo, OH":                  {"index": 88,  "housing_mult": 0.74, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.96},
+
+    # OK
+    "Oklahoma City, OK":           {"index": 87,  "housing_mult": 0.73, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
+    "Tulsa, OK":                   {"index": 85,  "housing_mult": 0.70, "food_mult": 0.93, "transport_mult": 0.94, "health_mult": 0.93},
+
+    # OR
+    "Eugene, OR":                  {"index": 115,  "housing_mult": 1.40, "food_mult": 1.07, "transport_mult": 1.04, "health_mult": 1.05},
+    "Portland, OR":                {"index": 127,  "housing_mult": 1.68, "food_mult": 1.07, "transport_mult": 1.05, "health_mult": 1.05},
+    "Salem, OR":                   {"index": 108,  "housing_mult": 1.22, "food_mult": 1.05, "transport_mult": 1.03, "health_mult": 1.03},
+
+    # PA
+    "Allentown, PA":               {"index": 105,  "housing_mult": 1.14, "food_mult": 1.02, "transport_mult": 1.01, "health_mult": 1.01},
+    "Philadelphia, PA":            {"index": 145,  "housing_mult": 2.10, "food_mult": 1.12, "transport_mult": 1.12, "health_mult": 1.10},
+    "Pittsburgh, PA":              {"index": 96,  "housing_mult": 0.88, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
+
+    # RI
+    "Providence, RI":              {"index": 128,  "housing_mult": 1.68, "food_mult": 1.09, "transport_mult": 1.07, "health_mult": 1.08},
+
+    # SC
+    "Charleston, SC":              {"index": 110,  "housing_mult": 1.30, "food_mult": 1.03, "transport_mult": 1.02, "health_mult": 1.01},
+    "Columbia, SC":                {"index": 91,  "housing_mult": 0.82, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
+    "Greenville, SC":              {"index": 92,  "housing_mult": 0.84, "food_mult": 0.97, "transport_mult": 0.97, "health_mult": 0.96},
+
+    # SD
+    "Rapid City, SD":              {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
+    "Sioux Falls, SD":             {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
+
+    # TN
+    "Chattanooga, TN":             {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
+    "Knoxville, TN":               {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
+    "Memphis, TN":                 {"index": 88,  "housing_mult": 0.75, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
+    "Nashville, TN":               {"index": 120,  "housing_mult": 1.55, "food_mult": 1.04, "transport_mult": 1.02, "health_mult": 1.02},
+
+    # TX
+    "Austin, TX":                  {"index": 128,  "housing_mult": 1.70, "food_mult": 1.06, "transport_mult": 1.04, "health_mult": 1.04},
+    "Dallas, TX":                  {"index": 114,  "housing_mult": 1.42, "food_mult": 1.02, "transport_mult": 1.04, "health_mult": 1.01},
+    "El Paso, TX":                 {"index": 91,  "housing_mult": 0.82, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
+    "Fort Worth, TX":              {"index": 108,  "housing_mult": 1.22, "food_mult": 1.01, "transport_mult": 1.02, "health_mult": 1.00},
+    "Houston, TX":                 {"index": 105,  "housing_mult": 1.14, "food_mult": 1.02, "transport_mult": 1.04, "health_mult": 1.01},
+    "Lubbock, TX":                 {"index": 86,  "housing_mult": 0.72, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.93},
+    "San Antonio, TX":             {"index": 100,  "housing_mult": 1.00, "food_mult": 0.99, "transport_mult": 1.01, "health_mult": 0.99},
+    "Waco, TX":                    {"index": 91,  "housing_mult": 0.82, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
+
+    # UT
+    "Provo, UT":                   {"index": 112,  "housing_mult": 1.36, "food_mult": 1.04, "transport_mult": 1.02, "health_mult": 1.02},
+    "Salt Lake City, UT":          {"index": 124,  "housing_mult": 1.60, "food_mult": 1.06, "transport_mult": 1.04, "health_mult": 1.04},
+
+    # VA
+    "Richmond, VA":                {"index": 113,  "housing_mult": 1.36, "food_mult": 1.03, "transport_mult": 1.02, "health_mult": 1.02},
+    "Virginia Beach, VA":          {"index": 105,  "housing_mult": 1.14, "food_mult": 1.01, "transport_mult": 1.01, "health_mult": 1.00},
+
+    # VT
+    "Burlington, VT":              {"index": 128,  "housing_mult": 1.70, "food_mult": 1.10, "transport_mult": 1.05, "health_mult": 1.08},
+
+    # WA
+    "Seattle, WA":                 {"index": 158,  "housing_mult": 2.45, "food_mult": 1.14, "transport_mult": 1.10, "health_mult": 1.12},
+    "Spokane, WA":                 {"index": 108,  "housing_mult": 1.22, "food_mult": 1.03, "transport_mult": 1.02, "health_mult": 1.02},
+    "Tacoma, WA":                  {"index": 122,  "housing_mult": 1.56, "food_mult": 1.09, "transport_mult": 1.07, "health_mult": 1.08},
+
+    # WI
+    "Madison, WI":                 {"index": 108,  "housing_mult": 1.22, "food_mult": 1.02, "transport_mult": 1.00, "health_mult": 1.01},
+    "Milwaukee, WI":               {"index": 102,  "housing_mult": 1.06, "food_mult": 1.00, "transport_mult": 1.00, "health_mult": 0.99},
+
+    # WV
+    "Charleston, WV":              {"index": 85,  "housing_mult": 0.70, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
+
+    # WY
+    "Casper, WY":                  {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
+    "Cheyenne, WY":                {"index": 91,  "housing_mult": 0.82, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
 }
 COL_DATA = {"National Average": {"index": 100, "housing_mult": 1.00, "food_mult": 1.00, "transport_mult": 1.00, "health_mult": 1.00}}
 COL_DATA.update(dict(sorted(_CITIES_RAW.items())))
@@ -472,49 +575,39 @@ STATE_TAX = {
 # Maps each city to its state abbreviation
 CITY_STATE = {
     "National Average": None,
-    "Akron, OH": "OH", "Albany, NY": "NY", "Albuquerque, NM": "NM",
-    "Allentown, PA": "PA", "Anchorage, AK": "AK", "Ann Arbor, MI": "MI",
-    "Asheville, NC": "NC", "Atlanta, GA": "GA", "Augusta, GA": "GA",
-    "Austin, TX": "TX", "Baltimore, MD": "MD", "Baton Rouge, LA": "LA",
-    "Billings, MT": "MT", "Birmingham, AL": "AL", "Bismarck, ND": "ND",
-    "Boise, ID": "ID", "Boston, MA": "MA", "Boulder, CO": "CO",
-    "Bozeman, MT": "MT", "Buffalo, NY": "NY", "Burlington, VT": "VT",
-    "Casper, WY": "WY", "Cedar Rapids, IA": "IA", "Charleston, SC": "SC",
-    "Charleston, WV": "WV", "Charlotte, NC": "NC", "Chattanooga, TN": "TN",
-    "Cheyenne, WY": "WY", "Chicago, IL": "IL", "Cincinnati, OH": "OH",
-    "Cleveland, OH": "OH", "Colorado Springs, CO": "CO", "Columbia, SC": "SC",
-    "Columbus, GA": "GA", "Columbus, OH": "OH", "Dallas, TX": "TX",
-    "Denver, CO": "CO", "Des Moines, IA": "IA", "Detroit, MI": "MI",
-    "Durham, NC": "NC", "El Paso, TX": "TX", "Eugene, OR": "OR",
-    "Evansville, IN": "IN", "Fargo, ND": "ND", "Fayetteville, AR": "AR",
-    "Fort Collins, CO": "CO", "Fort Wayne, IN": "IN", "Fort Worth, TX": "TX",
-    "Fresno, CA": "CA", "Grand Rapids, MI": "MI", "Greensboro, NC": "NC",
-    "Greenville, SC": "SC", "Hartford, CT": "CT", "Honolulu, HI": "HI",
-    "Houston, TX": "TX", "Huntsville, AL": "AL", "Indianapolis, IN": "IN",
-    "Jackson, MS": "MS", "Jacksonville, FL": "FL", "Jersey City, NJ": "NJ",
-    "Kansas City, MO": "MO", "Knoxville, TN": "TN", "Lansing, MI": "MI",
-    "Las Vegas, NV": "NV", "Lexington, KY": "KY", "Lincoln, NE": "NE",
-    "Little Rock, AR": "AR", "Los Angeles, CA": "CA", "Louisville, KY": "KY",
-    "Lubbock, TX": "TX", "Madison, WI": "WI", "Manchester, NH": "NH",
-    "Memphis, TN": "TN", "Miami, FL": "FL", "Milwaukee, WI": "WI",
-    "Minneapolis, MN": "MN", "Missoula, MT": "MT", "Montgomery, AL": "AL",
-    "Nashville, TN": "TN", "New Haven, CT": "CT", "New Orleans, LA": "LA",
-    "New York City, NY": "NY", "Newark, NJ": "NJ", "Oakland, CA": "CA",
-    "Oklahoma City, OK": "OK", "Omaha, NE": "NE", "Orlando, FL": "FL",
-    "Philadelphia, PA": "PA", "Phoenix, AZ": "AZ", "Pittsburgh, PA": "PA",
-    "Portland, ME": "ME", "Portland, OR": "OR", "Providence, RI": "RI",
-    "Provo, UT": "UT", "Raleigh, NC": "NC", "Rapid City, SD": "SD",
-    "Reno, NV": "NV", "Richmond, VA": "VA", "Riverside, CA": "CA",
-    "Rochester, NY": "NY", "Rockford, IL": "IL", "Sacramento, CA": "CA",
-    "Salem, OR": "OR", "Salt Lake City, UT": "UT", "San Antonio, TX": "TX",
-    "San Diego, CA": "CA", "San Francisco, CA": "CA", "San Jose, CA": "CA",
-    "Savannah, GA": "GA", "Scottsdale, AZ": "AZ", "Seattle, WA": "WA",
-    "Shreveport, LA": "LA", "Sioux Falls, SD": "SD", "Spokane, WA": "WA",
-    "Springfield, IL": "IL", "Springfield, MO": "MO", "Springfield, MA": "MA",
-    "St. Louis, MO": "MO", "St. Petersburg, FL": "FL", "Tacoma, WA": "WA",
-    "Tampa, FL": "FL", "Toledo, OH": "OH", "Tucson, AZ": "AZ",
-    "Tulsa, OK": "OK", "Virginia Beach, VA": "VA", "Washington, DC": "DC",
-    "Wichita, KS": "KS", "Wilmington, DE": "DE", "Worcester, MA": "MA",
+    "Anchorage, AK": "AK", "Birmingham, AL": "AL", "Huntsville, AL": "AL", "Montgomery, AL": "AL",
+    "El Dorado, AR": "AR", "Fayetteville, AR": "AR", "Little Rock, AR": "AR", "Phoenix, AZ": "AZ",
+    "Scottsdale, AZ": "AZ", "Tucson, AZ": "AZ", "Fresno, CA": "CA", "Los Angeles, CA": "CA",
+    "Oakland, CA": "CA", "Riverside, CA": "CA", "Sacramento, CA": "CA", "San Diego, CA": "CA",
+    "San Francisco, CA": "CA", "San Jose, CA": "CA", "Boulder, CO": "CO", "Colorado Springs, CO": "CO",
+    "Denver, CO": "CO", "Fort Collins, CO": "CO", "Hartford, CT": "CT", "New Haven, CT": "CT",
+    "Washington, DC": "DC", "Wilmington, DE": "DE", "Jacksonville, FL": "FL", "Miami, FL": "FL",
+    "Orlando, FL": "FL", "St. Petersburg, FL": "FL", "Tampa, FL": "FL", "Atlanta, GA": "GA",
+    "Augusta, GA": "GA", "Columbus, GA": "GA", "Savannah, GA": "GA", "Honolulu, HI": "HI",
+    "Cedar Rapids, IA": "IA", "Des Moines, IA": "IA", "Boise, ID": "ID", "Chicago, IL": "IL",
+    "Rockford, IL": "IL", "Springfield, IL": "IL", "Evansville, IN": "IN", "Fort Wayne, IN": "IN",
+    "Indianapolis, IN": "IN", "Wichita, KS": "KS", "Lexington, KY": "KY", "Louisville, KY": "KY",
+    "Baton Rouge, LA": "LA", "New Orleans, LA": "LA", "Shreveport, LA": "LA", "Boston, MA": "MA",
+    "Springfield, MA": "MA", "Worcester, MA": "MA", "Baltimore, MD": "MD", "Portland, ME": "ME",
+    "Ann Arbor, MI": "MI", "Detroit, MI": "MI", "Grand Rapids, MI": "MI", "Lansing, MI": "MI",
+    "Minneapolis, MN": "MN", "Kansas City, MO": "MO", "Springfield, MO": "MO", "St. Louis, MO": "MO",
+    "Jackson, MS": "MS", "Billings, MT": "MT", "Bozeman, MT": "MT", "Missoula, MT": "MT",
+    "Asheville, NC": "NC", "Charlotte, NC": "NC", "Durham, NC": "NC", "Greensboro, NC": "NC",
+    "Raleigh, NC": "NC", "Bismarck, ND": "ND", "Fargo, ND": "ND", "Lincoln, NE": "NE",
+    "Omaha, NE": "NE", "Manchester, NH": "NH", "Jersey City, NJ": "NJ", "Newark, NJ": "NJ",
+    "Albuquerque, NM": "NM", "Las Vegas, NV": "NV", "Reno, NV": "NV", "Albany, NY": "NY",
+    "Buffalo, NY": "NY", "New York City, NY": "NY", "Rochester, NY": "NY", "Akron, OH": "OH",
+    "Cincinnati, OH": "OH", "Cleveland, OH": "OH", "Columbus, OH": "OH", "Toledo, OH": "OH",
+    "Oklahoma City, OK": "OK", "Tulsa, OK": "OK", "Eugene, OR": "OR", "Portland, OR": "OR",
+    "Salem, OR": "OR", "Allentown, PA": "PA", "Philadelphia, PA": "PA", "Pittsburgh, PA": "PA",
+    "Providence, RI": "RI", "Charleston, SC": "SC", "Columbia, SC": "SC", "Greenville, SC": "SC",
+    "Rapid City, SD": "SD", "Sioux Falls, SD": "SD", "Chattanooga, TN": "TN", "Knoxville, TN": "TN",
+    "Memphis, TN": "TN", "Nashville, TN": "TN", "Austin, TX": "TX", "Dallas, TX": "TX",
+    "El Paso, TX": "TX", "Fort Worth, TX": "TX", "Houston, TX": "TX", "Lubbock, TX": "TX",
+    "San Antonio, TX": "TX", "Waco, TX": "TX", "Provo, UT": "UT", "Salt Lake City, UT": "UT",
+    "Richmond, VA": "VA", "Virginia Beach, VA": "VA", "Burlington, VT": "VT", "Seattle, WA": "WA",
+    "Spokane, WA": "WA", "Tacoma, WA": "WA", "Madison, WI": "WI", "Milwaukee, WI": "WI",
+    "Charleston, WV": "WV", "Casper, WY": "WY", "Cheyenne, WY": "WY",
 }
 
 NO_INCOME_TAX_STATES = {"AK", "FL", "NV", "NH", "SD", "TN", "TX", "WA", "WY"}
