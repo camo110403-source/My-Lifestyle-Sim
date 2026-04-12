@@ -1,7 +1,6 @@
 import streamlit as st
 import plotly.graph_objects as go
-from fpdf import FPDF
-import math
+import plotly.express as px
 
 st.set_page_config(
     page_title="Lifestyle Budget Simulator",
@@ -12,411 +11,172 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-/* ── Reset & base ── */
 html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    color: #ffffff;
-    -webkit-font-smoothing: antialiased;
-}
-h1, h2, h3, h4, h5 { font-family: 'Inter', sans-serif; color: #ffffff; }
-
-/* ── Backgrounds ── */
-.main { background-color: #0a0a0f; }
-[data-testid="stAppViewContainer"] { background: #0a0a0f; }
-[data-testid="stSidebar"] {
-    background: #0f0f17;
-    border-right: 1px solid #1c1c2e;
+    font-family: 'DM Sans', sans-serif;
 }
 
-/* ── Sidebar text white — targeted only, avoids breaking icons ── */
-[data-testid="stSidebar"] label { color: #ffffff !important; font-size: 13px !important; font-weight: 400 !important; font-family: 'Inter', sans-serif !important; }
-[data-testid="stSidebar"] p { color: #ffffff !important; font-family: 'Inter', sans-serif !important; }
-[data-testid="stSidebar"] h1,
-[data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 { color: #ffffff !important; font-family: 'Inter', sans-serif !important; }
-[data-testid="stSidebar"] h4 {
-    color: #6060a0 !important;
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.1em !important;
-    text-transform: uppercase !important;
-    margin-bottom: 10px !important;
-    font-family: 'Inter', sans-serif !important;
-}
-[data-testid="stSidebar"] .stRadio label { color: #ffffff !important; }
-[data-testid="stSidebar"] .stSelectbox label { color: #ffffff !important; }
-[data-testid="stSidebar"] .stCaption p { color: #ffffff !important; font-weight: 300 !important; font-size: 12px !important; opacity: 0.7; }
-[data-testid="stSidebar"] [data-testid="stExpander"] summary p { color: #ffffff !important; font-weight: 500 !important; }
-[data-testid="stSidebar"] [data-testid="stExpander"] summary svg { color: #ffffff !important; }
-
-/* ── Main area native elements ── */
-[data-testid="stMetricLabel"] p { color: #ffffff !important; font-size: 11px !important; font-weight: 600 !important; letter-spacing: 0.06em; text-transform: uppercase; }
-[data-testid="stMetricValue"]   { color: #ffffff !important; font-family: 'DM Serif Display', serif !important; }
-[data-testid="stMetricDelta"] p { font-size: 12px !important; font-weight: 400 !important; }
-.stCaption p { color: #ffffff !important; font-weight: 300 !important; font-size: 12px !important; opacity: 0.55; }
-hr { border-color: #1c1c2e !important; margin: 28px 0 !important; }
-[data-testid="stExpander"] { border-color: #1c1c2e !important; background: #0f0f17 !important; border-radius: 8px !important; }
-[data-testid="stExpander"] summary p { color: #ffffff !important; font-weight: 500 !important; }
-
-/* ── Buttons ── */
-[data-testid="stSidebar"] button[kind="secondary"],
-[data-testid="stSidebar"] button {
-    background: #1c1c2e !important;
-    color: #ffffff !important;
-    border: 1px solid #2e2e50 !important;
-    border-radius: 8px !important;
-}
-[data-testid="stSidebar"] button:hover {
-    background: #252540 !important;
-    border-color: #4040a0 !important;
+h1, h2, h3 {
+    font-family: 'DM Serif Display', serif;
 }
 
-/* ── Category cards ── */
+.main { background-color: #0f0f0f; }
+[data-testid="stAppViewContainer"] { background: #0f0f0f; }
+[data-testid="stSidebar"] { background: #161616; border-right: 1px solid #2a2a2a; }
+
+.metric-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.metric-card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 16px 20px;
+}
+.metric-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+}
+.metric-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: #f0ead6;
+    line-height: 1.1;
+}
+.metric-sub {
+    font-size: 11px;
+    color: #555;
+    margin-top: 4px;
+}
+
+.cat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+}
 .cat-card {
-    background: #12121c;
-    border: 1px solid #1c1c2e;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
     border-radius: 10px;
-    padding: 18px 20px;
-    transition: border-color 0.15s, background 0.15s;
-    height: 100%;
+    padding: 14px 16px;
 }
-.cat-card:hover {
-    background: #16162a;
-    border-color: #2e2e50;
+.cat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
 }
 .cat-name {
-    font-size: 10px;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-    opacity: 0.6;
-}
-.cat-weekly {
-    font-family: 'DM Serif Display', serif;
-    font-size: 26px;
-    color: #ffffff;
-    line-height: 1;
-    margin-bottom: 4px;
-}
-.cat-annual {
     font-size: 12px;
-    color: #ffffff;
-    opacity: 0.5;
-    font-weight: 400;
-    margin-bottom: 14px;
+    font-weight: 500;
+    color: #aaa;
 }
 .cat-pct {
     font-size: 11px;
-    font-weight: 600;
-    color: #ffffff;
-    opacity: 0.45;
+    color: #555;
+}
+.cat-bar-bg {
+    height: 3px;
+    background: #2a2a2a;
+    border-radius: 2px;
+    margin-bottom: 10px;
+}
+.cat-bar {
+    height: 3px;
+    border-radius: 2px;
+}
+.cat-weekly {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: #f0ead6;
+}
+.cat-annual {
+    font-size: 11px;
+    color: #555;
+    margin-top: 2px;
 }
 
-/* ── Tags ── */
 .location-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(100, 200, 100, 0.08);
-    color: #6ec87e;
-    border: 1px solid rgba(110, 200, 126, 0.2);
-    border-radius: 6px;
-    padding: 5px 12px;
+    display: inline-block;
+    background: #1e2a1e;
+    color: #5d9e5d;
+    border: 1px solid #2d4a2d;
+    border-radius: 20px;
+    padding: 4px 14px;
     font-size: 12px;
     font-weight: 500;
-    margin-bottom: 4px;
-}
-.tier-tag {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 6px;
-    padding: 5px 12px;
-    font-size: 12px;
-    font-weight: 500;
-    margin-bottom: 4px;
-    margin-left: 8px;
-}
-.tier-frugal      { background: rgba(100,200,100,0.08); color: #6ec87e; border: 1px solid rgba(110,200,126,0.2); }
-.tier-comfortable { background: rgba(100,150,220,0.08); color: #7eaad8; border: 1px solid rgba(126,170,216,0.2); }
-.tier-lavish      { background: rgba(200,170,100,0.08); color: #d4b47a; border: 1px solid rgba(212,180,122,0.2); }
-
-/* ── Section headings ── */
-.section-head {
-    font-size: 13px;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
     margin-bottom: 16px;
-    margin-top: 4px;
-    opacity: 0.5;
 }
 
-/* ── Insight boxes ── */
+.section-head {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: #f0ead6;
+    margin-bottom: 14px;
+    margin-top: 4px;
+}
+
 .insight-box {
-    background: #0f1a0f;
-    border: 1px solid rgba(110,200,126,0.15);
-    border-left: 3px solid #6ec87e;
-    border-radius: 8px;
+    background: #141c14;
+    border: 1px solid #2d4a2d;
+    border-radius: 10px;
     padding: 14px 18px;
     margin-bottom: 10px;
     font-size: 13px;
-    color: #ffffff;
-    line-height: 1.7;
-    font-weight: 400;
-}
-
-/* ── Goal / debt cards ── */
-.goal-card {
-    background: #12121c;
-    border: 1px solid #1c1c2e;
-    border-radius: 10px;
-    padding: 24px 28px;
-    margin-bottom: 16px;
-}
-.goal-big {
-    font-family: 'DM Serif Display', serif;
-    font-size: 42px;
-    color: #b09ad8;
-    line-height: 1;
-    letter-spacing: -0.02em;
-}
-.goal-label {
-    font-size: 10px;
-    font-weight: 700;
-    color: #ffffff;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-top: 6px;
-    opacity: 0.45;
-}
-.debt-big {
-    font-family: 'DM Serif Display', serif;
-    font-size: 42px;
-    color: #d48888;
-    line-height: 1;
-    letter-spacing: -0.02em;
-}
-
-/* ── Intro page ── */
-.intro-hero {
-    padding: 60px 48px 60px 0;
-    height: 100%;
-}
-.intro-eyebrow {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #c8a96e;
-    margin-bottom: 24px;
-}
-.intro-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 52px;
-    color: #ffffff;
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-    margin-bottom: 20px;
-}
-.intro-sub {
-    font-size: 16px;
-    color: rgba(255,255,255,0.45);
-    font-weight: 300;
-    line-height: 1.7;
-    margin-bottom: 48px;
-}
-.intro-feature {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    color: rgba(255,255,255,0.6);
-    font-weight: 400;
-    margin-bottom: 12px;
-}
-.intro-feature-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #c8a96e;
-    flex-shrink: 0;
-}
-.intro-card {
-    background: #12121c;
-    border: 1px solid #1c1c2e;
-    border-radius: 14px;
-    padding: 36px 36px 40px;
-    margin-top: 40px;
-}
-.intro-card-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #ffffff;
-    margin-bottom: 6px;
-}
-.intro-card-sub {
-    font-size: 13px;
-    color: rgba(255,255,255,0.4);
-    font-weight: 300;
-    margin-bottom: 28px;
-}
-.intro-section-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.35);
-    margin-bottom: 8px;
-    margin-top: 22px;
+    color: #8fc48f;
+    line-height: 1.6;
 }
 </style>
 """, unsafe_allow_html=True)
 
 
 # ── Cost of living index data (national average = 100) ──────────────────────
-# Sorted alphabetically; "National Average" always first.
-_CITIES_RAW = {
-    "Akron, OH":            {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.96},
-    "Albany, NY":           {"index": 108, "housing_mult": 1.22, "food_mult": 1.03, "transport_mult": 1.01, "health_mult": 1.02},
-    "Albuquerque, NM":      {"index": 107, "housing_mult": 1.20, "food_mult": 1.01, "transport_mult": 1.01, "health_mult": 1.00},
-    "Allentown, PA":        {"index": 105, "housing_mult": 1.14, "food_mult": 1.02, "transport_mult": 1.01, "health_mult": 1.01},
-    "Anchorage, AK":        {"index": 135, "housing_mult": 1.80, "food_mult": 1.28, "transport_mult": 1.15, "health_mult": 1.18},
-    "Ann Arbor, MI":        {"index": 112, "housing_mult": 1.35, "food_mult": 1.03, "transport_mult": 1.01, "health_mult": 1.02},
-    "Asheville, NC":        {"index": 108, "housing_mult": 1.22, "food_mult": 1.02, "transport_mult": 1.01, "health_mult": 1.01},
-    "Atlanta, GA":          {"index": 118, "housing_mult": 1.48, "food_mult": 1.03, "transport_mult": 1.03, "health_mult": 1.02},
-    "Augusta, GA":          {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Austin, TX":           {"index": 128, "housing_mult": 1.70, "food_mult": 1.06, "transport_mult": 1.04, "health_mult": 1.04},
-    "Baltimore, MD":        {"index": 120, "housing_mult": 1.52, "food_mult": 1.07, "transport_mult": 1.08, "health_mult": 1.07},
-    "Baton Rouge, LA":      {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Billings, MT":         {"index": 94,  "housing_mult": 0.87, "food_mult": 0.97, "transport_mult": 0.97, "health_mult": 0.96},
-    "Birmingham, AL":       {"index": 89,  "housing_mult": 0.78, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Bismarck, ND":         {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.96, "health_mult": 0.95},
-    "Boise, ID":            {"index": 118, "housing_mult": 1.48, "food_mult": 1.05, "transport_mult": 1.03, "health_mult": 1.03},
-    "Boston, MA":           {"index": 162, "housing_mult": 2.55, "food_mult": 1.16, "transport_mult": 1.12, "health_mult": 1.14},
-    "Boulder, CO":          {"index": 148, "housing_mult": 2.18, "food_mult": 1.12, "transport_mult": 1.08, "health_mult": 1.09},
-    "Bozeman, MT":          {"index": 115, "housing_mult": 1.40, "food_mult": 1.05, "transport_mult": 1.02, "health_mult": 1.03},
-    "Buffalo, NY":          {"index": 98,  "housing_mult": 0.96, "food_mult": 0.99, "transport_mult": 0.99, "health_mult": 0.98},
-    "Burlington, VT":       {"index": 128, "housing_mult": 1.70, "food_mult": 1.10, "transport_mult": 1.05, "health_mult": 1.08},
-    "Casper, WY":           {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Cedar Rapids, IA":     {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Charleston, SC":       {"index": 110, "housing_mult": 1.30, "food_mult": 1.03, "transport_mult": 1.02, "health_mult": 1.01},
-    "Charleston, WV":       {"index": 85,  "housing_mult": 0.70, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
-    "Charlotte, NC":        {"index": 108, "housing_mult": 1.25, "food_mult": 1.01, "transport_mult": 1.01, "health_mult": 1.00},
-    "Chattanooga, TN":      {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Cheyenne, WY":         {"index": 91,  "housing_mult": 0.82, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Chicago, IL":          {"index": 138, "housing_mult": 1.85, "food_mult": 1.09, "transport_mult": 1.08, "health_mult": 1.06},
-    "Cincinnati, OH":       {"index": 98,  "housing_mult": 0.95, "food_mult": 0.98, "transport_mult": 0.99, "health_mult": 0.98},
-    "Cleveland, OH":        {"index": 93,  "housing_mult": 0.85, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
-    "Colorado Springs, CO": {"index": 115, "housing_mult": 1.40, "food_mult": 1.05, "transport_mult": 1.03, "health_mult": 1.04},
-    "Columbia, SC":         {"index": 91,  "housing_mult": 0.82, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Columbus, GA":         {"index": 86,  "housing_mult": 0.72, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
-    "Columbus, OH":         {"index": 103, "housing_mult": 1.10, "food_mult": 1.00, "transport_mult": 1.00, "health_mult": 0.99},
-    "Dallas, TX":           {"index": 114, "housing_mult": 1.42, "food_mult": 1.02, "transport_mult": 1.04, "health_mult": 1.01},
-    "Denver, CO":           {"index": 135, "housing_mult": 1.80, "food_mult": 1.08, "transport_mult": 1.05, "health_mult": 1.06},
-    "Des Moines, IA":       {"index": 92,  "housing_mult": 0.84, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Detroit, MI":          {"index": 95,  "housing_mult": 0.88, "food_mult": 0.98, "transport_mult": 1.00, "health_mult": 0.97},
-    "Durham, NC":           {"index": 118, "housing_mult": 1.48, "food_mult": 1.04, "transport_mult": 1.02, "health_mult": 1.03},
-    "El Paso, TX":          {"index": 91,  "housing_mult": 0.82, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Eugene, OR":           {"index": 115, "housing_mult": 1.40, "food_mult": 1.07, "transport_mult": 1.04, "health_mult": 1.05},
-    "Evansville, IN":       {"index": 86,  "housing_mult": 0.72, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
-    "Fargo, ND":            {"index": 93,  "housing_mult": 0.85, "food_mult": 0.97, "transport_mult": 0.97, "health_mult": 0.96},
-    "Fayetteville, AR":     {"index": 83,  "housing_mult": 0.66, "food_mult": 0.92, "transport_mult": 0.93, "health_mult": 0.92},
-    "Fort Collins, CO":     {"index": 122, "housing_mult": 1.55, "food_mult": 1.07, "transport_mult": 1.04, "health_mult": 1.05},
-    "Fort Wayne, IN":       {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.95},
-    "Fort Worth, TX":       {"index": 108, "housing_mult": 1.22, "food_mult": 1.01, "transport_mult": 1.02, "health_mult": 1.00},
-    "Fresno, CA":           {"index": 115, "housing_mult": 1.40, "food_mult": 1.05, "transport_mult": 1.04, "health_mult": 1.03},
-    "Grand Rapids, MI":     {"index": 95,  "housing_mult": 0.88, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
-    "Greensboro, NC":       {"index": 93,  "housing_mult": 0.86, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
-    "Greenville, SC":       {"index": 92,  "housing_mult": 0.84, "food_mult": 0.97, "transport_mult": 0.97, "health_mult": 0.96},
-    "Hartford, CT":         {"index": 132, "housing_mult": 1.75, "food_mult": 1.10, "transport_mult": 1.08, "health_mult": 1.09},
-    "Honolulu, HI":         {"index": 191, "housing_mult": 3.35, "food_mult": 1.35, "transport_mult": 1.22, "health_mult": 1.20},
-    "Houston, TX":          {"index": 105, "housing_mult": 1.14, "food_mult": 1.02, "transport_mult": 1.04, "health_mult": 1.01},
-    "Huntsville, AL":       {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.96, "health_mult": 0.95},
-    "Indianapolis, IN":     {"index": 97,  "housing_mult": 0.90, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
-    "Jackson, MS":          {"index": 80,  "housing_mult": 0.62, "food_mult": 0.91, "transport_mult": 0.92, "health_mult": 0.91},
-    "Jacksonville, FL":     {"index": 100, "housing_mult": 1.00, "food_mult": 1.00, "transport_mult": 1.01, "health_mult": 0.99},
-    "Jersey City, NJ":      {"index": 165, "housing_mult": 2.68, "food_mult": 1.18, "transport_mult": 1.16, "health_mult": 1.13},
-    "Kansas City, MO":      {"index": 94,  "housing_mult": 0.85, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Knoxville, TN":        {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Lansing, MI":          {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Las Vegas, NV":        {"index": 112, "housing_mult": 1.35, "food_mult": 1.04, "transport_mult": 1.05, "health_mult": 1.03},
-    "Lexington, KY":        {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Lincoln, NE":          {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Little Rock, AR":      {"index": 82,  "housing_mult": 0.65, "food_mult": 0.92, "transport_mult": 0.93, "health_mult": 0.92},
-    "Los Angeles, CA":      {"index": 163, "housing_mult": 2.60, "food_mult": 1.14, "transport_mult": 1.18, "health_mult": 1.10},
-    "Louisville, KY":       {"index": 91,  "housing_mult": 0.80, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Lubbock, TX":          {"index": 86,  "housing_mult": 0.72, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.93},
-    "Madison, WI":          {"index": 108, "housing_mult": 1.22, "food_mult": 1.02, "transport_mult": 1.00, "health_mult": 1.01},
-    "Manchester, NH":       {"index": 122, "housing_mult": 1.56, "food_mult": 1.08, "transport_mult": 1.06, "health_mult": 1.07},
-    "Memphis, TN":          {"index": 88,  "housing_mult": 0.75, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
-    "Miami, FL":            {"index": 148, "housing_mult": 2.20, "food_mult": 1.10, "transport_mult": 1.08, "health_mult": 1.08},
-    "Milwaukee, WI":        {"index": 102, "housing_mult": 1.06, "food_mult": 1.00, "transport_mult": 1.00, "health_mult": 0.99},
-    "Minneapolis, MN":      {"index": 113, "housing_mult": 1.38, "food_mult": 1.04, "transport_mult": 1.01, "health_mult": 1.03},
-    "Missoula, MT":         {"index": 105, "housing_mult": 1.14, "food_mult": 1.02, "transport_mult": 1.01, "health_mult": 1.01},
-    "Montgomery, AL":       {"index": 84,  "housing_mult": 0.68, "food_mult": 0.93, "transport_mult": 0.94, "health_mult": 0.93},
-    "Nashville, TN":        {"index": 120, "housing_mult": 1.55, "food_mult": 1.04, "transport_mult": 1.02, "health_mult": 1.02},
-    "New Haven, CT":        {"index": 138, "housing_mult": 1.85, "food_mult": 1.11, "transport_mult": 1.09, "health_mult": 1.10},
-    "New Orleans, LA":      {"index": 100, "housing_mult": 1.00, "food_mult": 1.01, "transport_mult": 1.02, "health_mult": 1.00},
+COL_DATA = {
+    "National Average": {"index": 100, "housing_mult": 1.00, "food_mult": 1.00, "transport_mult": 1.00, "health_mult": 1.00},
+    # Major metros
     "New York City, NY":    {"index": 187, "housing_mult": 3.20, "food_mult": 1.22, "transport_mult": 1.18, "health_mult": 1.15},
-    "Newark, NJ":           {"index": 158, "housing_mult": 2.45, "food_mult": 1.16, "transport_mult": 1.15, "health_mult": 1.12},
-    "Oakland, CA":          {"index": 175, "housing_mult": 2.85, "food_mult": 1.20, "transport_mult": 1.16, "health_mult": 1.16},
-    "Oklahoma City, OK":    {"index": 87,  "housing_mult": 0.73, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
-    "Omaha, NE":            {"index": 90,  "housing_mult": 0.80, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "Orlando, FL":          {"index": 110, "housing_mult": 1.30, "food_mult": 1.02, "transport_mult": 1.02, "health_mult": 1.01},
-    "Philadelphia, PA":     {"index": 145, "housing_mult": 2.10, "food_mult": 1.12, "transport_mult": 1.12, "health_mult": 1.10},
-    "Phoenix, AZ":          {"index": 116, "housing_mult": 1.45, "food_mult": 1.02, "transport_mult": 1.03, "health_mult": 1.01},
-    "Pittsburgh, PA":       {"index": 96,  "housing_mult": 0.88, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
-    "Portland, ME":         {"index": 122, "housing_mult": 1.55, "food_mult": 1.09, "transport_mult": 1.04, "health_mult": 1.07},
-    "Portland, OR":         {"index": 127, "housing_mult": 1.68, "food_mult": 1.07, "transport_mult": 1.05, "health_mult": 1.05},
-    "Providence, RI":       {"index": 128, "housing_mult": 1.68, "food_mult": 1.09, "transport_mult": 1.07, "health_mult": 1.08},
-    "Provo, UT":            {"index": 112, "housing_mult": 1.36, "food_mult": 1.04, "transport_mult": 1.02, "health_mult": 1.02},
-    "Raleigh, NC":          {"index": 120, "housing_mult": 1.52, "food_mult": 1.05, "transport_mult": 1.03, "health_mult": 1.03},
-    "Rapid City, SD":       {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Reno, NV":             {"index": 118, "housing_mult": 1.48, "food_mult": 1.05, "transport_mult": 1.04, "health_mult": 1.04},
-    "Richmond, VA":         {"index": 113, "housing_mult": 1.36, "food_mult": 1.03, "transport_mult": 1.02, "health_mult": 1.02},
-    "Riverside, CA":        {"index": 122, "housing_mult": 1.55, "food_mult": 1.08, "transport_mult": 1.06, "health_mult": 1.04},
-    "Rochester, NY":        {"index": 96,  "housing_mult": 0.92, "food_mult": 0.98, "transport_mult": 0.99, "health_mult": 0.97},
-    "Rockford, IL":         {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.96},
-    "Sacramento, CA":       {"index": 142, "housing_mult": 2.05, "food_mult": 1.12, "transport_mult": 1.08, "health_mult": 1.08},
-    "Salem, OR":            {"index": 108, "housing_mult": 1.22, "food_mult": 1.05, "transport_mult": 1.03, "health_mult": 1.03},
-    "Salt Lake City, UT":   {"index": 124, "housing_mult": 1.60, "food_mult": 1.06, "transport_mult": 1.04, "health_mult": 1.04},
-    "San Antonio, TX":      {"index": 100, "housing_mult": 1.00, "food_mult": 0.99, "transport_mult": 1.01, "health_mult": 0.99},
-    "San Diego, CA":        {"index": 164, "housing_mult": 2.65, "food_mult": 1.16, "transport_mult": 1.14, "health_mult": 1.12},
     "San Francisco, CA":    {"index": 182, "housing_mult": 3.10, "food_mult": 1.20, "transport_mult": 1.15, "health_mult": 1.18},
-    "San Jose, CA":         {"index": 193, "housing_mult": 3.40, "food_mult": 1.22, "transport_mult": 1.18, "health_mult": 1.18},
-    "Savannah, GA":         {"index": 98,  "housing_mult": 0.95, "food_mult": 0.99, "transport_mult": 1.00, "health_mult": 0.98},
-    "Scottsdale, AZ":       {"index": 128, "housing_mult": 1.70, "food_mult": 1.06, "transport_mult": 1.05, "health_mult": 1.04},
+    "Los Angeles, CA":      {"index": 163, "housing_mult": 2.60, "food_mult": 1.14, "transport_mult": 1.18, "health_mult": 1.10},
+    "Boston, MA":           {"index": 162, "housing_mult": 2.55, "food_mult": 1.16, "transport_mult": 1.12, "health_mult": 1.14},
     "Seattle, WA":          {"index": 158, "housing_mult": 2.45, "food_mult": 1.14, "transport_mult": 1.10, "health_mult": 1.12},
-    "Shreveport, LA":       {"index": 86,  "housing_mult": 0.72, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
-    "Sioux Falls, SD":      {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Spokane, WA":          {"index": 108, "housing_mult": 1.22, "food_mult": 1.03, "transport_mult": 1.02, "health_mult": 1.02},
-    "Springfield, IL":      {"index": 92,  "housing_mult": 0.84, "food_mult": 0.97, "transport_mult": 0.97, "health_mult": 0.96},
-    "Springfield, MO":      {"index": 88,  "housing_mult": 0.76, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
-    "Springfield, MA":      {"index": 118, "housing_mult": 1.48, "food_mult": 1.07, "transport_mult": 1.05, "health_mult": 1.06},
-    "St. Louis, MO":        {"index": 93,  "housing_mult": 0.83, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
-    "St. Petersburg, FL":   {"index": 110, "housing_mult": 1.30, "food_mult": 1.03, "transport_mult": 1.02, "health_mult": 1.01},
-    "Tacoma, WA":           {"index": 122, "housing_mult": 1.56, "food_mult": 1.09, "transport_mult": 1.07, "health_mult": 1.08},
-    "Tampa, FL":            {"index": 113, "housing_mult": 1.38, "food_mult": 1.03, "transport_mult": 1.03, "health_mult": 1.02},
-    "Toledo, OH":           {"index": 88,  "housing_mult": 0.74, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.96},
-    "Tucson, AZ":           {"index": 107, "housing_mult": 1.20, "food_mult": 1.01, "transport_mult": 1.02, "health_mult": 1.00},
-    "Tulsa, OK":            {"index": 85,  "housing_mult": 0.70, "food_mult": 0.93, "transport_mult": 0.94, "health_mult": 0.93},
-    "Virginia Beach, VA":   {"index": 105, "housing_mult": 1.14, "food_mult": 1.01, "transport_mult": 1.01, "health_mult": 1.00},
     "Washington, DC":       {"index": 155, "housing_mult": 2.40, "food_mult": 1.13, "transport_mult": 1.10, "health_mult": 1.11},
+    "Miami, FL":            {"index": 148, "housing_mult": 2.20, "food_mult": 1.10, "transport_mult": 1.08, "health_mult": 1.08},
+    "Chicago, IL":          {"index": 138, "housing_mult": 1.85, "food_mult": 1.09, "transport_mult": 1.08, "health_mult": 1.06},
+    "Denver, CO":           {"index": 135, "housing_mult": 1.80, "food_mult": 1.08, "transport_mult": 1.05, "health_mult": 1.06},
+    "Austin, TX":           {"index": 128, "housing_mult": 1.70, "food_mult": 1.06, "transport_mult": 1.04, "health_mult": 1.04},
+    "Portland, OR":         {"index": 127, "housing_mult": 1.68, "food_mult": 1.07, "transport_mult": 1.05, "health_mult": 1.05},
+    "Nashville, TN":        {"index": 120, "housing_mult": 1.55, "food_mult": 1.04, "transport_mult": 1.02, "health_mult": 1.02},
+    "Atlanta, GA":          {"index": 118, "housing_mult": 1.48, "food_mult": 1.03, "transport_mult": 1.03, "health_mult": 1.02},
+    "Phoenix, AZ":          {"index": 116, "housing_mult": 1.45, "food_mult": 1.02, "transport_mult": 1.03, "health_mult": 1.01},
+    "Dallas, TX":           {"index": 114, "housing_mult": 1.42, "food_mult": 1.02, "transport_mult": 1.04, "health_mult": 1.01},
+    "Minneapolis, MN":      {"index": 113, "housing_mult": 1.38, "food_mult": 1.04, "transport_mult": 1.01, "health_mult": 1.03},
+    "Charlotte, NC":        {"index": 108, "housing_mult": 1.25, "food_mult": 1.01, "transport_mult": 1.01, "health_mult": 1.00},
+    "Columbus, OH":         {"index": 103, "housing_mult": 1.10, "food_mult": 1.00, "transport_mult": 1.00, "health_mult": 0.99},
+    "Indianapolis, IN":     {"index": 97,  "housing_mult": 0.90, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
+    "Pittsburgh, PA":       {"index": 96,  "housing_mult": 0.88, "food_mult": 0.97, "transport_mult": 0.98, "health_mult": 0.97},
+    "Kansas City, MO":      {"index": 94,  "housing_mult": 0.85, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
+    "St. Louis, MO":        {"index": 93,  "housing_mult": 0.83, "food_mult": 0.96, "transport_mult": 0.97, "health_mult": 0.96},
+    "Louisville, KY":       {"index": 91,  "housing_mult": 0.80, "food_mult": 0.95, "transport_mult": 0.96, "health_mult": 0.95},
+    "Memphis, TN":          {"index": 88,  "housing_mult": 0.75, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
+    "Oklahoma City, OK":    {"index": 87,  "housing_mult": 0.73, "food_mult": 0.94, "transport_mult": 0.95, "health_mult": 0.94},
+    "Tulsa, OK":            {"index": 85,  "housing_mult": 0.70, "food_mult": 0.93, "transport_mult": 0.94, "health_mult": 0.93},
     "Wichita, KS":          {"index": 84,  "housing_mult": 0.68, "food_mult": 0.93, "transport_mult": 0.93, "health_mult": 0.93},
-    "Wilmington, DE":       {"index": 115, "housing_mult": 1.40, "food_mult": 1.05, "transport_mult": 1.04, "health_mult": 1.04},
-    "Worcester, MA":        {"index": 145, "housing_mult": 2.10, "food_mult": 1.14, "transport_mult": 1.10, "health_mult": 1.12},
+    "Fayetteville, AR":     {"index": 83,  "housing_mult": 0.66, "food_mult": 0.92, "transport_mult": 0.93, "health_mult": 0.92},
+    "Little Rock, AR":      {"index": 82,  "housing_mult": 0.65, "food_mult": 0.92, "transport_mult": 0.93, "health_mult": 0.92},
+    "Jackson, MS":          {"index": 80,  "housing_mult": 0.62, "food_mult": 0.91, "transport_mult": 0.92, "health_mult": 0.91},
 }
-COL_DATA = {"National Average": {"index": 100, "housing_mult": 1.00, "food_mult": 1.00, "transport_mult": 1.00, "health_mult": 1.00}}
-COL_DATA.update(dict(sorted(_CITIES_RAW.items())))
 
 # ── Tax calculation ──────────────────────────────────────────────────────────
-def calc_tax(gross):
+def calc_federal_tax(gross):
     brackets = [(11600, 0.10), (44725, 0.12), (95375, 0.22),
                 (201050, 0.24), (383900, 0.32), (487450, 0.35), (float("inf"), 0.37)]
     std_deduction = 14600
@@ -430,6 +190,100 @@ def calc_tax(gross):
         prev = top
     tax += gross * 0.0765  # FICA
     return round(tax)
+
+# ── State income tax data ─────────────────────────────────────────────────────
+# flat_rate: flat tax states. brackets: [(income_ceiling, rate), ...]. std_ded: standard deduction.
+STATE_TAX = {
+    "AL": {"type": "brackets", "std_ded": 2500,  "brackets": [(500, 0.02), (3000, 0.04), (float("inf"), 0.05)]},
+    "AK": {"type": "none"},
+    "AZ": {"type": "flat",     "rate": 0.025},
+    "AR": {"type": "brackets", "std_ded": 2200,  "brackets": [(4300, 0.02), (8500, 0.04), (float("inf"), 0.049)]},
+    "CA": {"type": "brackets", "std_ded": 5202,  "brackets": [(10099, 0.01), (23942, 0.02), (37788, 0.04), (52455, 0.06), (66295, 0.08), (338639, 0.093), (406364, 0.103), (677275, 0.113), (float("inf"), 0.123)]},
+    "CO": {"type": "flat",     "rate": 0.044},
+    "CT": {"type": "brackets", "std_ded": 0,     "brackets": [(10000, 0.03), (50000, 0.05), (100000, 0.055), (200000, 0.06), (250000, 0.065), (500000, 0.069), (float("inf"), 0.0699)]},
+    "DC": {"type": "brackets", "std_ded": 12950, "brackets": [(10000, 0.04), (40000, 0.06), (60000, 0.065), (350000, 0.085), (1000000, 0.0925), (float("inf"), 0.1075)]},
+    "FL": {"type": "none"},
+    "GA": {"type": "flat",     "rate": 0.0549},
+    "ID": {"type": "flat",     "rate": 0.058},
+    "IL": {"type": "flat",     "rate": 0.0495},
+    "IN": {"type": "flat",     "rate": 0.0305},
+    "IA": {"type": "flat",     "rate": 0.057},
+    "KS": {"type": "brackets", "std_ded": 3500,  "brackets": [(15000, 0.031), (30000, 0.0525), (float("inf"), 0.057)]},
+    "KY": {"type": "flat",     "rate": 0.045},
+    "LA": {"type": "brackets", "std_ded": 4500,  "brackets": [(12500, 0.0185), (50000, 0.035), (float("inf"), 0.0425)]},
+    "ME": {"type": "brackets", "std_ded": 13850, "brackets": [(24500, 0.058), (58050, 0.0675), (float("inf"), 0.0715)]},
+    "MD": {"type": "brackets", "std_ded": 2400,  "brackets": [(1000, 0.02), (2000, 0.03), (3000, 0.04), (100000, 0.0475), (125000, 0.05), (150000, 0.0525), (250000, 0.055), (float("inf"), 0.0575)]},
+    "MA": {"type": "flat",     "rate": 0.05},
+    "MI": {"type": "flat",     "rate": 0.0425},
+    "MN": {"type": "brackets", "std_ded": 14575, "brackets": [(31690, 0.0535), (104090, 0.068), (171220, 0.0785), (float("inf"), 0.0985)]},
+    "MS": {"type": "flat",     "rate": 0.047},
+    "MO": {"type": "brackets", "std_ded": 14600, "brackets": [(1121, 0.015), (2242, 0.02), (3363, 0.025), (4484, 0.03), (5605, 0.035), (6726, 0.04), (7847, 0.045), (8968, 0.05), (float("inf"), 0.048)]},
+    "MT": {"type": "flat",     "rate": 0.059},
+    "NE": {"type": "brackets", "std_ded": 7900,  "brackets": [(3700, 0.0246), (22170, 0.0351), (35730, 0.0501), (float("inf"), 0.0664)]},
+    "NV": {"type": "none"},
+    "NH": {"type": "none"},
+    "NJ": {"type": "brackets", "std_ded": 0,     "brackets": [(20000, 0.014), (35000, 0.0175), (40000, 0.035), (75000, 0.05526), (500000, 0.0637), (1000000, 0.0897), (float("inf"), 0.1075)]},
+    "NM": {"type": "brackets", "std_ded": 14600, "brackets": [(5500, 0.017), (11000, 0.032), (16000, 0.047), (210000, 0.049), (float("inf"), 0.059)]},
+    "NY": {"type": "brackets", "std_ded": 8000,  "brackets": [(17150, 0.04), (23600, 0.045), (27900, 0.0525), (161550, 0.0585), (323200, 0.0625), (2155350, 0.0685), (5000000, 0.0965), (25000000, 0.103), (float("inf"), 0.109)]},
+    "NC": {"type": "flat",     "rate": 0.045},
+    "ND": {"type": "flat",     "rate": 0.0195},
+    "OH": {"type": "brackets", "std_ded": 0,     "brackets": [(26050, 0.0), (100000, 0.02765), (float("inf"), 0.0350)]},
+    "OK": {"type": "brackets", "std_ded": 6350,  "brackets": [(1000, 0.0025), (2500, 0.0075), (3750, 0.0175), (4900, 0.0275), (7200, 0.0375), (float("inf"), 0.0475)]},
+    "OR": {"type": "brackets", "std_ded": 2420,  "brackets": [(10200, 0.0475), (25500, 0.0675), (125000, 0.0875), (float("inf"), 0.099)]},
+    "PA": {"type": "flat",     "rate": 0.0307},
+    "RI": {"type": "brackets", "std_ded": 10550, "brackets": [(73450, 0.0375), (166950, 0.0475), (float("inf"), 0.0599)]},
+    "SC": {"type": "flat",     "rate": 0.064},
+    "SD": {"type": "none"},
+    "TN": {"type": "none"},
+    "TX": {"type": "none"},
+    "UT": {"type": "flat",     "rate": 0.0465},
+    "VT": {"type": "brackets", "std_ded": 7000,  "brackets": [(45400, 0.0335), (110050, 0.066), (229550, 0.076), (float("inf"), 0.0875)]},
+    "VA": {"type": "brackets", "std_ded": 8000,  "brackets": [(3000, 0.02), (5000, 0.03), (17000, 0.05), (float("inf"), 0.0575)]},
+    "WA": {"type": "none"},
+    "WV": {"type": "brackets", "std_ded": 0,     "brackets": [(10000, 0.0236), (25000, 0.0315), (40000, 0.0354), (60000, 0.0472), (float("inf"), 0.0512)]},
+    "WI": {"type": "brackets", "std_ded": 12760, "brackets": [(14320, 0.0354), (28640, 0.0465), (315310, 0.053), (float("inf"), 0.0765)]},
+    "WY": {"type": "none"},
+}
+
+# Map each city to its state abbreviation
+CITY_STATE = {
+    "National Average": None,
+    "New York City, NY": "NY", "San Francisco, CA": "CA", "Los Angeles, CA": "CA",
+    "Boston, MA": "MA", "Seattle, WA": "WA", "Washington, DC": "DC",
+    "Miami, FL": "FL", "Chicago, IL": "IL", "Denver, CO": "CO",
+    "Austin, TX": "TX", "Portland, OR": "OR", "Nashville, TN": "TN",
+    "Atlanta, GA": "GA", "Phoenix, AZ": "AZ", "Dallas, TX": "TX",
+    "Minneapolis, MN": "MN", "Charlotte, NC": "NC", "Columbus, OH": "OH",
+    "Indianapolis, IN": "IN", "Pittsburgh, PA": "PA", "Kansas City, MO": "MO",
+    "St. Louis, MO": "MO", "Louisville, KY": "KY", "Memphis, TN": "TN",
+    "Oklahoma City, OK": "OK", "Tulsa, OK": "OK", "Wichita, KS": "KS",
+    "Fayetteville, AR": "AR", "Little Rock, AR": "AR", "Jackson, MS": "MS",
+}
+
+def calc_state_tax(gross, state_abbr):
+    if state_abbr is None or state_abbr not in STATE_TAX:
+        return 0
+    info = STATE_TAX[state_abbr]
+    if info["type"] == "none":
+        return 0
+    if info["type"] == "flat":
+        return round(gross * info["rate"])
+    # brackets
+    std_ded = info.get("std_ded", 0)
+    taxable = max(0, gross - std_ded)
+    tax = 0
+    prev = 0
+    for top, rate in info["brackets"]:
+        if taxable <= prev:
+            break
+        tax += (min(taxable, top) - prev) * rate
+        prev = top
+    return round(tax)
+
+def calc_tax(gross, state_abbr=None):
+    federal = calc_federal_tax(gross)
+    state   = calc_state_tax(gross, state_abbr)
+    return federal, state
 
 # ── Budget frameworks ────────────────────────────────────────────────────────
 FRAMEWORKS = {
@@ -469,298 +323,37 @@ CATEGORIES = [
 
 COL_AFFECTED = {"housing", "food", "transport", "health"}
 
-# ── Lifestyle tiers ──────────────────────────────────────────────────────────
-# Adjustments are additive deltas applied to the resolved framework percentages.
-# Each set sums to 0 so the renormalization is a no-op when no clamping occurs.
-TIERS = {
-    "🌿 Frugal": {
-        "adj": {"housing": -2, "food": -2, "transport": -1, "savings": 5,
-                "entertainment": -4, "health": 1, "clothing": -3, "debt": 3, "other": 3},
-        "desc": "Prioritizes savings and debt payoff. Minimizes discretionary spending.",
-        "css": "tier-frugal",
-    },
-    "😊 Comfortable": {
-        "adj": {k: 0 for k in ["housing", "food", "transport", "savings",
-                                "entertainment", "health", "clothing", "debt", "other"]},
-        "desc": "Balanced lifestyle. Framework allocations applied as-is.",
-        "css": "tier-comfortable",
-    },
-    "✨ Lavish": {
-        "adj": {"housing": 4, "food": 3, "transport": 2, "savings": -7,
-                "entertainment": 5, "health": 1, "clothing": 3, "debt": -4, "other": -7},
-        "desc": "Maximizes lifestyle spending. Lower savings and debt repayment rates.",
-        "css": "tier-lavish",
-    },
-}
-
-# Maps intro survey answers → framework keys and tier keys
-PRIORITY_TO_FRAMEWORK = {
-    "Build savings fast":         "Aggressive Savings (FIRE-adjacent)",
-    "Pay off debt first":         "Debt Avalanche (Pay it off fast)",
-    "Balanced and comfortable":   "50/30/20 (Needs · Wants · Savings)",
-    "Track every dollar":         "Zero-Based (Every dollar assigned)",
-}
-LIFESTYLE_TO_TIER = {
-    "Frugal — save more, spend less": "🌿 Frugal",
-    "Comfortable — balanced approach": "😊 Comfortable",
-    "Lavish — live it up":            "✨ Lavish",
-}
-
-
-# ── PDF generation ───────────────────────────────────────────────────────────
-def generate_pdf(gross, net, tax, location, fw_name, tier_name, cat_data,
-                 goal_name, goal_amount, goal_current, goal_months,
-                 debt_balance, debt_rate, monthly_debt_payment, debt_months, debt_interest):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_auto_page_break(auto=True, margin=20)
-    weekly_net = net / 52
-
-    # Dark header banner
-    pdf.set_fill_color(15, 15, 15)
-    pdf.rect(0, 0, 220, 38, "F")
-    pdf.set_xy(20, 10)
-    pdf.set_font("Helvetica", "B", 18)
-    pdf.set_text_color(240, 234, 214)
-    pdf.cell(0, 8, "Lifestyle Budget Simulator", ln=True)
-    pdf.set_xy(20, 22)
-    pdf.set_font("Helvetica", "", 9)
-    pdf.set_text_color(140, 140, 140)
-    short_fw = fw_name.split("(")[0].strip()
-    short_tier = tier_name.split(" ", 1)[-1]
-    pdf.cell(0, 6, f"{location}  |  {short_fw}  |  {short_tier}", ln=True)
-    pdf.set_y(46)
-
-    def section(title):
-        pdf.set_font("Helvetica", "B", 12)
-        pdf.set_text_color(30, 30, 30)
-        pdf.cell(0, 7, title, ln=True)
-        pdf.set_draw_color(210, 210, 210)
-        pdf.line(20, pdf.get_y(), 190, pdf.get_y())
-        pdf.ln(3)
-
-    def kv(label, value):
-        pdf.set_font("Helvetica", "", 9)
-        pdf.set_text_color(100, 100, 100)
-        pdf.cell(80, 5.5, label)
-        pdf.set_font("Helvetica", "B", 9)
-        pdf.set_text_color(30, 30, 30)
-        pdf.cell(0, 5.5, value, ln=True)
-
-    # Income summary
-    section("Income Summary")
-    eff_rate = round(tax / gross * 100) if gross else 0
-    kv("Gross Income", f"${gross:,.0f}")
-    kv("Estimated Federal Tax", f"${tax:,.0f}  ({eff_rate}% effective rate)")
-    kv("Take-Home (Annual)", f"${net:,.0f}")
-    kv("Take-Home (Weekly)", f"${weekly_net:,.0f}")
-    pdf.ln(6)
-
-    # Budget breakdown table
-    section("Weekly Budget Breakdown")
-    pdf.set_fill_color(235, 235, 235)
-    pdf.set_font("Helvetica", "B", 8)
-    pdf.set_text_color(80, 80, 80)
-    pdf.cell(72, 6, "Category", fill=True)
-    pdf.cell(20, 6, "Alloc.", fill=True, align="R")
-    pdf.cell(42, 6, "Weekly", fill=True, align="R")
-    pdf.cell(0,  6, "Annual", fill=True, align="R", ln=True)
-    for i, d in enumerate(cat_data):
-        bg = (248, 248, 248) if i % 2 == 0 else (255, 255, 255)
-        pdf.set_fill_color(*bg)
-        pdf.set_font("Helvetica", "", 9)
-        pdf.set_text_color(30, 30, 30)
-        pdf.cell(72, 5.5, d["label"], fill=True)
-        pdf.cell(20, 5.5, f"{d['pct']}%", fill=True, align="R")
-        pdf.cell(42, 5.5, f"${d['weekly']:,.0f}", fill=True, align="R")
-        pdf.cell(0,  5.5, f"${d['annual']:,.0f}", fill=True, align="R", ln=True)
-    pdf.ln(7)
-
-    # Savings goal
-    if goal_amount > 0:
-        section(f"Savings Goal - {goal_name}")
-        remaining = max(0, goal_amount - goal_current)
-        kv("Target Amount", f"${goal_amount:,.0f}")
-        kv("Already Saved", f"${goal_current:,.0f}")
-        kv("Remaining", f"${remaining:,.0f}")
-        if goal_months == 0:
-            kv("Status", "Goal already reached!")
-        elif goal_months is not None:
-            yrs, mos = divmod(int(goal_months), 12)
-            parts = []
-            if yrs: parts.append(f"{yrs} yr{'s' if yrs != 1 else ''}")
-            if mos: parts.append(f"{mos} mo")
-            kv("Estimated Timeline", " ".join(parts) or "< 1 month")
-        else:
-            kv("Status", "No savings allocated - adjust your framework.")
-        pdf.ln(6)
-
-    # Debt payoff
-    if debt_balance > 0:
-        section("Debt Payoff Estimate")
-        kv("Current Balance", f"${debt_balance:,.0f}")
-        kv("APR", f"{debt_rate:.1f}%")
-        kv("Monthly Payment (from allocation)", f"${monthly_debt_payment:,.0f}")
-        if debt_months is None or debt_months == float("inf"):
-            kv("Status", "Payment does not cover interest - increase debt allocation.")
-        else:
-            yrs, mos = divmod(int(debt_months), 12)
-            parts = []
-            if yrs: parts.append(f"{yrs} yr{'s' if yrs != 1 else ''}")
-            if mos: parts.append(f"{mos} mo")
-            kv("Payoff Timeline", " ".join(parts) or "< 1 month")
-            kv("Total Interest Paid", f"${debt_interest:,.0f}")
-        pdf.ln(6)
-
-    # Footer
-    pdf.set_y(-18)
-    pdf.set_font("Helvetica", "I", 7)
-    pdf.set_text_color(160, 160, 160)
-    pdf.multi_cell(0, 4,
-        "Tax estimate uses simplified 2024 US federal brackets + 7.65% FICA. "
-        "State taxes not included. Cost of living multipliers are estimates. "
-        "All figures are for planning purposes only.",
-        align="C")
-
-    return bytes(pdf.output())
-
-
-# ── Intro page (shown until user submits the survey) ─────────────────────────
-if not st.session_state.get("intro_done", False):
-
-    hero, form = st.columns([1.05, 0.95], gap="large")
-
-    with hero:
-        st.markdown("""
-<div class="intro-hero">
-  <div class="intro-eyebrow">Lifestyle Budget Simulator</div>
-  <div class="intro-title">See exactly what<br>your money<br>looks like.</div>
-  <div class="intro-sub">Real cost-of-living data. Clear, honest numbers.<br>No vague advice — just your actual budget.</div>
-  <div>
-    <div class="intro-feature"><span class="intro-feature-dot"></span>Adjusts for your city's cost of living</div>
-    <div class="intro-feature"><span class="intro-feature-dot"></span>9 budget categories broken down weekly &amp; annually</div>
-    <div class="intro-feature"><span class="intro-feature-dot"></span>Savings goal tracker with projected timeline</div>
-    <div class="intro-feature"><span class="intro-feature-dot"></span>Debt payoff calculator with amortization chart</div>
-    <div class="intro-feature"><span class="intro-feature-dot"></span>Export your full budget as a PDF</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-    with form:
-        st.markdown("""
-<div class="intro-card">
-  <div class="intro-card-title">Build your budget</div>
-  <div class="intro-card-sub">Takes about 30 seconds.</div>
-</div>
-""", unsafe_allow_html=True)
-
-        # ── Name ──
-        st.markdown('<div class="intro-section-label">Your name (optional)</div>', unsafe_allow_html=True)
-        intro_name = st.text_input("Name", placeholder="e.g. Alex", label_visibility="collapsed")
-
-        # ── Income ──
-        st.markdown('<div class="intro-section-label">How do you earn?</div>', unsafe_allow_html=True)
-        intro_income_type = st.radio("Income type", ["Annual salary", "Hourly wage"],
-                                     horizontal=True, label_visibility="collapsed")
-        if intro_income_type == "Annual salary":
-            intro_gross = st.number_input("Annual salary ($)", min_value=0, max_value=2_000_000,
-                                          value=75_000, step=1_000, format="%d", label_visibility="collapsed")
-        else:
-            intro_hourly = st.number_input("Hourly wage ($)", min_value=0.0, max_value=500.0,
-                                           value=25.0, step=0.5, format="%.2f", label_visibility="collapsed")
-            intro_gross = intro_hourly * 40 * 52
-            st.caption(f"→ ${intro_gross:,.0f} / year  (40 hrs × 52 wks)")
-
-        # ── Location ──
-        st.markdown('<div class="intro-section-label">Where do you live?</div>', unsafe_allow_html=True)
-        intro_location = st.selectbox("Location", list(COL_DATA.keys()),
-                                      index=0, label_visibility="collapsed")
-
-        # ── Financial priority ──
-        st.markdown('<div class="intro-section-label">What\'s your main financial goal?</div>', unsafe_allow_html=True)
-        intro_priority = st.radio("Priority", list(PRIORITY_TO_FRAMEWORK.keys()),
-                                  label_visibility="collapsed")
-
-        # ── Lifestyle ──
-        st.markdown('<div class="intro-section-label">How would you describe your lifestyle?</div>', unsafe_allow_html=True)
-        intro_lifestyle = st.radio("Lifestyle", list(LIFESTYLE_TO_TIER.keys()),
-                                   index=1, label_visibility="collapsed")
-
-        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
-
-        if st.button("See my budget →", use_container_width=True, type="primary"):
-            st.session_state.update({
-                "intro_done":     True,
-                "s_name":         intro_name,
-                "s_gross":        int(intro_gross),
-                "s_income_type":  intro_income_type,
-                "s_hourly":       intro_hourly if intro_income_type == "Hourly wage" else 25.0,
-                "s_location":     intro_location,
-                "s_framework":    PRIORITY_TO_FRAMEWORK[intro_priority],
-                "s_tier":         LIFESTYLE_TO_TIER[intro_lifestyle],
-            })
-            st.rerun()
-
-    st.stop()  # Don't render sidebar or main app until intro is complete
-
-
-# ── Sidebar — Part 1: inputs ─────────────────────────────────────────────────
+# ── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
-    s_name = st.session_state.get("s_name", "")
-    greeting = f"Hey, {s_name}" if s_name else "Your Budget"
-    st.markdown(f'<p style="font-family:\'DM Serif Display\',serif;font-size:20px;color:#ffffff;margin-bottom:2px;letter-spacing:-0.01em">{greeting}</p>', unsafe_allow_html=True)
-    st.markdown('<p style="font-size:12px;color:#ffffff;margin-bottom:20px;font-weight:300;opacity:.5">Adjust any variable below to update your budget.</p>', unsafe_allow_html=True)
+    st.markdown('<p style="font-family:\'DM Serif Display\',serif;font-size:22px;color:#f0ead6;margin-bottom:4px">Lifestyle Simulator</p>', unsafe_allow_html=True)
+    st.markdown('<p style="font-size:12px;color:#555;margin-bottom:24px">Budget planning based on real cost of living</p>', unsafe_allow_html=True)
 
     st.markdown("#### Income")
-    _it_default = 0 if st.session_state.get("s_income_type", "Annual salary") == "Annual salary" else 1
-    income_type = st.radio("Income type", ["Annual salary", "Hourly wage"],
-                           horizontal=True, index=_it_default, label_visibility="collapsed")
+    income_type = st.radio("Income type", ["Annual salary", "Hourly wage"], horizontal=True, label_visibility="collapsed")
 
     if income_type == "Annual salary":
-        gross = st.number_input("Annual salary ($)", min_value=0, max_value=2_000_000,
-                                value=st.session_state.get("s_gross", 75_000), step=1_000, format="%d")
+        gross = st.number_input("Annual salary ($)", min_value=0, max_value=2000000, value=75000, step=1000, format="%d")
     else:
-        hourly = st.number_input("Hourly wage ($)", min_value=0.0, max_value=500.0,
-                                 value=st.session_state.get("s_hourly", 25.0), step=0.50, format="%.2f")
+        hourly = st.number_input("Hourly wage ($)", min_value=0.0, max_value=500.0, value=25.0, step=0.50, format="%.2f")
         gross = hourly * 40 * 52
         st.caption(f"→ ${gross:,.0f} / year (40 hrs × 52 wks)")
 
     st.divider()
 
     st.markdown("#### Location")
-    _loc_list = list(COL_DATA.keys()) + ["My city isn't listed →"]
-    _loc_default = st.session_state.get("s_location", "National Average")
-    _loc_idx = _loc_list.index(_loc_default) if _loc_default in _loc_list else 0
-    location_sel = st.selectbox("Type or select a city", _loc_list, index=_loc_idx)
+    location = st.selectbox("City / metro area", list(COL_DATA.keys()), index=0)
+    col_info = COL_DATA[location]
+    col_idx = col_info["index"]
 
-    if location_sel == "My city isn't listed →":
-        custom_col_idx = st.slider("Estimated cost of living index", 60, 250, 100)
-        st.caption("100 = US average · NYC ≈ 187 · Rural Midwest ≈ 80–90")
-        col_idx  = custom_col_idx
-        col_info = {
-            "index":          custom_col_idx,
-            "housing_mult":   round((custom_col_idx / 100) ** 2.0, 3),
-            "food_mult":      round(max(0.88, 1.0 + (custom_col_idx - 100) * 0.0022), 3),
-            "transport_mult": round(max(0.90, 1.0 + (custom_col_idx - 100) * 0.0018), 3),
-            "health_mult":    round(max(0.90, 1.0 + (custom_col_idx - 100) * 0.0015), 3),
-        }
-        location = f"Custom city (COL {custom_col_idx})"
-    else:
-        location = location_sel
-        col_info = COL_DATA[location]
-        col_idx  = col_info["index"]
-        if col_idx != 100:
-            diff = col_idx - 100
-            direction = "higher" if diff > 0 else "lower"
-            st.caption(f"Cost of living is **{abs(diff)}% {direction}** than the national average.")
+    if col_idx != 100:
+        diff = col_idx - 100
+        direction = "higher" if diff > 0 else "lower"
+        st.caption(f"Cost of living is **{abs(diff)}% {direction}** than the national average.")
 
     st.divider()
 
     st.markdown("#### Budgeting framework")
-    _fw_list = list(FRAMEWORKS.keys())
-    _fw_default = st.session_state.get("s_framework", _fw_list[0])
-    _fw_idx = _fw_list.index(_fw_default) if _fw_default in _fw_list else 0
-    fw_name = st.selectbox("Framework", _fw_list, index=_fw_idx)
+    fw_name = st.selectbox("Framework", list(FRAMEWORKS.keys()))
     pcts = FRAMEWORKS[fw_name]
 
     with st.expander("Customize allocations"):
@@ -776,67 +369,28 @@ with st.sidebar:
             st.success("Total: 100% ✓")
             pcts = custom_pcts
 
-    st.divider()
-
-    st.markdown("#### Lifestyle tier")
-    _tier_list = list(TIERS.keys())
-    _tier_default = st.session_state.get("s_tier", "😊 Comfortable")
-    _tier_idx = _tier_list.index(_tier_default) if _tier_default in _tier_list else 1
-    tier = st.radio(
-        "Lifestyle tier",
-        _tier_list,
-        index=_tier_idx,
-        horizontal=True,
-        label_visibility="collapsed",
-    )
-    st.caption(TIERS[tier]["desc"])
-
-    st.divider()
-
-    st.markdown("#### Savings goal")
-    with st.expander("Set a savings goal"):
-        goal_name    = st.text_input("Goal name", value="Emergency Fund")
-        goal_amount  = st.number_input("Target amount ($)", min_value=0, max_value=10_000_000, value=10_000, step=500, format="%d")
-        goal_current = st.number_input("Already saved ($)", min_value=0, max_value=10_000_000, value=0, step=500, format="%d")
-
-    st.divider()
-
-    st.markdown("#### Debt payoff")
-    with st.expander("Enter debt details"):
-        debt_balance = st.number_input("Total debt balance ($)", min_value=0, max_value=2_000_000, value=0, step=500, format="%d")
-        debt_rate    = st.slider("Annual interest rate (APR %)", 0.0, 36.0, 18.0, step=0.1)
-
-
 # ── Calculations ─────────────────────────────────────────────────────────────
-tax        = calc_tax(gross)
-net        = gross - tax
+state_abbr = CITY_STATE.get(location)
+federal_tax, state_tax = calc_tax(gross, state_abbr)
+tax = federal_tax + state_tax
+net = gross - tax
 weekly_net = net / 52
-tax_rate   = round(tax / gross * 100) if gross > 0 else 0
-
-# Apply lifestyle tier: additive deltas → clamp negatives → renormalize to 100
-tier_adj = TIERS[tier]["adj"]
-adjusted_pcts = {key: max(0, pcts.get(key, 0) + tier_adj.get(key, 0))
-                 for key, _, _ in CATEGORIES}
-total_adj = sum(adjusted_pcts.values())
-if total_adj > 0 and total_adj != 100:
-    scale = 100 / total_adj
-    adjusted_pcts = {k: round(v * scale) for k, v in adjusted_pcts.items()}
-    diff = 100 - sum(adjusted_pcts.values())
-    if diff != 0:
-        max_key = max(adjusted_pcts, key=adjusted_pcts.get)
-        adjusted_pcts[max_key] += diff
-pcts = adjusted_pcts
+tax_rate = round(tax / gross * 100) if gross > 0 else 0
+fed_rate  = round(federal_tax / gross * 100) if gross > 0 else 0
+st_rate   = round(state_tax / gross * 100) if gross > 0 else 0
 
 def apply_col(key, base_weekly):
-    if key == "housing":   return base_weekly * col_info["housing_mult"]
-    if key == "food":      return base_weekly * col_info["food_mult"]
-    if key == "transport": return base_weekly * col_info["transport_mult"]
-    if key == "health":    return base_weekly * col_info["health_mult"]
+    if key in COL_AFFECTED:
+        mult_key = f"{key}_mult" if f"{key}_mult" in col_info else "index"
+        if key == "housing":   return base_weekly * col_info["housing_mult"]
+        if key == "food":      return base_weekly * col_info["food_mult"]
+        if key == "transport": return base_weekly * col_info["transport_mult"]
+        if key == "health":    return base_weekly * col_info["health_mult"]
     return base_weekly
 
 cat_data = []
 for key, label, color in CATEGORIES:
-    base     = weekly_net * pcts.get(key, 0) / 100
+    base = weekly_net * pcts.get(key, 0) / 100
     adjusted = apply_col(key, base)
     cat_data.append({
         "key": key, "label": label, "color": color,
@@ -846,75 +400,30 @@ for key, label, color in CATEGORIES:
         "annual": adjusted * 52,
     })
 
-savings_weekly = next(d["weekly"] for d in cat_data if d["key"] == "savings")
-savings_annual = savings_weekly * 52
-debt_weekly    = next(d["weekly"] for d in cat_data if d["key"] == "debt")
-
-# Savings goal timeline
-goal_months = None
-if goal_amount > 0:
-    remaining = max(0, goal_amount - goal_current)
-    if remaining == 0:
-        goal_months = 0
-    elif savings_annual > 0:
-        goal_months = math.ceil(remaining / (savings_annual / 12))
-
-# Debt payoff amortization
-monthly_debt_payment = debt_weekly * 52 / 12
-debt_months   = None
-debt_interest = None
-amort_balances     = []
-amort_months_list  = []
-
-if debt_balance > 0 and monthly_debt_payment > 0:
-    monthly_rate = debt_rate / 100 / 12
-    if monthly_rate == 0:
-        debt_months   = math.ceil(debt_balance / monthly_debt_payment)
-        debt_interest = 0.0
-    elif monthly_debt_payment <= monthly_rate * debt_balance:
-        debt_months   = float("inf")
-        debt_interest = float("inf")
-    else:
-        raw = -math.log(1 - (monthly_rate * debt_balance) / monthly_debt_payment) / math.log(1 + monthly_rate)
-        debt_months   = math.ceil(raw)
-        debt_interest = debt_months * monthly_debt_payment - debt_balance
-
-    if debt_months not in (None, float("inf")):
-        bal = float(debt_balance)
-        for m in range(min(int(debt_months) + 1, 601)):
-            amort_balances.append(bal)
-            amort_months_list.append(m)
-            interest_charge = bal * (debt_rate / 100 / 12)
-            bal = max(0.0, bal - (monthly_debt_payment - interest_charge))
-
-
 # ── Header ───────────────────────────────────────────────────────────────────
-tier_css = TIERS[tier]["css"]
-s_name    = st.session_state.get("s_name", "")
-headline  = f"{s_name}'s financial life at" if s_name else "Your financial life at"
-
 st.markdown(f"""
-<div style="padding:32px 0 24px 0;border-bottom:1px solid #1c1c2e;margin-bottom:28px">
-  <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#6060a0;margin-bottom:12px">Lifestyle Budget Simulator</div>
-  <div style="font-family:'DM Serif Display',serif;font-size:38px;color:#ffffff;letter-spacing:-0.02em;line-height:1.1;margin-bottom:16px">
-    {headline} <span style="color:#c8a96e">${gross:,.0f}</span> / yr
-  </div>
-  <div>
-    <span class="location-tag">📍 {location} &nbsp;·&nbsp; COL {col_idx}</span>
-    <span class="tier-tag {tier_css}">{tier}</span>
-  </div>
+<div style="margin-bottom:8px">
+  <span style="font-family:'DM Serif Display',serif;font-size:32px;color:#f0ead6">
+    Your financial life at <span style="color:#c8a96e">${gross:,.0f}/yr</span>
+  </span>
 </div>
+<div class="location-tag">📍 {location} — COL index {col_idx}</div>
 """, unsafe_allow_html=True)
 
 # ── Top metrics ───────────────────────────────────────────────────────────────
-c1, c2, c3, c4 = st.columns(4)
+c1, c2, c3, c4, c5 = st.columns(5)
 with c1:
     st.metric("Gross income", f"${gross:,.0f}", help="Before taxes")
 with c2:
-    st.metric("Estimated taxes", f"${tax:,.0f}", delta=f"-{tax_rate}% effective rate", delta_color="inverse")
+    st.metric("Federal tax", f"${federal_tax:,.0f}", delta=f"-{fed_rate}% + FICA", delta_color="inverse")
 with c3:
-    st.metric("Take-home (annual)", f"${net:,.0f}")
+    no_tax_states = {"AK","FL","NV","NH","SD","TN","TX","WA","WY"}
+    state_label = f"{state_abbr} state tax" if state_abbr else "State tax"
+    state_note = "No state income tax" if state_abbr in no_tax_states else f"-{st_rate}% rate"
+    st.metric(state_label, f"${state_tax:,.0f}", delta=state_note, delta_color="inverse")
 with c4:
+    st.metric("Take-home (annual)", f"${net:,.0f}", delta=f"-{tax_rate}% total", delta_color="inverse")
+with c5:
     st.metric("Take-home (weekly)", f"${weekly_net:,.0f}")
 
 st.divider()
@@ -933,11 +442,16 @@ with left:
             d = cat_data[row_start + i]
             bar_w = min(int(d["pct"] * 2.5), 100)
             col.markdown(f"""
-<div class="cat-card" style="border-top:2px solid {d['color']}">
-  <div class="cat-name">{d["label"]}</div>
-  <div class="cat-weekly">${d["weekly"]:,.0f}</div>
+<div class="cat-card">
+  <div class="cat-header">
+    <span class="cat-name">{d["label"]}</span>
+    <span class="cat-pct">{d["pct"]}%</span>
+  </div>
+  <div class="cat-bar-bg">
+    <div class="cat-bar" style="width:{bar_w}%;background:{d["color"]}"></div>
+  </div>
+  <div class="cat-weekly">${d["weekly"]:,.0f}<span style="font-size:12px;color:#555">/wk</span></div>
   <div class="cat-annual">${d["annual"]:,.0f} / year</div>
-  <div class="cat-pct">{d["pct"]}% of take-home</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -948,7 +462,7 @@ with right:
         labels=[d["label"] for d in cat_data],
         values=[d["pct"] for d in cat_data],
         hole=0.62,
-        marker=dict(colors=[d["color"] for d in cat_data], line=dict(color="#0a0a0f", width=2)),
+        marker=dict(colors=[d["color"] for d in cat_data], line=dict(color="#0f0f0f", width=2)),
         textinfo="none",
         hovertemplate="<b>%{label}</b><br>%{value}% — $%{customdata:,.0f}/wk<extra></extra>",
         customdata=[d["weekly"] for d in cat_data],
@@ -960,18 +474,19 @@ with right:
         height=280,
         showlegend=True,
         legend=dict(
-            font=dict(color="#ffffff", size=11, family="DM Sans"),
+            font=dict(color="#888", size=11, family="DM Sans"),
             bgcolor="rgba(0,0,0,0)",
             bordercolor="rgba(0,0,0,0)",
         ),
         annotations=[dict(
             text=f"<b style='font-size:20px'>${weekly_net:,.0f}</b><br>/week",
             x=0.5, y=0.5, showarrow=False,
-            font=dict(color="#ffffff", size=14, family="DM Serif Display"),
+            font=dict(color="#f0ead6", size=14, family="DM Serif Display"),
         )],
     )
     st.plotly_chart(fig, use_container_width=True)
 
+    # COL comparison bar chart
     st.markdown('<div class="section-head" style="margin-top:8px">Cost of living impact</div>', unsafe_allow_html=True)
 
     affected = [d for d in cat_data if d["key"] in COL_AFFECTED]
@@ -980,8 +495,8 @@ with right:
         name="National avg",
         x=[d["label"] for d in affected],
         y=[round(d["weekly_base"]) for d in affected],
-        marker_color="#1c1c2e",
-        marker_line_color="#2e2e44",
+        marker_color="#2a2a2a",
+        marker_line_color="#444",
         marker_line_width=1,
     ))
     fig2.add_trace(go.Bar(
@@ -996,19 +511,21 @@ with right:
         plot_bgcolor="rgba(0,0,0,0)",
         height=200,
         margin=dict(t=10, b=0, l=0, r=0),
-        font=dict(color="#ffffff", size=11, family="DM Sans"),
-        xaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e"),
-        yaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", tickprefix="$"),
-        legend=dict(font=dict(color="#a0a0b8", size=10), bgcolor="rgba(0,0,0,0)"),
+        font=dict(color="#888", size=11, family="DM Sans"),
+        xaxis=dict(gridcolor="#1e1e1e", linecolor="#2a2a2a"),
+        yaxis=dict(gridcolor="#1e1e1e", linecolor="#2a2a2a", tickprefix="$"),
+        legend=dict(font=dict(color="#888", size=10), bgcolor="rgba(0,0,0,0)"),
     )
     st.plotly_chart(fig2, use_container_width=True)
-
 
 # ── Insights ──────────────────────────────────────────────────────────────────
 st.divider()
 st.markdown('<div class="section-head">Insights for your situation</div>', unsafe_allow_html=True)
 
 housing_weekly = next(d["weekly"] for d in cat_data if d["key"] == "housing")
+savings_weekly = next(d["weekly"] for d in cat_data if d["key"] == "savings")
+debt_weekly    = next(d["weekly"] for d in cat_data if d["key"] == "debt")
+
 insights = []
 
 if col_idx > 130:
@@ -1016,12 +533,10 @@ if col_idx > 130:
 elif col_idx < 90:
     insights.append(f"🌱 <b>{location}</b> is {100 - col_idx}% below the national average cost of living. Your dollar stretches further here — consider redirecting savings toward investing.")
 
-if savings_annual < 3000 and gross > 30000:
-    insights.append(f"⚠️ Your current savings allocation is <b>${savings_annual:,.0f}/yr</b>. Financial planners typically recommend 3–6 months of expenses (~${weekly_net * 12:,.0f}) as an emergency fund baseline.")
+if savings_weekly * 52 < 3000 and gross > 30000:
+    insights.append(f"⚠️ Your current savings allocation is <b>${savings_weekly * 52:,.0f}/yr</b>. Financial planners typically recommend 3–6 months of expenses (~${weekly_net * 12:,.0f}) as an emergency fund baseline.")
 else:
-    months_to_efund = max(1, round(weekly_net * 26 / savings_annual)) if savings_annual > 0 else None
-    efund_str = f" in about {months_to_efund} year(s)" if months_to_efund else ""
-    insights.append(f"✅ You're on track to save <b>${savings_annual:,.0f}/yr</b>. At this rate, you'd have a 6-month emergency fund (~${weekly_net * 26:,.0f}){efund_str}.")
+    insights.append(f"✅ You're on track to save <b>${savings_weekly * 52:,.0f}/yr</b>. At this rate, you'd have a 6-month emergency fund (~${weekly_net * 26:,.0f}) in about {max(1, round(weekly_net * 26 / (savings_weekly * 52)))} year(s).")
 
 if debt_weekly * 52 > net * 0.20:
     insights.append(f"💳 Debt repayment takes up more than 20% of your take-home pay. Consider the avalanche method (highest interest first) to minimize total interest paid.")
@@ -1029,216 +544,10 @@ if debt_weekly * 52 > net * 0.20:
 if gross < 40000:
     insights.append(f"📌 At your income level, the <b>Earned Income Tax Credit (EITC)</b> may apply to you — consult a tax professional to see if you qualify for additional refunds.")
 
-if tier == "✨ Lavish":
-    insights.append(f"✨ <b>Lavish mode</b> is active. Lifestyle spending is elevated — keep an eye on your savings rate to ensure long-term financial health.")
-elif tier == "🌿 Frugal":
-    insights.append(f"🌿 <b>Frugal mode</b> is active. Your savings rate is boosted and discretionary spending is trimmed. Great for building wealth or paying off debt fast.")
-
 ic1, ic2 = st.columns(2)
 for i, insight in enumerate(insights):
     col = ic1 if i % 2 == 0 else ic2
     col.markdown(f'<div class="insight-box">{insight}</div>', unsafe_allow_html=True)
 
-
-# ── Savings Goal Tracker ──────────────────────────────────────────────────────
 st.divider()
-st.markdown('<div class="section-head">Savings goal tracker</div>', unsafe_allow_html=True)
-
-if savings_annual <= 0:
-    st.warning("Your current savings allocation is $0. Adjust your framework or tier to see a goal timeline.")
-elif goal_amount <= 0:
-    st.info("Open the **Savings goal** expander in the sidebar to set a target.")
-else:
-    sg_left, sg_right = st.columns([1, 1.2], gap="large")
-    remaining = max(0, goal_amount - goal_current)
-    progress_pct = min(100, round(goal_current / goal_amount * 100)) if goal_amount else 0
-
-    with sg_left:
-        if goal_months == 0:
-            st.markdown(f"""
-<div class="goal-card">
-  <div style="font-size:13px;color:#5dbe5d;margin-bottom:8px">Goal already reached!</div>
-  <div class="goal-big">${goal_amount:,.0f}</div>
-  <div class="goal-label">{goal_name}</div>
-</div>""", unsafe_allow_html=True)
-        else:
-            yrs, mos = divmod(int(goal_months), 12)
-            parts = []
-            if yrs: parts.append(f"{yrs} yr{'s' if yrs != 1 else ''}")
-            if mos: parts.append(f"{mos} mo")
-            timeline_str = " ".join(parts) or "< 1 month"
-            st.markdown(f"""
-<div class="goal-card">
-  <div style="font-size:10px;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;opacity:.45">Time to reach goal</div>
-  <div class="goal-big">{timeline_str}</div>
-  <div class="goal-label">{goal_name} · ${goal_amount:,.0f} target</div>
-  <div style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
-    <div>
-      <div style="font-size:20px;color:#ffffff;font-family:'DM Serif Display',serif">${goal_current:,.0f}</div>
-      <div class="goal-label">Already saved</div>
-    </div>
-    <div>
-      <div style="font-size:20px;color:#ffffff;font-family:'DM Serif Display',serif">${remaining:,.0f}</div>
-      <div class="goal-label">Remaining</div>
-    </div>
-  </div>
-  <div style="margin-top:18px">
-    <div style="font-size:10px;font-weight:700;color:#ffffff;margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em;opacity:.45">Progress</div>
-    <div style="height:3px;background:#1c1c2e;border-radius:2px">
-      <div style="height:3px;background:#b09ad8;border-radius:2px;width:{progress_pct}%"></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:#ffffff;opacity:.5">
-      <span>{progress_pct}% saved</span>
-      <span>${savings_annual:,.0f}/yr</span>
-    </div>
-  </div>
-</div>""", unsafe_allow_html=True)
-
-    with sg_right:
-        months_to_show = min((goal_months or 120) + 6, 360)
-        m_list    = list(range(months_to_show + 1))
-        bal_list  = [min(goal_current + (savings_annual / 12) * m, goal_amount * 1.05) for m in m_list]
-
-        fig_goal = go.Figure()
-        fig_goal.add_trace(go.Scatter(
-            x=m_list, y=bal_list,
-            mode="lines",
-            line=dict(color="#a07ec8", width=2),
-            fill="tozeroy",
-            fillcolor="rgba(160,126,200,0.08)",
-            hovertemplate="Month %{x}: $%{y:,.0f}<extra></extra>",
-        ))
-        fig_goal.add_hline(
-            y=goal_amount,
-            line=dict(color="#c8a96e", width=1, dash="dash"),
-            annotation_text=f"${goal_amount:,.0f} goal",
-            annotation_font=dict(color="#c8a96e", size=10),
-        )
-        if goal_months and goal_months <= months_to_show:
-            fig_goal.add_vline(
-                x=goal_months,
-                line=dict(color="#5dbe5d", width=1, dash="dot"),
-            )
-        fig_goal.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            height=240,
-            margin=dict(t=10, b=0, l=0, r=10),
-            font=dict(color="#ffffff", size=10, family="DM Sans"),
-            xaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", title="Month"),
-            yaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", tickprefix="$"),
-            showlegend=False,
-        )
-        st.plotly_chart(fig_goal, use_container_width=True)
-
-
-# ── Debt Payoff Calculator ────────────────────────────────────────────────────
-st.divider()
-st.markdown('<div class="section-head">Debt payoff calculator</div>', unsafe_allow_html=True)
-
-if debt_balance == 0:
-    st.info("Open the **Debt payoff** expander in the sidebar and enter your balance to see a payoff timeline.")
-elif monthly_debt_payment <= 0:
-    st.warning("Your debt repayment allocation is $0. Increase the debt slice in your framework to calculate a payoff timeline.")
-else:
-    dp_left, dp_right = st.columns([1, 1.2], gap="large")
-
-    with dp_left:
-        if debt_months == float("inf"):
-            monthly_interest_charge = debt_balance * (debt_rate / 100 / 12)
-            st.markdown(f"""
-<div class="goal-card">
-  <div style="font-size:13px;color:#d48888;margin-bottom:10px;font-weight:600">Payment doesn't cover interest</div>
-  <div style="font-size:13px;color:#ffffff;line-height:1.7">
-    At <b style="color:#ffffff">{debt_rate:.1f}% APR</b>, your monthly interest charge is
-    <b style="color:#ffffff">${monthly_interest_charge:,.0f}</b>, but your debt payment is only
-    <b style="color:#ffffff">${monthly_debt_payment:,.0f}/mo</b>.<br><br>
-    Increase your debt repayment allocation or choose a framework with a higher debt slice.
-  </div>
-</div>""", unsafe_allow_html=True)
-        else:
-            yrs, mos = divmod(int(debt_months), 12)
-            parts = []
-            if yrs: parts.append(f"{yrs} yr{'s' if yrs != 1 else ''}")
-            if mos: parts.append(f"{mos} mo")
-            timeline_str  = " ".join(parts) or "< 1 month"
-            interest_pct  = min(100, round(debt_interest / (debt_balance + debt_interest) * 100)) if (debt_balance + debt_interest) > 0 else 0
-
-            st.markdown(f"""
-<div class="goal-card">
-  <div style="font-size:11px;font-weight:600;color:#ffffff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Payoff timeline</div>
-  <div class="debt-big">{timeline_str}</div>
-  <div class="goal-label">${debt_balance:,.0f} balance · {debt_rate:.1f}% APR</div>
-  <div style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
-    <div>
-      <div style="font-size:20px;color:#ffffff;font-family:'DM Serif Display',serif">${monthly_debt_payment:,.0f}</div>
-      <div class="goal-label">Monthly payment</div>
-    </div>
-    <div>
-      <div style="font-size:20px;color:#d48888;font-family:'DM Serif Display',serif">${debt_interest:,.0f}</div>
-      <div class="goal-label">Total interest</div>
-    </div>
-  </div>
-  <div style="margin-top:18px">
-    <div style="font-size:11px;font-weight:600;color:#ffffff;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Interest as % of total paid</div>
-    <div style="height:3px;background:#1c1c2e;border-radius:2px">
-      <div style="height:3px;background:#d48888;border-radius:2px;width:{interest_pct}%"></div>
-    </div>
-    <div style="font-size:11px;color:#ffffff;margin-top:6px;opacity:.5">{interest_pct}% of total payments go toward interest</div>
-  </div>
-</div>""", unsafe_allow_html=True)
-
-    with dp_right:
-        if amort_balances:
-            fig_debt = go.Figure()
-            fig_debt.add_trace(go.Scatter(
-                x=amort_months_list,
-                y=amort_balances,
-                mode="lines",
-                line=dict(color="#c87e7e", width=2),
-                fill="tozeroy",
-                fillcolor="rgba(200,126,126,0.08)",
-                hovertemplate="Month %{x}: $%{y:,.0f} remaining<extra></extra>",
-            ))
-            fig_debt.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                height=240,
-                margin=dict(t=10, b=0, l=0, r=10),
-                font=dict(color="#ffffff", size=10, family="DM Sans"),
-                xaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", title="Month"),
-                yaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", tickprefix="$", title="Remaining balance"),
-                showlegend=False,
-            )
-            st.plotly_chart(fig_debt, use_container_width=True)
-
-
-# ── Sidebar — Part 2: PDF export ─────────────────────────────────────────────
-with st.sidebar:
-    st.divider()
-    st.markdown("#### Export")
-    pdf_bytes = generate_pdf(
-        gross=gross, net=net, tax=tax,
-        location=location, fw_name=fw_name, tier_name=tier,
-        cat_data=cat_data,
-        goal_name=goal_name, goal_amount=goal_amount,
-        goal_current=goal_current, goal_months=goal_months,
-        debt_balance=debt_balance, debt_rate=debt_rate,
-        monthly_debt_payment=monthly_debt_payment,
-        debt_months=debt_months, debt_interest=debt_interest,
-    )
-    st.download_button(
-        label="📄 Download budget as PDF",
-        data=pdf_bytes,
-        file_name=f"lifestyle_budget_{gross:,.0f}.pdf",
-        mime="application/pdf",
-        use_container_width=True,
-    )
-
-    st.divider()
-    if st.button("← Start over", use_container_width=True):
-        st.session_state.intro_done = False
-        st.rerun()
-
-st.divider()
-st.caption("Tax estimate uses simplified 2024 US federal brackets + 7.65% FICA. State taxes not included. Cost of living multipliers are estimates based on composite index data. All figures are for planning purposes only.")
+st.caption("Tax estimates use 2024 US federal brackets (single filer) + 7.65% FICA + simplified state income tax rates. State taxes not included for 'National Average' selection. Cost of living multipliers are estimates based on composite index data. All figures are for planning purposes only — consult a tax professional for advice.")
