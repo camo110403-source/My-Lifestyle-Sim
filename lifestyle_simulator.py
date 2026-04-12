@@ -1046,6 +1046,8 @@ def apply_col(key, base_weekly):
     if key == "health":    return base_weekly * col_info["health_mult"]
     return base_weekly
 
+monthly_net = net / 12
+
 cat_data = []
 for key, label, color in CATEGORIES:
     base     = weekly_net * pcts.get(key, 0) / 100
@@ -1055,6 +1057,7 @@ for key, label, color in CATEGORIES:
         "pct": pcts.get(key, 0),
         "weekly_base": base,
         "weekly": adjusted,
+        "monthly": adjusted * 52 / 12,
         "annual": adjusted * 52,
     })
 
@@ -1132,15 +1135,21 @@ with c3:
 with c4:
     st.metric("Take-home (annual)", f"${net:,.0f}", delta=f"-{total_tax_rate}% total", delta_color="inverse")
 with c5:
-    st.metric("Take-home (weekly)", f"${weekly_net:,.0f}")
+    st.metric("Take-home (monthly)", f"${monthly_net:,.0f}", help="Annual take-home ÷ 12")
 
 st.divider()
+
+# ── View toggle ───────────────────────────────────────────────────────────────
+tog_col, _ = st.columns([1, 3])
+with tog_col:
+    view_mode = st.radio("View", ["Weekly", "Monthly"], horizontal=True, label_visibility="collapsed")
 
 # ── Two-column layout ─────────────────────────────────────────────────────────
 left, right = st.columns([1.05, 1], gap="large")
 
 with left:
-    st.markdown('<div class="section-head">Weekly budget breakdown</div>', unsafe_allow_html=True)
+    period_label = "monthly" if view_mode == "Monthly" else "weekly"
+    st.markdown(f'<div class="section-head">{view_mode} budget breakdown</div>', unsafe_allow_html=True)
 
     for row_start in range(0, len(cat_data), 3):
         cols = st.columns(3)
@@ -1148,12 +1157,14 @@ with left:
             if row_start + i >= len(cat_data):
                 break
             d = cat_data[row_start + i]
-            bar_w = min(int(d["pct"] * 2.5), 100)
+            primary_amt = d["monthly"] if view_mode == "Monthly" else d["weekly"]
+            secondary_amt = d["annual"]
+            secondary_label = "/ year"
             col.markdown(f"""
 <div class="cat-card" style="border-top:2px solid {d['color']}">
   <div class="cat-name">{d["label"]}</div>
-  <div class="cat-weekly">${d["weekly"]:,.0f}</div>
-  <div class="cat-annual">${d["annual"]:,.0f} / year</div>
+  <div class="cat-weekly">${primary_amt:,.0f}</div>
+  <div class="cat-annual">${secondary_amt:,.0f} / year</div>
   <div class="cat-pct">{d["pct"]}% of take-home</div>
 </div>
 """, unsafe_allow_html=True)
@@ -1167,8 +1178,8 @@ with right:
         hole=0.62,
         marker=dict(colors=[d["color"] for d in cat_data], line=dict(color="#0a0a0f", width=2)),
         textinfo="none",
-        hovertemplate="<b>%{label}</b><br>%{value}% — $%{customdata:,.0f}/wk<extra></extra>",
-        customdata=[d["weekly"] for d in cat_data],
+        hovertemplate="<b>%{label}</b><br>%{value}% — $%{customdata:,.0f}/" + period_label + "<extra></extra>",
+        customdata=[d["monthly"] if view_mode == "Monthly" else d["weekly"] for d in cat_data],
     ))
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
@@ -1179,7 +1190,7 @@ with right:
         legend=dict(font=dict(color="#ffffff", size=11, family="DM Sans"),
                     bgcolor="rgba(0,0,0,0)", bordercolor="rgba(0,0,0,0)"),
         annotations=[dict(
-            text=f"<b style='font-size:20px'>${weekly_net:,.0f}</b><br>/week",
+            text=f"<b style='font-size:20px'>${monthly_net:,.0f}</b><br>/{'month' if view_mode == 'Monthly' else 'week'}",
             x=0.5, y=0.5, showarrow=False,
             font=dict(color="#ffffff", size=14, family="DM Serif Display"),
         )],
@@ -1193,13 +1204,13 @@ with right:
     fig2.add_trace(go.Bar(
         name="National avg",
         x=[d["label"] for d in affected],
-        y=[round(d["weekly_base"]) for d in affected],
+        y=[round(d["monthly"] / d["weekly"] * d["weekly_base"] * 52 / 12) if view_mode == "Monthly" else round(d["weekly_base"]) for d in affected],
         marker_color="#1c1c2e", marker_line_color="#2e2e44", marker_line_width=1,
     ))
     fig2.add_trace(go.Bar(
         name=location,
         x=[d["label"] for d in affected],
-        y=[round(d["weekly"]) for d in affected],
+        y=[round(d["monthly"]) if view_mode == "Monthly" else round(d["weekly"]) for d in affected],
         marker_color=[d["color"] for d in affected],
     ))
     fig2.update_layout(
