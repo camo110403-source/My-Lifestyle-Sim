@@ -992,6 +992,33 @@ with st.sidebar:
 
     st.divider()
 
+    st.markdown("#### Real dollar amounts")
+    st.caption("Pin specific categories to exact monthly amounts. Remaining take-home is split across unpinned categories.")
+    with st.expander("Enter known expenses"):
+        pinned = {}
+        pin_items = [
+            ("housing",       "Rent / mortgage ($/mo)"),
+            ("food",          "Food & dining ($/mo)"),
+            ("transport",     "Transportation ($/mo)"),
+            ("health",        "Health ($/mo)"),
+            ("entertainment", "Entertainment ($/mo)"),
+            ("clothing",      "Clothing ($/mo)"),
+            ("debt",          "Debt repayment ($/mo)"),
+            ("other",         "Other / buffer ($/mo)"),
+            ("savings",       "Savings & investing ($/mo)"),
+        ]
+        for key, pin_label in pin_items:
+            use_pin = st.checkbox(f"I know my {pin_label.split('(')[0].strip().lower()}", key=f"pin_chk_{key}")
+            if use_pin:
+                val = st.number_input(pin_label, min_value=0, max_value=50_000,
+                                      value=0, step=50, format="%d", key=f"pin_val_{key}")
+                pinned[key] = val
+        if pinned:
+            total_pinned = sum(pinned.values())
+            st.caption(f"Pinned total: **${total_pinned:,.0f}/mo**")
+
+    st.divider()
+
     st.markdown("#### Lifestyle tier")
     _tier_list = list(TIERS.keys())
     _tier_default = st.session_state.get("s_tier", "😊 Comfortable")
@@ -1048,17 +1075,43 @@ def apply_col(key, base_weekly):
 
 monthly_net = net / 12
 
+# ── Apply pinned dollar amounts ───────────────────────────────────────────────
+# pinned dict comes from sidebar; keys are category keys, values are $/month.
+# Pinned categories get their exact monthly amount.
+# Remaining take-home is distributed to unpinned categories using pct weights.
+pinned_total_monthly = sum(pinned.values()) if pinned else 0
+remaining_monthly    = max(0, monthly_net - pinned_total_monthly)
+unpinned_keys        = [key for key, _, _ in CATEGORIES if key not in pinned]
+unpinned_pct_total   = sum(pcts.get(k, 0) for k in unpinned_keys) or 1
+
 cat_data = []
 for key, label, color in CATEGORIES:
-    base     = weekly_net * pcts.get(key, 0) / 100
-    adjusted = apply_col(key, base)
+    if key in pinned:
+        monthly_amt = float(pinned[key])
+        weekly_amt  = monthly_amt * 12 / 52
+        annual_amt  = monthly_amt * 12
+        # compute effective pct of take-home for display
+        eff_pct = round(monthly_amt / monthly_net * 100) if monthly_net > 0 else 0
+        base_weekly = weekly_net * pcts.get(key, 0) / 100
+    else:
+        base_weekly = weekly_net * pcts.get(key, 0) / 100
+        # scale to fill remaining budget
+        share       = pcts.get(key, 0) / unpinned_pct_total
+        monthly_amt = remaining_monthly * share
+        weekly_amt  = monthly_amt * 12 / 52
+        annual_amt  = monthly_amt * 12
+        eff_pct     = round(monthly_amt / monthly_net * 100) if monthly_net > 0 else 0
+
     cat_data.append({
-        "key": key, "label": label, "color": color,
-        "pct": pcts.get(key, 0),
-        "weekly_base": base,
-        "weekly": adjusted,
-        "monthly": adjusted * 52 / 12,
-        "annual": adjusted * 52,
+        "key":        key,
+        "label":      label,
+        "color":      color,
+        "pct":        eff_pct,
+        "pinned":     key in pinned,
+        "weekly_base": base_weekly,
+        "weekly":     weekly_amt,
+        "monthly":    monthly_amt,
+        "annual":     annual_amt,
     })
 
 savings_weekly = next(d["weekly"] for d in cat_data if d["key"] == "savings")
@@ -1159,10 +1212,10 @@ with left:
             d = cat_data[row_start + i]
             primary_amt = d["monthly"] if view_mode == "Monthly" else d["weekly"]
             secondary_amt = d["annual"]
-            secondary_label = "/ year"
+            pin_badge = ' <span style="font-size:9px;background:#1e2a3a;color:#7eafc8;border:1px solid #2e4a6a;border-radius:4px;padding:1px 6px;vertical-align:middle">pinned</span>' if d["pinned"] else ""
             col.markdown(f"""
 <div class="cat-card" style="border-top:2px solid {d['color']}">
-  <div class="cat-name">{d["label"]}</div>
+  <div class="cat-name">{d["label"]}{pin_badge}</div>
   <div class="cat-weekly">${primary_amt:,.0f}</div>
   <div class="cat-annual">${secondary_amt:,.0f} / year</div>
   <div class="cat-pct">{d["pct"]}% of take-home</div>
