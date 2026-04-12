@@ -877,6 +877,7 @@ if not st.session_state.get("intro_done", False):
         st.markdown('<div class="intro-section-label">How do you earn?</div>', unsafe_allow_html=True)
         intro_income_type = st.radio("Income type", ["Annual salary", "Hourly wage"],
                                      horizontal=True, label_visibility="collapsed")
+        intro_hourly = 25.0  # default, overwritten below if hourly selected
         if intro_income_type == "Annual salary":
             intro_gross = st.number_input("Annual salary ($)", min_value=0, max_value=2_000_000,
                                           value=75_000, step=1_000, format="%d", label_visibility="collapsed")
@@ -1029,22 +1030,30 @@ with st.sidebar:
     if pinned:
         st.markdown("**Effective allocation after pinning:**")
         _mn = (gross - calc_federal_tax(gross) - calc_state_tax(gross, state_abbr)) / 12
+        # Apply tier adjustment to get accurate pcts matching the main cards
+        _tier_adj = TIERS.get(st.session_state.get("s_tier", "😊 Comfortable"), TIERS["😊 Comfortable"])["adj"]
+        _adj_pcts = {key: max(0, pcts.get(key, 0) + _tier_adj.get(key, 0)) for key, _, _ in CATEGORIES}
+        _adj_total = sum(_adj_pcts.values())
+        if _adj_total > 0 and _adj_total != 100:
+            _scale = 100 / _adj_total
+            _adj_pcts = {k: round(v * _scale) for k, v in _adj_pcts.items()}
+            _diff = 100 - sum(_adj_pcts.values())
+            if _diff != 0:
+                _mk = max(_adj_pcts, key=_adj_pcts.get)
+                _adj_pcts[_mk] += _diff
         _pinned_total = sum(pinned.values())
         _remaining = max(0, _mn - _pinned_total)
         _unpinned_keys = [k for k, _, _ in CATEGORIES if k not in pinned]
-        _unpinned_pct_total = sum(pcts.get(k, 0) for k in _unpinned_keys) or 1
+        _unpinned_pct_total = sum(_adj_pcts.get(k, 0) for k in _unpinned_keys) or 1
         _rows = ""
-        _running = 0
         for _key, _label, _color in CATEGORIES:
             if _key in pinned:
                 _mo = float(pinned[_key])
             else:
-                _mo = _remaining * pcts.get(_key, 0) / _unpinned_pct_total
+                _mo = _remaining * _adj_pcts.get(_key, 0) / _unpinned_pct_total
             _pct = round(_mo / _mn * 100) if _mn > 0 else 0
-            _running += _pct
             _pin_marker = " 📌" if _key in pinned else ""
             _rows += f'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #1c1c2e;font-size:12px"><span style="color:rgba(255,255,255,0.6)">{_label}{_pin_marker}</span><span style="color:#ffffff;font-weight:500">${_mo:,.0f}/mo &nbsp;<span style="color:rgba(255,255,255,0.35);font-weight:400">({_pct}%)</span></span></div>'
-        _total_pct = round(sum(pinned[k] if k in pinned else _remaining * pcts.get(k,0) / _unpinned_pct_total for k, _, _ in CATEGORIES) / _mn * 100) if _mn > 0 else 0
         st.markdown(f'<div style="background:#0f0f17;border:1px solid #1c1c2e;border-radius:8px;padding:12px 14px;margin-top:4px">{_rows}<div style="display:flex;justify-content:space-between;padding-top:6px;font-size:12px;font-weight:600"><span style="color:rgba(255,255,255,0.5)">Take-home</span><span style="color:#c8a96e">${_mn:,.0f}/mo &nbsp;(100%)</span></div></div>', unsafe_allow_html=True)
 
     st.divider()
