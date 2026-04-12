@@ -280,7 +280,6 @@ hr { border-color: #1c1c2e !important; margin: 28px 0 !important; }
 
 
 # ── Cost of living index data (national average = 100) ──────────────────────
-# Sorted alphabetically; "National Average" always first.
 _CITIES_RAW = {
     "Akron, OH":            {"index": 88,  "housing_mult": 0.75, "food_mult": 0.95, "transport_mult": 0.97, "health_mult": 0.96},
     "Albany, NY":           {"index": 108, "housing_mult": 1.22, "food_mult": 1.03, "transport_mult": 1.01, "health_mult": 1.02},
@@ -415,8 +414,113 @@ _CITIES_RAW = {
 COL_DATA = {"National Average": {"index": 100, "housing_mult": 1.00, "food_mult": 1.00, "transport_mult": 1.00, "health_mult": 1.00}}
 COL_DATA.update(dict(sorted(_CITIES_RAW.items())))
 
-# ── Tax calculation ──────────────────────────────────────────────────────────
-def calc_tax(gross):
+# ── State income tax data ─────────────────────────────────────────────────────
+STATE_TAX = {
+    "AL": {"type": "brackets", "std_ded": 2500,  "brackets": [(500, 0.02), (3000, 0.04), (float("inf"), 0.05)]},
+    "AK": {"type": "none"},
+    "AZ": {"type": "flat",     "rate": 0.025},
+    "AR": {"type": "brackets", "std_ded": 2200,  "brackets": [(4300, 0.02), (8500, 0.04), (float("inf"), 0.049)]},
+    "CA": {"type": "brackets", "std_ded": 5202,  "brackets": [(10099, 0.01), (23942, 0.02), (37788, 0.04), (52455, 0.06), (66295, 0.08), (338639, 0.093), (406364, 0.103), (677275, 0.113), (float("inf"), 0.123)]},
+    "CO": {"type": "flat",     "rate": 0.044},
+    "CT": {"type": "brackets", "std_ded": 0,     "brackets": [(10000, 0.03), (50000, 0.05), (100000, 0.055), (200000, 0.06), (250000, 0.065), (500000, 0.069), (float("inf"), 0.0699)]},
+    "DC": {"type": "brackets", "std_ded": 12950, "brackets": [(10000, 0.04), (40000, 0.06), (60000, 0.065), (350000, 0.085), (1000000, 0.0925), (float("inf"), 0.1075)]},
+    "DE": {"type": "brackets", "std_ded": 3250,  "brackets": [(2000, 0.0), (5000, 0.022), (10000, 0.039), (20000, 0.048), (25000, 0.052), (60000, 0.055), (float("inf"), 0.066)]},
+    "FL": {"type": "none"},
+    "GA": {"type": "flat",     "rate": 0.0549},
+    "HI": {"type": "brackets", "std_ded": 2200,  "brackets": [(2400, 0.014), (4800, 0.032), (9600, 0.055), (14400, 0.064), (19200, 0.068), (24000, 0.072), (36000, 0.076), (48000, 0.079), (150000, 0.0825), (175000, 0.09), (200000, 0.10), (float("inf"), 0.11)]},
+    "ID": {"type": "flat",     "rate": 0.058},
+    "IL": {"type": "flat",     "rate": 0.0495},
+    "IN": {"type": "flat",     "rate": 0.0305},
+    "IA": {"type": "flat",     "rate": 0.057},
+    "KS": {"type": "brackets", "std_ded": 3500,  "brackets": [(15000, 0.031), (30000, 0.0525), (float("inf"), 0.057)]},
+    "KY": {"type": "flat",     "rate": 0.045},
+    "LA": {"type": "brackets", "std_ded": 4500,  "brackets": [(12500, 0.0185), (50000, 0.035), (float("inf"), 0.0425)]},
+    "ME": {"type": "brackets", "std_ded": 13850, "brackets": [(24500, 0.058), (58050, 0.0675), (float("inf"), 0.0715)]},
+    "MD": {"type": "brackets", "std_ded": 2400,  "brackets": [(1000, 0.02), (2000, 0.03), (3000, 0.04), (100000, 0.0475), (125000, 0.05), (150000, 0.0525), (250000, 0.055), (float("inf"), 0.0575)]},
+    "MA": {"type": "flat",     "rate": 0.05},
+    "MI": {"type": "flat",     "rate": 0.0425},
+    "MN": {"type": "brackets", "std_ded": 14575, "brackets": [(31690, 0.0535), (104090, 0.068), (171220, 0.0785), (float("inf"), 0.0985)]},
+    "MS": {"type": "flat",     "rate": 0.047},
+    "MO": {"type": "brackets", "std_ded": 14600, "brackets": [(1121, 0.015), (2242, 0.02), (3363, 0.025), (4484, 0.03), (5605, 0.035), (6726, 0.04), (7847, 0.045), (8968, 0.05), (float("inf"), 0.048)]},
+    "MT": {"type": "flat",     "rate": 0.059},
+    "NE": {"type": "brackets", "std_ded": 7900,  "brackets": [(3700, 0.0246), (22170, 0.0351), (35730, 0.0501), (float("inf"), 0.0664)]},
+    "NV": {"type": "none"},
+    "NH": {"type": "none"},
+    "NJ": {"type": "brackets", "std_ded": 0,     "brackets": [(20000, 0.014), (35000, 0.0175), (40000, 0.035), (75000, 0.05526), (500000, 0.0637), (1000000, 0.0897), (float("inf"), 0.1075)]},
+    "NM": {"type": "brackets", "std_ded": 14600, "brackets": [(5500, 0.017), (11000, 0.032), (16000, 0.047), (210000, 0.049), (float("inf"), 0.059)]},
+    "NY": {"type": "brackets", "std_ded": 8000,  "brackets": [(17150, 0.04), (23600, 0.045), (27900, 0.0525), (161550, 0.0585), (323200, 0.0625), (2155350, 0.0685), (5000000, 0.0965), (25000000, 0.103), (float("inf"), 0.109)]},
+    "NC": {"type": "flat",     "rate": 0.045},
+    "ND": {"type": "flat",     "rate": 0.0195},
+    "OH": {"type": "brackets", "std_ded": 0,     "brackets": [(26050, 0.0), (100000, 0.02765), (float("inf"), 0.0350)]},
+    "OK": {"type": "brackets", "std_ded": 6350,  "brackets": [(1000, 0.0025), (2500, 0.0075), (3750, 0.0175), (4900, 0.0275), (7200, 0.0375), (float("inf"), 0.0475)]},
+    "OR": {"type": "brackets", "std_ded": 2420,  "brackets": [(10200, 0.0475), (25500, 0.0675), (125000, 0.0875), (float("inf"), 0.099)]},
+    "PA": {"type": "flat",     "rate": 0.0307},
+    "RI": {"type": "brackets", "std_ded": 10550, "brackets": [(73450, 0.0375), (166950, 0.0475), (float("inf"), 0.0599)]},
+    "SC": {"type": "flat",     "rate": 0.064},
+    "SD": {"type": "none"},
+    "TN": {"type": "none"},
+    "TX": {"type": "none"},
+    "UT": {"type": "flat",     "rate": 0.0465},
+    "VT": {"type": "brackets", "std_ded": 7000,  "brackets": [(45400, 0.0335), (110050, 0.066), (229550, 0.076), (float("inf"), 0.0875)]},
+    "VA": {"type": "brackets", "std_ded": 8000,  "brackets": [(3000, 0.02), (5000, 0.03), (17000, 0.05), (float("inf"), 0.0575)]},
+    "WA": {"type": "none"},
+    "WV": {"type": "brackets", "std_ded": 0,     "brackets": [(10000, 0.0236), (25000, 0.0315), (40000, 0.0354), (60000, 0.0472), (float("inf"), 0.0512)]},
+    "WI": {"type": "brackets", "std_ded": 12760, "brackets": [(14320, 0.0354), (28640, 0.0465), (315310, 0.053), (float("inf"), 0.0765)]},
+    "WY": {"type": "none"},
+}
+
+# Maps each city to its state abbreviation
+CITY_STATE = {
+    "National Average": None,
+    "Akron, OH": "OH", "Albany, NY": "NY", "Albuquerque, NM": "NM",
+    "Allentown, PA": "PA", "Anchorage, AK": "AK", "Ann Arbor, MI": "MI",
+    "Asheville, NC": "NC", "Atlanta, GA": "GA", "Augusta, GA": "GA",
+    "Austin, TX": "TX", "Baltimore, MD": "MD", "Baton Rouge, LA": "LA",
+    "Billings, MT": "MT", "Birmingham, AL": "AL", "Bismarck, ND": "ND",
+    "Boise, ID": "ID", "Boston, MA": "MA", "Boulder, CO": "CO",
+    "Bozeman, MT": "MT", "Buffalo, NY": "NY", "Burlington, VT": "VT",
+    "Casper, WY": "WY", "Cedar Rapids, IA": "IA", "Charleston, SC": "SC",
+    "Charleston, WV": "WV", "Charlotte, NC": "NC", "Chattanooga, TN": "TN",
+    "Cheyenne, WY": "WY", "Chicago, IL": "IL", "Cincinnati, OH": "OH",
+    "Cleveland, OH": "OH", "Colorado Springs, CO": "CO", "Columbia, SC": "SC",
+    "Columbus, GA": "GA", "Columbus, OH": "OH", "Dallas, TX": "TX",
+    "Denver, CO": "CO", "Des Moines, IA": "IA", "Detroit, MI": "MI",
+    "Durham, NC": "NC", "El Paso, TX": "TX", "Eugene, OR": "OR",
+    "Evansville, IN": "IN", "Fargo, ND": "ND", "Fayetteville, AR": "AR",
+    "Fort Collins, CO": "CO", "Fort Wayne, IN": "IN", "Fort Worth, TX": "TX",
+    "Fresno, CA": "CA", "Grand Rapids, MI": "MI", "Greensboro, NC": "NC",
+    "Greenville, SC": "SC", "Hartford, CT": "CT", "Honolulu, HI": "HI",
+    "Houston, TX": "TX", "Huntsville, AL": "AL", "Indianapolis, IN": "IN",
+    "Jackson, MS": "MS", "Jacksonville, FL": "FL", "Jersey City, NJ": "NJ",
+    "Kansas City, MO": "MO", "Knoxville, TN": "TN", "Lansing, MI": "MI",
+    "Las Vegas, NV": "NV", "Lexington, KY": "KY", "Lincoln, NE": "NE",
+    "Little Rock, AR": "AR", "Los Angeles, CA": "CA", "Louisville, KY": "KY",
+    "Lubbock, TX": "TX", "Madison, WI": "WI", "Manchester, NH": "NH",
+    "Memphis, TN": "TN", "Miami, FL": "FL", "Milwaukee, WI": "WI",
+    "Minneapolis, MN": "MN", "Missoula, MT": "MT", "Montgomery, AL": "AL",
+    "Nashville, TN": "TN", "New Haven, CT": "CT", "New Orleans, LA": "LA",
+    "New York City, NY": "NY", "Newark, NJ": "NJ", "Oakland, CA": "CA",
+    "Oklahoma City, OK": "OK", "Omaha, NE": "NE", "Orlando, FL": "FL",
+    "Philadelphia, PA": "PA", "Phoenix, AZ": "AZ", "Pittsburgh, PA": "PA",
+    "Portland, ME": "ME", "Portland, OR": "OR", "Providence, RI": "RI",
+    "Provo, UT": "UT", "Raleigh, NC": "NC", "Rapid City, SD": "SD",
+    "Reno, NV": "NV", "Richmond, VA": "VA", "Riverside, CA": "CA",
+    "Rochester, NY": "NY", "Rockford, IL": "IL", "Sacramento, CA": "CA",
+    "Salem, OR": "OR", "Salt Lake City, UT": "UT", "San Antonio, TX": "TX",
+    "San Diego, CA": "CA", "San Francisco, CA": "CA", "San Jose, CA": "CA",
+    "Savannah, GA": "GA", "Scottsdale, AZ": "AZ", "Seattle, WA": "WA",
+    "Shreveport, LA": "LA", "Sioux Falls, SD": "SD", "Spokane, WA": "WA",
+    "Springfield, IL": "IL", "Springfield, MO": "MO", "Springfield, MA": "MA",
+    "St. Louis, MO": "MO", "St. Petersburg, FL": "FL", "Tacoma, WA": "WA",
+    "Tampa, FL": "FL", "Toledo, OH": "OH", "Tucson, AZ": "AZ",
+    "Tulsa, OK": "OK", "Virginia Beach, VA": "VA", "Washington, DC": "DC",
+    "Wichita, KS": "KS", "Wilmington, DE": "DE", "Worcester, MA": "MA",
+}
+
+NO_INCOME_TAX_STATES = {"AK", "FL", "NV", "NH", "SD", "TN", "TX", "WA", "WY"}
+
+# ── Tax calculations ──────────────────────────────────────────────────────────
+def calc_federal_tax(gross):
     brackets = [(11600, 0.10), (44725, 0.12), (95375, 0.22),
                 (201050, 0.24), (383900, 0.32), (487450, 0.35), (float("inf"), 0.37)]
     std_deduction = 14600
@@ -429,6 +533,25 @@ def calc_tax(gross):
         tax += (min(taxable, top) - prev) * rate
         prev = top
     tax += gross * 0.0765  # FICA
+    return round(tax)
+
+def calc_state_tax(gross, state_abbr):
+    if not state_abbr or state_abbr not in STATE_TAX:
+        return 0
+    info = STATE_TAX[state_abbr]
+    if info["type"] == "none":
+        return 0
+    if info["type"] == "flat":
+        return round(gross * info["rate"])
+    std_ded = info.get("std_ded", 0)
+    taxable = max(0, gross - std_ded)
+    tax = 0
+    prev = 0
+    for top, rate in info["brackets"]:
+        if taxable <= prev:
+            break
+        tax += (min(taxable, top) - prev) * rate
+        prev = top
     return round(tax)
 
 # ── Budget frameworks ────────────────────────────────────────────────────────
@@ -470,8 +593,6 @@ CATEGORIES = [
 COL_AFFECTED = {"housing", "food", "transport", "health"}
 
 # ── Lifestyle tiers ──────────────────────────────────────────────────────────
-# Adjustments are additive deltas applied to the resolved framework percentages.
-# Each set sums to 0 so the renormalization is a no-op when no clamping occurs.
 TIERS = {
     "🌿 Frugal": {
         "adj": {"housing": -2, "food": -2, "transport": -1, "savings": 5,
@@ -493,7 +614,6 @@ TIERS = {
     },
 }
 
-# Maps intro survey answers → framework keys and tier keys
 PRIORITY_TO_FRAMEWORK = {
     "Build savings fast":         "Aggressive Savings (FIRE-adjacent)",
     "Pay off debt first":         "Debt Avalanche (Pay it off fast)",
@@ -508,15 +628,16 @@ LIFESTYLE_TO_TIER = {
 
 
 # ── PDF generation ───────────────────────────────────────────────────────────
-def generate_pdf(gross, net, tax, location, fw_name, tier_name, cat_data,
+def generate_pdf(gross, net, federal_tax, state_tax_amt, state_abbr,
+                 location, fw_name, tier_name, cat_data,
                  goal_name, goal_amount, goal_current, goal_months,
                  debt_balance, debt_rate, monthly_debt_payment, debt_months, debt_interest):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=20)
     weekly_net = net / 52
+    total_tax = federal_tax + state_tax_amt
 
-    # Dark header banner
     pdf.set_fill_color(15, 15, 15)
     pdf.rect(0, 0, 220, 38, "F")
     pdf.set_xy(20, 10)
@@ -547,16 +668,23 @@ def generate_pdf(gross, net, tax, location, fw_name, tier_name, cat_data,
         pdf.set_text_color(30, 30, 30)
         pdf.cell(0, 5.5, value, ln=True)
 
-    # Income summary
+    eff_rate = round(total_tax / gross * 100) if gross else 0
+    fed_rate  = round(federal_tax / gross * 100) if gross else 0
+    st_rate   = round(state_tax_amt / gross * 100) if gross else 0
+
     section("Income Summary")
-    eff_rate = round(tax / gross * 100) if gross else 0
     kv("Gross Income", f"${gross:,.0f}")
-    kv("Estimated Federal Tax", f"${tax:,.0f}  ({eff_rate}% effective rate)")
+    kv("Federal Tax (incl. FICA)", f"${federal_tax:,.0f}  ({fed_rate}% of gross)")
+    state_label = f"{state_abbr} State Tax" if state_abbr else "State Tax"
+    if state_abbr in NO_INCOME_TAX_STATES:
+        kv(state_label, "No state income tax")
+    else:
+        kv(state_label, f"${state_tax_amt:,.0f}  ({st_rate}% of gross)")
+    kv("Total Tax Burden", f"${total_tax:,.0f}  ({eff_rate}% effective rate)")
     kv("Take-Home (Annual)", f"${net:,.0f}")
     kv("Take-Home (Weekly)", f"${weekly_net:,.0f}")
     pdf.ln(6)
 
-    # Budget breakdown table
     section("Weekly Budget Breakdown")
     pdf.set_fill_color(235, 235, 235)
     pdf.set_font("Helvetica", "B", 8)
@@ -576,7 +704,6 @@ def generate_pdf(gross, net, tax, location, fw_name, tier_name, cat_data,
         pdf.cell(0,  5.5, f"${d['annual']:,.0f}", fill=True, align="R", ln=True)
     pdf.ln(7)
 
-    # Savings goal
     if goal_amount > 0:
         section(f"Savings Goal - {goal_name}")
         remaining = max(0, goal_amount - goal_current)
@@ -595,7 +722,6 @@ def generate_pdf(gross, net, tax, location, fw_name, tier_name, cat_data,
             kv("Status", "No savings allocated - adjust your framework.")
         pdf.ln(6)
 
-    # Debt payoff
     if debt_balance > 0:
         section("Debt Payoff Estimate")
         kv("Current Balance", f"${debt_balance:,.0f}")
@@ -612,20 +738,18 @@ def generate_pdf(gross, net, tax, location, fw_name, tier_name, cat_data,
             kv("Total Interest Paid", f"${debt_interest:,.0f}")
         pdf.ln(6)
 
-    # Footer
     pdf.set_y(-18)
     pdf.set_font("Helvetica", "I", 7)
     pdf.set_text_color(160, 160, 160)
     pdf.multi_cell(0, 4,
-        "Tax estimate uses simplified 2024 US federal brackets + 7.65% FICA. "
-        "State taxes not included. Cost of living multipliers are estimates. "
-        "All figures are for planning purposes only.",
+        "Tax estimates use 2024 US federal brackets + 7.65% FICA + simplified state income tax rates. "
+        "Cost of living multipliers are estimates. All figures are for planning purposes only.",
         align="C")
 
     return bytes(pdf.output())
 
 
-# ── Intro page (shown until user submits the survey) ─────────────────────────
+# ── Intro page ────────────────────────────────────────────────────────────────
 if not st.session_state.get("intro_done", False):
 
     hero, form = st.columns([1.05, 0.95], gap="large")
@@ -654,11 +778,9 @@ if not st.session_state.get("intro_done", False):
 </div>
 """, unsafe_allow_html=True)
 
-        # ── Name ──
         st.markdown('<div class="intro-section-label">Your name (optional)</div>', unsafe_allow_html=True)
         intro_name = st.text_input("Name", placeholder="e.g. Alex", label_visibility="collapsed")
 
-        # ── Income ──
         st.markdown('<div class="intro-section-label">How do you earn?</div>', unsafe_allow_html=True)
         intro_income_type = st.radio("Income type", ["Annual salary", "Hourly wage"],
                                      horizontal=True, label_visibility="collapsed")
@@ -671,17 +793,14 @@ if not st.session_state.get("intro_done", False):
             intro_gross = intro_hourly * 40 * 52
             st.caption(f"→ ${intro_gross:,.0f} / year  (40 hrs × 52 wks)")
 
-        # ── Location ──
         st.markdown('<div class="intro-section-label">Where do you live?</div>', unsafe_allow_html=True)
         intro_location = st.selectbox("Location", list(COL_DATA.keys()),
                                       index=0, label_visibility="collapsed")
 
-        # ── Financial priority ──
         st.markdown('<div class="intro-section-label">What\'s your main financial goal?</div>', unsafe_allow_html=True)
         intro_priority = st.radio("Priority", list(PRIORITY_TO_FRAMEWORK.keys()),
                                   label_visibility="collapsed")
 
-        # ── Lifestyle ──
         st.markdown('<div class="intro-section-label">How would you describe your lifestyle?</div>', unsafe_allow_html=True)
         intro_lifestyle = st.radio("Lifestyle", list(LIFESTYLE_TO_TIER.keys()),
                                    index=1, label_visibility="collapsed")
@@ -701,10 +820,10 @@ if not st.session_state.get("intro_done", False):
             })
             st.rerun()
 
-    st.stop()  # Don't render sidebar or main app until intro is complete
+    st.stop()
 
 
-# ── Sidebar — Part 1: inputs ─────────────────────────────────────────────────
+# ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     s_name = st.session_state.get("s_name", "")
     greeting = f"Hey, {s_name}" if s_name else "Your Budget"
@@ -744,11 +863,13 @@ with st.sidebar:
             "transport_mult": round(max(0.90, 1.0 + (custom_col_idx - 100) * 0.0018), 3),
             "health_mult":    round(max(0.90, 1.0 + (custom_col_idx - 100) * 0.0015), 3),
         }
-        location = f"Custom city (COL {custom_col_idx})"
+        location   = f"Custom city (COL {custom_col_idx})"
+        state_abbr = None
     else:
-        location = location_sel
-        col_info = COL_DATA[location]
-        col_idx  = col_info["index"]
+        location   = location_sel
+        col_info   = COL_DATA[location]
+        col_idx    = col_info["index"]
+        state_abbr = CITY_STATE.get(location)
         if col_idx != 100:
             diff = col_idx - 100
             direction = "higher" if diff > 0 else "lower"
@@ -782,13 +903,8 @@ with st.sidebar:
     _tier_list = list(TIERS.keys())
     _tier_default = st.session_state.get("s_tier", "😊 Comfortable")
     _tier_idx = _tier_list.index(_tier_default) if _tier_default in _tier_list else 1
-    tier = st.radio(
-        "Lifestyle tier",
-        _tier_list,
-        index=_tier_idx,
-        horizontal=True,
-        label_visibility="collapsed",
-    )
+    tier = st.radio("Lifestyle tier", _tier_list, index=_tier_idx,
+                    horizontal=True, label_visibility="collapsed")
     st.caption(TIERS[tier]["desc"])
 
     st.divider()
@@ -807,13 +923,16 @@ with st.sidebar:
         debt_rate    = st.slider("Annual interest rate (APR %)", 0.0, 36.0, 18.0, step=0.1)
 
 
-# ── Calculations ─────────────────────────────────────────────────────────────
-tax        = calc_tax(gross)
-net        = gross - tax
-weekly_net = net / 52
-tax_rate   = round(tax / gross * 100) if gross > 0 else 0
+# ── Calculations ──────────────────────────────────────────────────────────────
+federal_tax    = calc_federal_tax(gross)
+state_tax_amt  = calc_state_tax(gross, state_abbr)
+total_tax      = federal_tax + state_tax_amt
+net            = gross - total_tax
+weekly_net     = net / 52
+total_tax_rate = round(total_tax / gross * 100) if gross > 0 else 0
+fed_rate       = round(federal_tax / gross * 100) if gross > 0 else 0
+st_rate        = round(state_tax_amt / gross * 100) if gross > 0 else 0
 
-# Apply lifestyle tier: additive deltas → clamp negatives → renormalize to 100
 tier_adj = TIERS[tier]["adj"]
 adjusted_pcts = {key: max(0, pcts.get(key, 0) + tier_adj.get(key, 0))
                  for key, _, _ in CATEGORIES}
@@ -850,7 +969,6 @@ savings_weekly = next(d["weekly"] for d in cat_data if d["key"] == "savings")
 savings_annual = savings_weekly * 52
 debt_weekly    = next(d["weekly"] for d in cat_data if d["key"] == "debt")
 
-# Savings goal timeline
 goal_months = None
 if goal_amount > 0:
     remaining = max(0, goal_amount - goal_current)
@@ -859,12 +977,11 @@ if goal_amount > 0:
     elif savings_annual > 0:
         goal_months = math.ceil(remaining / (savings_annual / 12))
 
-# Debt payoff amortization
 monthly_debt_payment = debt_weekly * 52 / 12
 debt_months   = None
 debt_interest = None
-amort_balances     = []
-amort_months_list  = []
+amort_balances    = []
+amort_months_list = []
 
 if debt_balance > 0 and monthly_debt_payment > 0:
     monthly_rate = debt_rate / 100 / 12
@@ -888,10 +1005,10 @@ if debt_balance > 0 and monthly_debt_payment > 0:
             bal = max(0.0, bal - (monthly_debt_payment - interest_charge))
 
 
-# ── Header ───────────────────────────────────────────────────────────────────
+# ── Header ────────────────────────────────────────────────────────────────────
 tier_css = TIERS[tier]["css"]
-s_name    = st.session_state.get("s_name", "")
-headline  = f"{s_name}'s financial life at" if s_name else "Your financial life at"
+s_name   = st.session_state.get("s_name", "")
+headline = f"{s_name}'s financial life at" if s_name else "Your financial life at"
 
 st.markdown(f"""
 <div style="padding:32px 0 24px 0;border-bottom:1px solid #1c1c2e;margin-bottom:28px">
@@ -907,14 +1024,21 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ── Top metrics ───────────────────────────────────────────────────────────────
-c1, c2, c3, c4 = st.columns(4)
+c1, c2, c3, c4, c5 = st.columns(5)
 with c1:
     st.metric("Gross income", f"${gross:,.0f}", help="Before taxes")
 with c2:
-    st.metric("Estimated taxes", f"${tax:,.0f}", delta=f"-{tax_rate}% effective rate", delta_color="inverse")
+    st.metric("Federal tax", f"${federal_tax:,.0f}", delta=f"-{fed_rate}% + FICA", delta_color="inverse")
 with c3:
-    st.metric("Take-home (annual)", f"${net:,.0f}")
+    if state_abbr in NO_INCOME_TAX_STATES:
+        st.metric(f"{state_abbr} state tax", "$0", delta="No state income tax", delta_color="off")
+    elif state_abbr:
+        st.metric(f"{state_abbr} state tax", f"${state_tax_amt:,.0f}", delta=f"-{st_rate}% rate", delta_color="inverse")
+    else:
+        st.metric("State tax", "$0", delta="Select a city for state tax", delta_color="off")
 with c4:
+    st.metric("Take-home (annual)", f"${net:,.0f}", delta=f"-{total_tax_rate}% total", delta_color="inverse")
+with c5:
     st.metric("Take-home (weekly)", f"${weekly_net:,.0f}")
 
 st.divider()
@@ -959,11 +1083,8 @@ with right:
         margin=dict(t=0, b=0, l=0, r=0),
         height=280,
         showlegend=True,
-        legend=dict(
-            font=dict(color="#ffffff", size=11, family="DM Sans"),
-            bgcolor="rgba(0,0,0,0)",
-            bordercolor="rgba(0,0,0,0)",
-        ),
+        legend=dict(font=dict(color="#ffffff", size=11, family="DM Sans"),
+                    bgcolor="rgba(0,0,0,0)", bordercolor="rgba(0,0,0,0)"),
         annotations=[dict(
             text=f"<b style='font-size:20px'>${weekly_net:,.0f}</b><br>/week",
             x=0.5, y=0.5, showarrow=False,
@@ -980,9 +1101,7 @@ with right:
         name="National avg",
         x=[d["label"] for d in affected],
         y=[round(d["weekly_base"]) for d in affected],
-        marker_color="#1c1c2e",
-        marker_line_color="#2e2e44",
-        marker_line_width=1,
+        marker_color="#1c1c2e", marker_line_color="#2e2e44", marker_line_width=1,
     ))
     fig2.add_trace(go.Bar(
         name=location,
@@ -992,10 +1111,8 @@ with right:
     ))
     fig2.update_layout(
         barmode="group",
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        height=200,
-        margin=dict(t=10, b=0, l=0, r=0),
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        height=200, margin=dict(t=10, b=0, l=0, r=0),
         font=dict(color="#ffffff", size=11, family="DM Sans"),
         xaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e"),
         yaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", tickprefix="$"),
@@ -1015,6 +1132,11 @@ if col_idx > 130:
     insights.append(f"🏙️ <b>{location}</b> has a cost of living {col_idx - 100}% above the national average. Your housing budget of <b>${housing_weekly:,.0f}/wk</b> may feel tight — consider a longer commute or roommates to stay within budget.")
 elif col_idx < 90:
     insights.append(f"🌱 <b>{location}</b> is {100 - col_idx}% below the national average cost of living. Your dollar stretches further here — consider redirecting savings toward investing.")
+
+if state_abbr and state_abbr not in NO_INCOME_TAX_STATES and state_tax_amt > 0:
+    insights.append(f"🏛️ <b>{state_abbr} state income tax</b> adds <b>${state_tax_amt:,.0f}/yr</b> ({st_rate}% of gross) on top of your federal burden. Your total tax rate is {total_tax_rate}%.")
+elif state_abbr in NO_INCOME_TAX_STATES:
+    insights.append(f"✅ <b>{state_abbr} has no state income tax</b> — you keep more of every paycheck compared to most states.")
 
 if savings_annual < 3000 and gross > 30000:
     insights.append(f"⚠️ Your current savings allocation is <b>${savings_annual:,.0f}/yr</b>. Financial planners typically recommend 3–6 months of expenses (~${weekly_net * 12:,.0f}) as an emergency fund baseline.")
@@ -1096,34 +1218,24 @@ else:
 
     with sg_right:
         months_to_show = min((goal_months or 120) + 6, 360)
-        m_list    = list(range(months_to_show + 1))
-        bal_list  = [min(goal_current + (savings_annual / 12) * m, goal_amount * 1.05) for m in m_list]
+        m_list   = list(range(months_to_show + 1))
+        bal_list = [min(goal_current + (savings_annual / 12) * m, goal_amount * 1.05) for m in m_list]
 
         fig_goal = go.Figure()
         fig_goal.add_trace(go.Scatter(
-            x=m_list, y=bal_list,
-            mode="lines",
+            x=m_list, y=bal_list, mode="lines",
             line=dict(color="#a07ec8", width=2),
-            fill="tozeroy",
-            fillcolor="rgba(160,126,200,0.08)",
+            fill="tozeroy", fillcolor="rgba(160,126,200,0.08)",
             hovertemplate="Month %{x}: $%{y:,.0f}<extra></extra>",
         ))
-        fig_goal.add_hline(
-            y=goal_amount,
-            line=dict(color="#c8a96e", width=1, dash="dash"),
-            annotation_text=f"${goal_amount:,.0f} goal",
-            annotation_font=dict(color="#c8a96e", size=10),
-        )
+        fig_goal.add_hline(y=goal_amount, line=dict(color="#c8a96e", width=1, dash="dash"),
+                           annotation_text=f"${goal_amount:,.0f} goal",
+                           annotation_font=dict(color="#c8a96e", size=10))
         if goal_months and goal_months <= months_to_show:
-            fig_goal.add_vline(
-                x=goal_months,
-                line=dict(color="#5dbe5d", width=1, dash="dot"),
-            )
+            fig_goal.add_vline(x=goal_months, line=dict(color="#5dbe5d", width=1, dash="dot"))
         fig_goal.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            height=240,
-            margin=dict(t=10, b=0, l=0, r=10),
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+            height=240, margin=dict(t=10, b=0, l=0, r=10),
             font=dict(color="#ffffff", size=10, family="DM Sans"),
             xaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", title="Month"),
             yaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", tickprefix="$"),
@@ -1192,19 +1304,14 @@ else:
         if amort_balances:
             fig_debt = go.Figure()
             fig_debt.add_trace(go.Scatter(
-                x=amort_months_list,
-                y=amort_balances,
-                mode="lines",
+                x=amort_months_list, y=amort_balances, mode="lines",
                 line=dict(color="#c87e7e", width=2),
-                fill="tozeroy",
-                fillcolor="rgba(200,126,126,0.08)",
+                fill="tozeroy", fillcolor="rgba(200,126,126,0.08)",
                 hovertemplate="Month %{x}: $%{y:,.0f} remaining<extra></extra>",
             ))
             fig_debt.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                height=240,
-                margin=dict(t=10, b=0, l=0, r=10),
+                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                height=240, margin=dict(t=10, b=0, l=0, r=10),
                 font=dict(color="#ffffff", size=10, family="DM Sans"),
                 xaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", title="Month"),
                 yaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", tickprefix="$", title="Remaining balance"),
@@ -1213,12 +1320,13 @@ else:
             st.plotly_chart(fig_debt, use_container_width=True)
 
 
-# ── Sidebar — Part 2: PDF export ─────────────────────────────────────────────
+# ── Sidebar Part 2: PDF export ────────────────────────────────────────────────
 with st.sidebar:
     st.divider()
     st.markdown("#### Export")
     pdf_bytes = generate_pdf(
-        gross=gross, net=net, tax=tax,
+        gross=gross, net=net,
+        federal_tax=federal_tax, state_tax_amt=state_tax_amt, state_abbr=state_abbr,
         location=location, fw_name=fw_name, tier_name=tier,
         cat_data=cat_data,
         goal_name=goal_name, goal_amount=goal_amount,
@@ -1241,4 +1349,4 @@ with st.sidebar:
         st.rerun()
 
 st.divider()
-st.caption("Tax estimate uses simplified 2024 US federal brackets + 7.65% FICA. State taxes not included. Cost of living multipliers are estimates based on composite index data. All figures are for planning purposes only.")
+st.caption("Tax estimates use 2024 US federal brackets + 7.65% FICA + simplified state income tax rates. Cost of living multipliers are estimates based on composite index data. All figures are for planning purposes only.")
