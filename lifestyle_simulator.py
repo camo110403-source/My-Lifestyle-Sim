@@ -975,6 +975,15 @@ with st.sidebar:
     _fw_default = st.session_state.get("s_framework", _fw_list[0])
     _fw_idx = _fw_list.index(_fw_default) if _fw_default in _fw_list else 0
     fw_name = st.selectbox("Framework", _fw_list, index=_fw_idx)
+
+    # Reset pinned amounts and custom sliders whenever the framework changes
+    if st.session_state.get("_last_fw") != fw_name:
+        for key, _, _ in CATEGORIES:
+            st.session_state.pop(f"pin_chk_{key}", None)
+            st.session_state.pop(f"pin_val_{key}", None)
+            st.session_state.pop(f"sl_{key}", None)
+        st.session_state["_last_fw"] = fw_name
+
     pcts = FRAMEWORKS[fw_name]
 
     with st.expander("Customize allocations"):
