@@ -1243,7 +1243,7 @@ with right:
         legend=dict(font=dict(color="#ffffff", size=11, family="DM Sans"),
                     bgcolor="rgba(0,0,0,0)", bordercolor="rgba(0,0,0,0)"),
         annotations=[dict(
-            text=f"<b style='font-size:20px'>${monthly_net:,.0f}</b><br>/{'month' if view_mode == 'Monthly' else 'week'}",
+            text=f"<b style='font-size:20px'>${monthly_net:,.0f}</b><br>/month" if view_mode == "Monthly" else f"<b style='font-size:20px'>${weekly_net:,.0f}</b><br>/week",
             x=0.5, y=0.5, showarrow=False,
             font=dict(color="#ffffff", size=14, family="DM Serif Display"),
         )],
@@ -1257,7 +1257,7 @@ with right:
     fig2.add_trace(go.Bar(
         name="National avg",
         x=[d["label"] for d in affected],
-        y=[round(d["monthly"] / d["weekly"] * d["weekly_base"] * 52 / 12) if view_mode == "Monthly" else round(d["weekly_base"]) for d in affected],
+        y=[round(d["weekly_base"] * 52 / 12) if view_mode == "Monthly" else round(d["weekly_base"]) for d in affected],
         marker_color="#1c1c2e", marker_line_color="#2e2e44", marker_line_width=1,
     ))
     fig2.add_trace(go.Bar(
