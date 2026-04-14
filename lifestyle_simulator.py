@@ -15,337 +15,159 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap');
+
+/* ── Design tokens ── */
+:root {
+  --bg:      #090B12;
+  --surface: #0E1120;
+  --card:    #121726;
+  --card-hi: #18203A;
+  --border:  #1C2340;
+  --bd-sub:  #111526;
+  --sidebar: #0B0D18;
+  --t1: #EEF0FF;
+  --t2: rgba(238,240,255,0.50);
+  --t3: rgba(238,240,255,0.24);
+  --gold:   #C4A35A;
+  --green:  #4BB88A;
+  --red:    #DC6060;
+  --purple: #8B6FD4;
+  --blue:   #5090C4;
+}
 
 /* ── Reset & base ── */
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
-    color: #ffffff;
+    color: var(--t1);
     -webkit-font-smoothing: antialiased;
+    background: var(--bg);
 }
-h1, h2, h3, h4, h5 { font-family: 'Inter', sans-serif; color: #ffffff; }
+h1, h2, h3, h4, h5 { font-family: 'Inter', sans-serif; color: var(--t1); }
 
 /* ── Backgrounds ── */
-.main { background-color: #0a0a0f; }
-[data-testid="stAppViewContainer"] { background: #0a0a0f; }
+.main                              { background: var(--bg); }
+[data-testid="stAppViewContainer"] { background: var(--bg); }
 [data-testid="stSidebar"] {
-    background: #0f0f17;
-    border-right: 1px solid #1c1c2e;
+    background: var(--sidebar) !important;
+    border-right: 1px solid var(--border) !important;
 }
 
-/* ── Sidebar text white — targeted only, avoids breaking icons ── */
-[data-testid="stSidebar"] label { color: #ffffff !important; font-size: 13px !important; font-weight: 400 !important; font-family: 'Inter', sans-serif !important; }
-[data-testid="stSidebar"] p { color: #ffffff !important; font-family: 'Inter', sans-serif !important; }
+/* ── Sidebar text ── */
+[data-testid="stSidebar"] label        { color: var(--t1) !important; font-size: 12.5px !important; font-weight: 400 !important; }
+[data-testid="stSidebar"] p            { color: var(--t1) !important; }
 [data-testid="stSidebar"] h1,
 [data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 { color: #ffffff !important; font-family: 'Inter', sans-serif !important; }
+[data-testid="stSidebar"] h3           { color: var(--t1) !important; }
 [data-testid="stSidebar"] h4 {
-    color: #6060a0 !important;
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.1em !important;
-    text-transform: uppercase !important;
-    margin-bottom: 10px !important;
-    font-family: 'Inter', sans-serif !important;
+    color: var(--t3) !important; font-size: 10px !important; font-weight: 700 !important;
+    letter-spacing: 0.14em !important; text-transform: uppercase !important; margin-bottom: 8px !important;
 }
-[data-testid="stSidebar"] .stRadio label { color: #ffffff !important; }
-[data-testid="stSidebar"] .stSelectbox label { color: #ffffff !important; }
-[data-testid="stSidebar"] .stCaption p { color: #ffffff !important; font-weight: 300 !important; font-size: 12px !important; opacity: 0.7; }
-[data-testid="stSidebar"] [data-testid="stExpander"] summary p { color: #ffffff !important; font-weight: 500 !important; }
-[data-testid="stSidebar"] [data-testid="stExpander"] summary svg { color: #ffffff !important; }
+[data-testid="stSidebar"] .stRadio label     { color: var(--t1) !important; }
+[data-testid="stSidebar"] .stSelectbox label { color: var(--t1) !important; }
+[data-testid="stSidebar"] .stCaption p       { color: var(--t2) !important; font-size: 11.5px !important; }
+[data-testid="stSidebar"] [data-testid="stExpander"] summary p   { color: var(--t1) !important; font-weight: 500 !important; }
+[data-testid="stSidebar"] [data-testid="stExpander"] summary svg { color: var(--t1) !important; }
 
-/* ── Main area native elements ── */
-[data-testid="stMetricLabel"] p { color: #ffffff !important; font-size: 11px !important; font-weight: 600 !important; letter-spacing: 0.06em; text-transform: uppercase; }
-[data-testid="stMetricValue"]   { color: #ffffff !important; font-family: 'DM Serif Display', serif !important; }
-[data-testid="stMetricDelta"] p { font-size: 12px !important; font-weight: 400 !important; }
-.stCaption p { color: #ffffff !important; font-weight: 300 !important; font-size: 12px !important; opacity: 0.55; }
-hr { border-color: #1c1c2e !important; margin: 28px 0 !important; }
-[data-testid="stExpander"] { border-color: #1c1c2e !important; background: #0f0f17 !important; border-radius: 8px !important; }
-[data-testid="stExpander"] summary p { color: #ffffff !important; font-weight: 500 !important; }
+/* ── Native Streamlit elements ── */
+[data-testid="stMetricLabel"] p { color: var(--t3) !important; font-size: 10.5px !important; font-weight: 600 !important; letter-spacing: 0.1em; text-transform: uppercase; }
+[data-testid="stMetricValue"]   { color: var(--t1) !important; font-weight: 700 !important; letter-spacing: -0.01em; }
+[data-testid="stMetricDelta"] p { font-size: 11px !important; }
+.stCaption p { color: var(--t2) !important; font-size: 11.5px !important; }
+hr { border-color: var(--border) !important; margin: 32px 0 !important; }
+[data-testid="stExpander"] { border-color: var(--border) !important; background: var(--surface) !important; border-radius: 10px !important; }
+[data-testid="stExpander"] summary p { color: var(--t1) !important; font-weight: 500 !important; font-size: 13px !important; }
 
-/* ── Buttons ── */
-[data-testid="stSidebar"] button[kind="secondary"],
+/* ── Sidebar buttons ── */
 [data-testid="stSidebar"] button {
-    background: #1c1c2e !important;
-    color: #ffffff !important;
-    border: 1px solid #2e2e50 !important;
-    border-radius: 8px !important;
+    background: var(--card) !important; color: var(--t1) !important;
+    border: 1px solid var(--border) !important; border-radius: 8px !important; font-size: 13px !important;
 }
-[data-testid="stSidebar"] button:hover {
-    background: #252540 !important;
-    border-color: #4040a0 !important;
-}
-
-/* ── Category cards ── */
-.cat-card {
-    background: #12121c;
-    border: 1px solid #1c1c2e;
-    border-radius: 10px;
-    padding: 18px 20px;
-    transition: border-color 0.15s, background 0.15s;
-    height: 100%;
-}
-.cat-card:hover {
-    background: #16162a;
-    border-color: #2e2e50;
-}
-.cat-name {
-    font-size: 10px;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-    opacity: 0.6;
-}
-.cat-weekly {
-    font-family: 'DM Serif Display', serif;
-    font-size: 26px;
-    color: #ffffff;
-    line-height: 1;
-    margin-bottom: 4px;
-}
-.cat-annual {
-    font-size: 12px;
-    color: #ffffff;
-    opacity: 0.5;
-    font-weight: 400;
-    margin-bottom: 14px;
-}
-.cat-pct {
-    font-size: 11px;
-    font-weight: 600;
-    color: #ffffff;
-    opacity: 0.45;
-}
+[data-testid="stSidebar"] button:hover { background: var(--card-hi) !important; border-color: rgba(139,111,212,.3) !important; }
 
 /* ── Tags ── */
 .location-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(100, 200, 100, 0.08);
-    color: #6ec87e;
-    border: 1px solid rgba(110, 200, 126, 0.2);
-    border-radius: 6px;
-    padding: 5px 12px;
-    font-size: 12px;
-    font-weight: 500;
-    margin-bottom: 4px;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(75,184,138,.07); color: #4BB88A;
+    border: 1px solid rgba(75,184,138,.18); border-radius: 20px;
+    padding: 4px 13px; font-size: 11.5px; font-weight: 500;
 }
 .tier-tag {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 6px;
-    padding: 5px 12px;
-    font-size: 12px;
-    font-weight: 500;
-    margin-bottom: 4px;
-    margin-left: 8px;
+    display: inline-flex; align-items: center;
+    border-radius: 20px; padding: 4px 13px; font-size: 11.5px; font-weight: 500; margin-left: 8px;
 }
-.tier-frugal      { background: rgba(100,200,100,0.08); color: #6ec87e; border: 1px solid rgba(110,200,126,0.2); }
-.tier-comfortable { background: rgba(100,150,220,0.08); color: #7eaad8; border: 1px solid rgba(126,170,216,0.2); }
-.tier-lavish      { background: rgba(200,170,100,0.08); color: #d4b47a; border: 1px solid rgba(212,180,122,0.2); }
+.tier-frugal      { background: rgba(75,184,138,.07);  color: #4BB88A; border: 1px solid rgba(75,184,138,.2); }
+.tier-comfortable { background: rgba(80,144,196,.07);  color: #5090C4; border: 1px solid rgba(80,144,196,.2); }
+.tier-lavish      { background: rgba(196,163,90,.07);  color: #C4A35A; border: 1px solid rgba(196,163,90,.2); }
 
 /* ── Section headings ── */
 .section-head {
-    font-size: 13px;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-    margin-top: 4px;
-    opacity: 0.5;
+    font-size: 10.5px; font-weight: 700; color: var(--t3);
+    letter-spacing: 0.14em; text-transform: uppercase;
+    margin-bottom: 18px; margin-top: 4px;
 }
+
+/* ── Category rows (Copilot Money–style) ── */
+.cat-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 16px; border-radius: 10px;
+    background: var(--card); margin-bottom: 5px;
+    border: 1px solid var(--border);
+    border-left: 3px solid transparent;
+    transition: background .12s;
+}
+.cat-row:hover { background: var(--card-hi); }
+.cat-row-name {
+    font-size: 13px; font-weight: 500; color: var(--t1);
+    width: 150px; flex-shrink: 0;
+}
+.cat-row-bar-wrap { flex: 1; height: 3px; background: var(--bd-sub); border-radius: 3px; overflow: hidden; }
+.cat-row-bar-fill { height: 3px; border-radius: 3px; }
+.cat-row-amount { font-size: 14px; font-weight: 600; color: var(--t1); width: 80px; text-align: right; flex-shrink: 0; }
+.cat-row-meta   { font-size: 10.5px; color: var(--t3); width: 36px; text-align: right; flex-shrink: 0; }
 
 /* ── Insight boxes ── */
 .insight-box {
-    background: #0f1a0f;
-    border: 1px solid rgba(110,200,126,0.15);
-    border-left: 3px solid #6ec87e;
-    border-radius: 8px;
-    padding: 14px 18px;
-    margin-bottom: 10px;
-    font-size: 13px;
-    color: #ffffff;
-    line-height: 1.7;
-    font-weight: 400;
+    background: rgba(75,184,138,.04); border: 1px solid rgba(75,184,138,.12);
+    border-left: 3px solid #4BB88A; border-radius: 10px;
+    padding: 14px 18px; margin-bottom: 10px;
+    font-size: 13px; color: var(--t1); line-height: 1.72;
 }
 
 /* ── Goal / debt cards ── */
-.goal-card {
-    background: #12121c;
-    border: 1px solid #1c1c2e;
-    border-radius: 10px;
-    padding: 24px 28px;
-    margin-bottom: 16px;
-}
-.goal-big {
-    font-family: 'DM Serif Display', serif;
-    font-size: 42px;
-    color: #b09ad8;
-    line-height: 1;
-    letter-spacing: -0.02em;
-}
-.goal-label {
-    font-size: 10px;
-    font-weight: 700;
-    color: #ffffff;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-top: 6px;
-    opacity: 0.45;
-}
-.debt-big {
-    font-family: 'DM Serif Display', serif;
-    font-size: 42px;
-    color: #d48888;
-    line-height: 1;
-    letter-spacing: -0.02em;
-}
+.goal-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-bottom: 16px; }
+.goal-big  { font-family: 'DM Serif Display', serif; font-size: 44px; color: var(--purple); line-height: 1; letter-spacing: -0.02em; }
+.goal-label{ font-size: 10px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+.debt-big  { font-family: 'DM Serif Display', serif; font-size: 44px; color: var(--red); line-height: 1; letter-spacing: -0.02em; }
 
-/* ── Intro page ── */
-.intro-hero {
-    padding: 60px 48px 60px 0;
-    height: 100%;
-}
-.intro-eyebrow {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #c8a96e;
-    margin-bottom: 24px;
-}
-.intro-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 52px;
-    color: #ffffff;
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-    margin-bottom: 20px;
-}
-.intro-sub {
-    font-size: 16px;
-    color: rgba(255,255,255,0.45);
-    font-weight: 300;
-    line-height: 1.7;
-    margin-bottom: 48px;
-}
-.intro-feature {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    color: rgba(255,255,255,0.6);
-    font-weight: 400;
-    margin-bottom: 12px;
-}
-.intro-feature-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #c8a96e;
-    flex-shrink: 0;
-}
-.intro-card {
-    background: #12121c;
-    border: 1px solid #1c1c2e;
-    border-radius: 14px;
-    padding: 36px 36px 40px;
-    margin-top: 40px;
-}
-.intro-card-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #ffffff;
-    margin-bottom: 6px;
-}
-.intro-card-sub {
-    font-size: 13px;
-    color: rgba(255,255,255,0.4);
-    font-weight: 300;
-    margin-bottom: 28px;
-}
-.intro-section-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.35);
-    margin-bottom: 8px;
-    margin-top: 22px;
-}
+/* ── Intro / survey ── */
+.intro-eyebrow   { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 22px; }
+.intro-title     { font-family: 'DM Serif Display', serif; font-size: 54px; color: var(--t1); line-height: 1.06; letter-spacing: -0.03em; margin-bottom: 20px; }
+.intro-sub       { font-size: 15.5px; color: var(--t2); font-weight: 300; line-height: 1.75; margin-bottom: 44px; }
+.intro-feature   { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--t2); margin-bottom: 11px; }
+.intro-feature-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+.intro-card      { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 36px 36px 40px; margin-top: 36px; }
+.intro-card-title{ font-size: 18px; font-weight: 600; color: var(--t1); margin-bottom: 4px; }
+.intro-card-sub  { font-size: 13px; color: var(--t2); font-weight: 300; margin-bottom: 26px; }
+.intro-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--t3); margin-bottom: 7px; margin-top: 20px; }
 
-/* ── Net worth / retirement cards ── */
-.nw-card {
-    background: #12121c;
-    border: 1px solid #1c1c2e;
-    border-radius: 10px;
-    padding: 20px 24px;
-}
-.nw-big-pos { font-family: 'DM Serif Display', serif; font-size: 38px; color: #7ec8a0; line-height: 1; letter-spacing: -0.02em; }
-.nw-big-neg { font-family: 'DM Serif Display', serif; font-size: 38px; color: #d48888; line-height: 1; letter-spacing: -0.02em; }
-.nw-big-neu { font-family: 'DM Serif Display', serif; font-size: 38px; color: #ffffff;  line-height: 1; letter-spacing: -0.02em; }
-.ef-bar-wrap { height: 10px; background: #1c1c2e; border-radius: 6px; overflow: hidden; margin: 10px 0 6px; }
-.sub-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #1c1c2e; font-size: 12px; }
-.wi-col-head { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid #1c1c2e; }
+/* ── NW / EF / retirement cards ── */
+.nw-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 26px; }
+.nw-big-pos { font-family: 'DM Serif Display', serif; font-size: 38px; color: var(--green);  line-height: 1; letter-spacing: -0.02em; }
+.nw-big-neg { font-family: 'DM Serif Display', serif; font-size: 38px; color: var(--red);    line-height: 1; letter-spacing: -0.02em; }
+.nw-big-neu { font-family: 'DM Serif Display', serif; font-size: 38px; color: var(--t1);     line-height: 1; letter-spacing: -0.02em; }
+.ef-bar-wrap { height: 8px; background: var(--bd-sub); border-radius: 6px; overflow: hidden; margin: 12px 0 6px; }
+.sub-row     { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+.wi-col-head { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--t3); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
 
 /* ── Auth page ── */
-.auth-wrap {
-    max-width: 440px;
-    margin: 80px auto 0;
-}
-.auth-logo {
-    font-family: 'DM Serif Display', serif;
-    font-size: 32px;
-    color: #ffffff;
-    text-align: center;
-    margin-bottom: 6px;
-    letter-spacing: -0.02em;
-}
-.auth-tagline {
-    font-size: 13px;
-    color: rgba(255,255,255,0.4);
-    text-align: center;
-    margin-bottom: 36px;
-    font-weight: 300;
-}
-.auth-card {
-    background: #12121c;
-    border: 1px solid #1c1c2e;
-    border-radius: 14px;
-    padding: 36px 36px 40px;
-}
-.auth-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.35);
-    margin-bottom: 8px;
-    margin-top: 20px;
-}
-.auth-error {
-    background: rgba(200, 80, 80, 0.1);
-    border: 1px solid rgba(200, 80, 80, 0.25);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 13px;
-    color: #d48888;
-    margin-top: 12px;
-}
-.auth-success {
-    background: rgba(80, 180, 100, 0.1);
-    border: 1px solid rgba(80, 180, 100, 0.25);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 13px;
-    color: #6ec87e;
-    margin-top: 12px;
-}
+.auth-logo    { font-family: 'DM Serif Display', serif; font-size: 30px; color: var(--t1); text-align: center; margin-bottom: 6px; letter-spacing: -0.02em; }
+.auth-tagline { font-size: 13px; color: var(--t2); text-align: center; margin-bottom: 34px; font-weight: 300; }
+.auth-card    { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 36px 36px 40px; }
+.auth-label   { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--t3); margin-bottom: 7px; margin-top: 18px; }
+.auth-error   { background: rgba(220,96,96,.07); border: 1px solid rgba(220,96,96,.22); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--red); margin-top: 12px; }
+.auth-success { background: rgba(75,184,138,.07); border: 1px solid rgba(75,184,138,.22); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--green); margin-top: 12px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -1615,12 +1437,21 @@ s_name   = st.session_state.get("s_name", "")
 headline = f"{s_name}'s financial life at" if s_name else "Your financial life at"
 
 st.markdown(f"""
-<div style="padding:32px 0 24px 0;border-bottom:1px solid #1c1c2e;margin-bottom:28px">
-  <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#6060a0;margin-bottom:12px">Lifestyle Budget Simulator</div>
-  <div style="font-family:'DM Serif Display',serif;font-size:38px;color:#ffffff;letter-spacing:-0.02em;line-height:1.1;margin-bottom:16px">
-    {headline} <span style="color:#c8a96e">${gross:,.0f}</span> / yr
+<div style="padding:36px 0 28px;border-bottom:1px solid #1C2340;margin-bottom:32px">
+  <div style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(238,240,255,0.28);margin-bottom:18px">Lifestyle Budget Simulator</div>
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px">
+    <div>
+      <div style="font-size:13px;color:rgba(238,240,255,0.45);font-weight:400;margin-bottom:6px">{headline}</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:42px;color:#EEF0FF;letter-spacing:-0.025em;line-height:1">
+        <span style="color:#C4A35A">${gross:,.0f}</span><span style="font-size:18px;color:rgba(238,240,255,0.4);font-family:'Inter',sans-serif;font-weight:300;margin-left:6px">/ yr gross</span>
+      </div>
+    </div>
+    <div style="text-align:right;padding-bottom:4px">
+      <div style="font-size:11px;color:rgba(238,240,255,0.3);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Take-home</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:28px;color:#4BB88A;letter-spacing:-0.02em">${net:,.0f}<span style="font-size:14px;color:rgba(238,240,255,0.35);font-family:'Inter',sans-serif;font-weight:300;margin-left:5px">/ yr</span></div>
+    </div>
   </div>
-  <div>
+  <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
     <span class="location-tag">📍 {location} &nbsp;·&nbsp; COL {col_idx}</span>
     <span class="tier-tag {tier_css}">{tier}</span>
   </div>
@@ -1659,23 +1490,23 @@ with left:
     period_label = "monthly" if view_mode == "Monthly" else "weekly"
     st.markdown(f'<div class="section-head">{view_mode} budget breakdown</div>', unsafe_allow_html=True)
 
-    for row_start in range(0, len(cat_data), 3):
-        cols = st.columns(3)
-        for i, col in enumerate(cols):
-            if row_start + i >= len(cat_data):
-                break
-            d = cat_data[row_start + i]
-            primary_amt = d["monthly"] if view_mode == "Monthly" else d["weekly"]
-            secondary_amt = d["annual"]
-            pin_badge = ' <span style="font-size:9px;background:#1e2a3a;color:#7eafc8;border:1px solid #2e4a6a;border-radius:4px;padding:1px 6px;vertical-align:middle">pinned</span>' if d["pinned"] else ""
-            col.markdown(f"""
-<div class="cat-card" style="border-top:2px solid {d['color']}">
-  <div class="cat-name">{d["label"]}{pin_badge}</div>
-  <div class="cat-weekly">${primary_amt:,.0f}</div>
-  <div class="cat-annual">${secondary_amt:,.0f} / year</div>
-  <div class="cat-pct">{d["pct"]}% of take-home</div>
-</div>
-""", unsafe_allow_html=True)
+    rows_html = ""
+    for d in cat_data:
+        primary_amt = d["monthly"] if view_mode == "Monthly" else d["weekly"]
+        pin_badge = (' <span style="font-size:9px;background:rgba(80,144,196,.12);color:#5090C4;'
+                     'border:1px solid rgba(80,144,196,.25);border-radius:4px;padding:1px 5px;'
+                     'vertical-align:middle;margin-left:4px">pinned</span>') if d["pinned"] else ""
+        rows_html += (
+            f'<div class="cat-row" style="border-left-color:{d["color"]}">'
+            f'<div class="cat-row-name">{d["label"]}{pin_badge}</div>'
+            f'<div class="cat-row-bar-wrap">'
+            f'<div class="cat-row-bar-fill" style="width:{d["pct"]}%;background:{d["color"]}40"></div>'
+            f'</div>'
+            f'<div class="cat-row-amount">${primary_amt:,.0f}</div>'
+            f'<div class="cat-row-meta">{d["pct"]}%</div>'
+            f'</div>'
+        )
+    st.markdown(rows_html, unsafe_allow_html=True)
 
 with right:
     st.markdown('<div class="section-head">Allocation</div>', unsafe_allow_html=True)
@@ -1695,12 +1526,12 @@ with right:
         margin=dict(t=0, b=0, l=0, r=0),
         height=280,
         showlegend=True,
-        legend=dict(font=dict(color="#ffffff", size=11, family="DM Sans"),
+        legend=dict(font=dict(color="rgba(238,240,255,0.6)", size=11, family="Inter"),
                     bgcolor="rgba(0,0,0,0)", bordercolor="rgba(0,0,0,0)"),
         annotations=[dict(
-            text=f"<b style='font-size:20px'>${monthly_net:,.0f}</b><br>/month" if view_mode == "Monthly" else f"<b style='font-size:20px'>${weekly_net:,.0f}</b><br>/week",
+            text=f"<b>${monthly_net:,.0f}</b><br><span style='font-size:11px'>/month</span>" if view_mode == "Monthly" else f"<b>${weekly_net:,.0f}</b><br><span style='font-size:11px'>/week</span>",
             x=0.5, y=0.5, showarrow=False,
-            font=dict(color="#ffffff", size=14, family="DM Serif Display"),
+            font=dict(color="#EEF0FF", size=16, family="Inter"),
         )],
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -1725,10 +1556,10 @@ with right:
         barmode="group",
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         height=200, margin=dict(t=10, b=0, l=0, r=0),
-        font=dict(color="#ffffff", size=11, family="DM Sans"),
-        xaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e"),
-        yaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", tickprefix="$"),
-        legend=dict(font=dict(color="#a0a0b8", size=10), bgcolor="rgba(0,0,0,0)"),
+        font=dict(color="rgba(238,240,255,0.7)", size=11, family="Inter"),
+        xaxis=dict(gridcolor="#111526", linecolor="#1C2340"),
+        yaxis=dict(gridcolor="#111526", linecolor="#1C2340", tickprefix="$"),
+        legend=dict(font=dict(color="rgba(238,240,255,0.5)", size=10), bgcolor="rgba(0,0,0,0)"),
     )
     st.plotly_chart(fig2, use_container_width=True)
 
