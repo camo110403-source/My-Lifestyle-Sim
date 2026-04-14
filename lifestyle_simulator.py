@@ -953,6 +953,91 @@ def _load_profile(username: str):
             st.session_state[k] = v
 
 
+# ── About page ────────────────────────────────────────────────────────────────
+if not st.session_state.get("about_done", False):
+
+    ab_l, ab_r = st.columns([1.1, 0.9], gap="large")
+
+    with ab_l:
+        st.markdown("""
+<div style="padding:60px 48px 60px 0">
+  <div style="font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#c8a96e;margin-bottom:24px">Lifestyle Budget Simulator</div>
+  <div style="font-family:'DM Serif Display',serif;font-size:54px;color:#ffffff;line-height:1.05;letter-spacing:-0.03em;margin-bottom:24px">
+    Your money.<br>Your future.<br><span style="color:#c8a96e">Your plan.</span>
+  </div>
+  <div style="font-size:16px;color:rgba(255,255,255,0.45);font-weight:300;line-height:1.8;margin-bottom:40px;max-width:480px">
+    Most people spend more time planning a vacation than planning their finances. The result?
+    78% of Americans live paycheck to paycheck — not because they don't earn enough,
+    but because no one ever showed them where the money actually goes.
+  </div>
+  <div style="display:grid;gap:20px;max-width:500px">
+    <div style="background:#12121c;border:1px solid #1c1c2e;border-left:3px solid #c8a96e;border-radius:10px;padding:18px 22px">
+      <div style="font-size:28px;font-family:'DM Serif Display',serif;color:#c8a96e;line-height:1">$1,000</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:4px">The average American spends this much monthly on non-essentials without realizing it.</div>
+    </div>
+    <div style="background:#12121c;border:1px solid #1c1c2e;border-left:3px solid #7ec8a0;border-radius:10px;padding:18px 22px">
+      <div style="font-size:28px;font-family:'DM Serif Display',serif;color:#7ec8a0;line-height:1">10 years</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:4px">How much earlier people who start budgeting in their 20s can retire vs. those who don't.</div>
+    </div>
+    <div style="background:#12121c;border:1px solid #1c1c2e;border-left:3px solid #a07ec8;border-radius:10px;padding:18px 22px">
+      <div style="font-size:28px;font-family:'DM Serif Display',serif;color:#b09ad8;line-height:1">3x</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:4px">The net worth difference between people who track their spending and those who don't, at retirement.</div>
+    </div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+    with ab_r:
+        st.markdown("""
+<div style="padding:60px 0 60px 0">
+  <div style="background:#12121c;border:1px solid #1c1c2e;border-radius:16px;padding:40px 36px">
+    <div style="font-size:20px;font-weight:600;color:#ffffff;margin-bottom:8px;font-family:'DM Serif Display',serif">A clearer picture changes everything.</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:32px;line-height:1.7">
+      This isn't a spreadsheet. It's a living, real-time view of what your income actually means —
+      broken into the categories that shape your day-to-day life.
+    </div>
+    <div style="display:grid;gap:16px;margin-bottom:32px">
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <div style="width:32px;height:32px;border-radius:8px;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px">📍</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#ffffff;margin-bottom:2px">Real cost-of-living data</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.5">Budgets adjust automatically for 100+ US cities. Moving to Austin vs. San Francisco makes a $30,000 difference — we show you that.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <div style="width:32px;height:32px;border-radius:8px;background:rgba(126,200,160,.1);border:1px solid rgba(126,200,160,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px">🏦</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#ffffff;margin-bottom:2px">See your full financial picture</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.5">Net worth, emergency fund health, debt payoff timeline, retirement projections — all in one place, personalized to your numbers.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <div style="width:32px;height:32px;border-radius:8px;background:rgba(160,126,200,.1);border:1px solid rgba(160,126,200,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px">📈</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#ffffff;margin-bottom:2px">Plan the life you actually want</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.5">Model promotions, compare cities, audit subscriptions, and project your retirement — before making any decision.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <div style="width:32px;height:32px;border-radius:8px;background:rgba(126,200,200,.1);border:1px solid rgba(126,200,200,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px">⚡</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#ffffff;margin-bottom:2px">Up and running in 30 seconds</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.5">No imports, no spreadsheets, no financial jargon. Enter your income, pick your city, and your complete budget is ready instantly.</div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:rgba(255,255,255,.25);text-align:center;margin-bottom:16px">The best time to start was yesterday. The second best time is now.</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+        if st.button("Get started →", use_container_width=True, type="primary"):
+            st.session_state["about_done"] = True
+            st.rerun()
+
+    st.stop()
+
+
 # ── Auth page ─────────────────────────────────────────────────────────────────
 if not st.session_state.get("auth_done", False):
     _, mid, _ = st.columns([1, 1.6, 1])
@@ -1689,6 +1774,156 @@ for i, insight in enumerate(insights):
     col.markdown(f'<div class="insight-box">{insight}</div>', unsafe_allow_html=True)
 
 
+# ── Emergency Fund Status ─────────────────────────────────────────────────────
+st.divider()
+st.markdown('<div class="section-head">Emergency fund status</div>', unsafe_allow_html=True)
+
+ef_left, ef_right = st.columns([1, 1.4], gap="large")
+with ef_left:
+    if ef_months_covered >= 6:
+        ef_color, ef_status, ef_label_color = "#7ec8a0", "You're covered", "#7ec8a0"
+    elif ef_months_covered >= 3:
+        ef_color, ef_status, ef_label_color = "#c8b07e", "Getting there", "#c8b07e"
+    else:
+        ef_color, ef_status, ef_label_color = "#d48888", "Build this up", "#d48888"
+
+    ef_bar_pct = min(100, round(ef_months_covered / 6 * 100))
+    st.markdown(f"""
+<div class="nw-card">
+  <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Months of expenses covered</div>
+  <div style="font-family:'DM Serif Display',serif;font-size:48px;color:{ef_label_color};line-height:1;letter-spacing:-0.02em">{ef_months_covered:.1f}</div>
+  <div style="font-size:12px;color:{ef_label_color};font-weight:500;margin-top:6px">{ef_status}</div>
+  <div class="ef-bar-wrap"><div style="height:10px;background:{ef_color};border-radius:6px;width:{ef_bar_pct}%"></div></div>
+  <div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.4)"><span>0 mo</span><span style="color:{ef_label_color}">3 mo</span><span>6 mo+</span></div>
+  <div style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div>
+      <div style="font-size:16px;font-family:'DM Serif Display',serif;color:#ffffff">${ef_savings:,.0f}</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:2px">Liquid savings</div>
+    </div>
+    <div>
+      <div style="font-size:16px;font-family:'DM Serif Display',serif;color:#ffffff">${monthly_expenses:,.0f}</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:2px">Monthly expenses</div>
+    </div>
+  </div>
+</div>""", unsafe_allow_html=True)
+
+with ef_right:
+    ef_target_3 = monthly_expenses * 3
+    ef_target_6 = monthly_expenses * 6
+    ef_target_12 = monthly_expenses * 12
+    months_to_3  = max(0, math.ceil((ef_target_3  - ef_savings) / (savings_annual / 12))) if savings_annual > 0 else None
+    months_to_6  = max(0, math.ceil((ef_target_6  - ef_savings) / (savings_annual / 12))) if savings_annual > 0 else None
+    months_to_12 = max(0, math.ceil((ef_target_12 - ef_savings) / (savings_annual / 12))) if savings_annual > 0 else None
+
+    def _mo_str(m):
+        if m is None: return "No savings allocated"
+        if m == 0:    return "Already reached"
+        y, mo = divmod(m, 12)
+        p = []
+        if y:  p.append(f"{y} yr{'s' if y!=1 else ''}")
+        if mo: p.append(f"{mo} mo")
+        return " ".join(p) or "< 1 month"
+
+    st.markdown(f"""
+<div class="nw-card">
+  <div class="wi-col-head">Time to reach each milestone</div>
+  <div style="display:grid;gap:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#ffffff">3-month fund</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.45);margin-top:2px">${ef_target_3:,.0f} target</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:14px;font-weight:600;color:{"#7ec8a0" if ef_savings >= ef_target_3 else "#c8b07e"}">{_mo_str(months_to_3)}</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#ffffff">6-month fund</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.45);margin-top:2px">${ef_target_6:,.0f} target</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:14px;font-weight:600;color:{"#7ec8a0" if ef_savings >= ef_target_6 else "#c8b07e"}">{_mo_str(months_to_6)}</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#ffffff">12-month fund</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.45);margin-top:2px">${ef_target_12:,.0f} target</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:14px;font-weight:600;color:{"#7ec8a0" if ef_savings >= ef_target_12 else "#c8b07e"}">{_mo_str(months_to_12)}</div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:20px;background:#0f0f17;border:1px solid rgba(200,169,110,.15);border-left:3px solid #c8a96e;border-radius:8px;padding:12px 14px;font-size:12px;color:#ffffff;line-height:1.6">
+    Monthly expenses = take-home minus savings allocation (${monthly_net:,.0f} &minus; ${savings_annual/12:,.0f} = ${monthly_expenses:,.0f}/mo).
+    Adjust your savings in the sidebar to see timelines update.
+  </div>
+</div>""", unsafe_allow_html=True)
+
+
+# ── Subscription Audit ────────────────────────────────────────────────────────
+st.divider()
+st.markdown('<div class="section-head">Subscription audit</div>', unsafe_allow_html=True)
+
+if not sub_checked:
+    st.info("Open the **Subscriptions** expander in the sidebar and check off your active subscriptions.")
+else:
+    ent_annual   = next(d["annual"] for d in cat_data if d["key"] == "entertainment")
+    other_annual = next(d["annual"] for d in cat_data if d["key"] == "other")
+    sub_annual   = sub_total * 12
+    budget_pool  = ent_annual + other_annual
+
+    sa_left, sa_right = st.columns([1, 1.2], gap="large")
+
+    with sa_left:
+        over = sub_annual > budget_pool
+        color = "#d48888" if over else "#7ec8a0"
+        rows_html = "".join(
+            f'<div class="sub-row"><span style="color:rgba(255,255,255,.75)">{n}</span><span style="color:#ffffff;font-weight:500">${p:.2f}/mo</span></div>'
+            for n, p in sub_checked
+        )
+        st.markdown(f"""
+<div class="nw-card">
+  <div class="wi-col-head">Your subscriptions</div>
+  {rows_html}
+  <div style="display:flex;justify-content:space-between;padding-top:10px;font-size:13px;font-weight:600">
+    <span style="color:rgba(255,255,255,.5)">Total monthly</span>
+    <span style="color:{color}">${sub_total:,.2f}/mo</span>
+  </div>
+  <div style="display:flex;justify-content:space-between;padding-top:4px;font-size:12px">
+    <span style="color:rgba(255,255,255,.4)">Total annual</span>
+    <span style="color:{color}">${sub_annual:,.0f}/yr</span>
+  </div>
+</div>""", unsafe_allow_html=True)
+
+    with sa_right:
+        used_pct  = min(100, round(sub_annual / budget_pool * 100)) if budget_pool > 0 else 100
+        remain    = max(0, budget_pool - sub_annual)
+        bar_color = "#d48888" if over else "#7ec8c8"
+        st.markdown(f"""
+<div class="nw-card">
+  <div class="wi-col-head">vs. your entertainment + other budget</div>
+  <div style="font-family:'DM Serif Display',serif;font-size:36px;color:{bar_color};line-height:1;letter-spacing:-0.02em">{used_pct}%</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.45);margin-top:4px;margin-bottom:12px">of entertainment + other budget used by subscriptions</div>
+  <div class="ef-bar-wrap" style="height:8px">
+    <div style="height:8px;background:{bar_color};border-radius:6px;width:{used_pct}%"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+    <div>
+      <div style="font-size:15px;font-family:'DM Serif Display',serif;color:#ffffff">${budget_pool:,.0f}</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:2px">Annual budget</div>
+    </div>
+    <div>
+      <div style="font-size:15px;font-family:'DM Serif Display',serif;color:{"#d48888" if over else "#7ec8a0"}">${remain:,.0f} {"over" if over else "left"}</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:2px">Remaining</div>
+    </div>
+  </div>
+  {"<div style='margin-top:14px;background:rgba(200,80,80,.08);border:1px solid rgba(200,80,80,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:#d48888'>Subscriptions exceed your entertainment + other budget by <b>${abs(sub_annual - budget_pool):,.0f}/yr</b>. Consider trimming or raising your entertainment allocation.</div>" if over else ""}
+</div>""", unsafe_allow_html=True)
+
+
 # ── Savings Goal Tracker ──────────────────────────────────────────────────────
 st.divider()
 st.markdown('<div class="section-head">Savings goal tracker</div>', unsafe_allow_html=True)
@@ -1983,6 +2218,252 @@ else:
   your salary grows from <b>${gross:,.0f}</b> to <b style="color:#c8a96e">${final_gross:,.0f}</b>
   — a <b>+{total_pct}%</b> increase. Estimated take-home rises to
   <b style="color:#7ec8a0">${final_net:,.0f}/yr</b> (${final_net/12:,.0f}/mo).
+</div>""", unsafe_allow_html=True)
+
+
+# ── Net Worth Tracker ─────────────────────────────────────────────────────────
+st.divider()
+st.markdown('<div class="section-head">Net worth tracker</div>', unsafe_allow_html=True)
+
+if nw_total_assets == 0 and nw_total_liabilities == 0:
+    st.info("Open the **Net worth** expander in the sidebar to add your assets and liabilities.")
+else:
+    nw_color = "nw-big-pos" if net_worth >= 0 else "nw-big-neg"
+    nw_l, nw_m, nw_r = st.columns([1, 1, 1.3], gap="large")
+
+    with nw_l:
+        st.markdown(f"""
+<div class="nw-card">
+  <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Total assets</div>
+  <div class="nw-big-pos">${nw_total_assets:,.0f}</div>
+  <div style="margin-top:14px;display:grid;gap:7px">
+    {"".join(f'<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid #1c1c2e"><span style="color:rgba(255,255,255,.6)">{n}</span><span style="color:#ffffff">${v:,.0f}</span></div>' for n,v in [("Checking & savings",nw_checking),("Investments",nw_investments),("Retirement accts",nw_retirement_a),("Home",nw_home),("Vehicle",nw_vehicle),("Other",nw_other_asset)] if v > 0)}
+  </div>
+</div>""", unsafe_allow_html=True)
+
+    with nw_m:
+        st.markdown(f"""
+<div class="nw-card">
+  <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Total liabilities</div>
+  <div class="nw-big-neg">${nw_total_liabilities:,.0f}</div>
+  <div style="margin-top:14px;display:grid;gap:7px">
+    {"".join(f'<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid #1c1c2e"><span style="color:rgba(255,255,255,.6)">{n}</span><span style="color:#d48888">${v:,.0f}</span></div>' for n,v in [("Mortgage",nw_mortgage),("Student loans",nw_student),("Car loan",nw_car_loan),("Credit cards",nw_credit),("Other",nw_other_liab)] if v > 0)}
+  </div>
+</div>""", unsafe_allow_html=True)
+
+    with nw_r:
+        nw_sign = "+" if net_worth >= 0 else ""
+        debt_to_asset = round(nw_total_liabilities / nw_total_assets * 100) if nw_total_assets > 0 else 0
+
+        _asset_labels = ["Checking & savings", "Investments", "Retirement", "Home", "Vehicle", "Other"]
+        _asset_vals   = [nw_checking, nw_investments, nw_retirement_a, nw_home, nw_vehicle, nw_other_asset]
+        _asset_colors = ["#7ec8c8", "#a07ec8", "#c8a96e", "#7eafc8", "#c8b07e", "#8a8a8a"]
+        _asset_data   = [(l, v, c) for l, v, c in zip(_asset_labels, _asset_vals, _asset_colors) if v > 0]
+
+        if _asset_data:
+            fig_nw = go.Figure(go.Pie(
+                labels=[x[0] for x in _asset_data],
+                values=[x[1] for x in _asset_data],
+                hole=0.6,
+                marker=dict(colors=[x[2] for x in _asset_data], line=dict(color="#0a0a0f", width=2)),
+                textinfo="none",
+                hovertemplate="<b>%{label}</b><br>$%{value:,.0f}<extra></extra>",
+            ))
+            fig_nw.update_layout(
+                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                height=200, margin=dict(t=0, b=0, l=0, r=0),
+                showlegend=True,
+                legend=dict(font=dict(color="#ffffff", size=10), bgcolor="rgba(0,0,0,0)"),
+                annotations=[dict(text=f"<b>${nw_total_assets/1e6:.2f}M</b>" if nw_total_assets >= 1e6 else f"<b>${nw_total_assets:,.0f}</b>",
+                                  x=0.5, y=0.5, showarrow=False,
+                                  font=dict(color="#ffffff", size=12))],
+            )
+            st.plotly_chart(fig_nw, use_container_width=True)
+
+        nw_sign_color = "#7ec8a0" if net_worth >= 0 else "#d48888"
+        st.markdown(f"""
+<div style="background:#0f0f17;border:1px solid #1c1c2e;border-radius:10px;padding:16px 20px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4)">Net worth</div>
+    <div style="font-size:24px;font-family:'DM Serif Display',serif;color:{nw_sign_color}">{nw_sign}${abs(net_worth):,.0f}</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:12px">
+    <span style="color:rgba(255,255,255,.5)">Debt-to-asset ratio</span>
+    <span style="color:{"#d48888" if debt_to_asset > 50 else "#7ec8a0"}">{debt_to_asset}%</span>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:12px">
+    <span style="color:rgba(255,255,255,.5)">Annual savings adds</span>
+    <span style="color:#7ec8a0">+${savings_annual:,.0f}/yr</span>
+  </div>
+</div>""", unsafe_allow_html=True)
+
+
+# ── Retirement Projector ──────────────────────────────────────────────────────
+st.divider()
+st.markdown('<div class="section-head">Retirement projector</div>', unsafe_allow_html=True)
+
+rp_left, rp_right = st.columns([1.2, 1], gap="large")
+
+with rp_left:
+    if ret_years <= 0:
+        st.info("Your target retirement age is at or before your current age — adjust the sliders in the sidebar.")
+    else:
+        fig_ret = go.Figure()
+        fig_ret.add_trace(go.Scatter(
+            x=[ret_age + y for y in ret_curve_years],
+            y=ret_curve_values,
+            mode="lines",
+            line=dict(color="#a07ec8", width=2),
+            fill="tozeroy", fillcolor="rgba(160,126,200,0.07)",
+            hovertemplate="Age %{x}: $%{y:,.0f}<extra></extra>",
+        ))
+        if nw_retirement_a > 0:
+            fig_ret.add_hline(y=nw_retirement_a,
+                              line=dict(color="rgba(255,255,255,.2)", width=1, dash="dash"),
+                              annotation_text="Starting savings",
+                              annotation_font=dict(color="rgba(255,255,255,.4)", size=9))
+        fig_ret.add_vline(x=ret_target_age,
+                          line=dict(color="#c8a96e", width=1, dash="dot"))
+        fig_ret.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+            height=280, margin=dict(t=20, b=0, l=0, r=10),
+            font=dict(color="#ffffff", size=11, family="DM Sans"),
+            xaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", title="Age"),
+            yaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", tickprefix="$"),
+            showlegend=False,
+        )
+        st.plotly_chart(fig_ret, use_container_width=True)
+
+with rp_right:
+    st.markdown(f"""
+<div class="nw-card" style="margin-bottom:12px">
+  <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Projected nest egg at {ret_target_age}</div>
+  <div style="font-family:'DM Serif Display',serif;font-size:38px;color:#b09ad8;line-height:1;letter-spacing:-0.02em">${ret_fv:,.0f}</div>
+  <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:6px">nominal · {ret_return_rate}% annual return</div>
+  <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div>
+      <div style="font-size:16px;font-family:'DM Serif Display',serif;color:#7ec8a0">${ret_monthly_4pct:,.0f}</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:2px">Monthly income (4% rule)</div>
+    </div>
+    <div>
+      <div style="font-size:16px;font-family:'DM Serif Display',serif;color:#7ec8c8">${ret_fv_real:,.0f}</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:2px">Inflation-adjusted ({ret_inflation}%)</div>
+    </div>
+  </div>
+</div>""", unsafe_allow_html=True)
+
+    st.markdown(f"""
+<div style="background:#0f0f17;border:1px solid #1c1c2e;border-radius:10px;padding:14px 18px;font-size:12px;line-height:1.8;color:rgba(255,255,255,.7)">
+  <div style="display:grid;gap:4px">
+    <div style="display:flex;justify-content:space-between"><span>Years to retirement</span><span style="color:#ffffff;font-weight:500">{ret_years} yrs</span></div>
+    <div style="display:flex;justify-content:space-between"><span>Annual contribution</span><span style="color:#ffffff;font-weight:500">${savings_annual:,.0f}/yr</span></div>
+    <div style="display:flex;justify-content:space-between"><span>Starting savings</span><span style="color:#ffffff;font-weight:500">${ret_current_ret:,.0f}</span></div>
+    <div style="display:flex;justify-content:space-between"><span>Return rate</span><span style="color:#ffffff;font-weight:500">{ret_return_rate}%</span></div>
+    <div style="display:flex;justify-content:space-between"><span>Inflation</span><span style="color:#ffffff;font-weight:500">{ret_inflation}%</span></div>
+  </div>
+</div>""", unsafe_allow_html=True)
+    st.caption("Projections use compound interest. 4% rule estimates safe annual withdrawal as 4% of nest egg. Not financial advice.")
+
+
+# ── What-If Scenario Comparison ───────────────────────────────────────────────
+st.divider()
+st.markdown('<div class="section-head">What-if scenario comparison</div>', unsafe_allow_html=True)
+st.caption("Compare your current budget against a different city, framework, income, or tier.")
+
+with st.expander("Configure Scenario B"):
+    wi_col1, wi_col2 = st.columns(2)
+    with wi_col1:
+        wi_gross = st.number_input("Income (gross, $/yr)", min_value=0, max_value=2_000_000,
+                                    value=gross, step=1_000, format="%d", key="wi_gross")
+        _wi_loc_list = list(COL_DATA.keys())
+        _wi_loc_idx  = _wi_loc_list.index(location) if location in _wi_loc_list else 0
+        wi_location  = st.selectbox("City", _wi_loc_list, index=_wi_loc_idx, key="wi_location")
+    with wi_col2:
+        _wi_fw_list = list(FRAMEWORKS.keys())
+        _wi_fw_idx  = _wi_fw_list.index(fw_name) if fw_name in _wi_fw_list else 0
+        wi_fw_name  = st.selectbox("Framework", _wi_fw_list, index=_wi_fw_idx, key="wi_framework")
+        _wi_tier_list = list(TIERS.keys())
+        _wi_tier_idx  = _wi_tier_list.index(tier) if tier in _wi_tier_list else 1
+        wi_tier       = st.radio("Tier", _wi_tier_list, index=_wi_tier_idx,
+                                  horizontal=True, key="wi_tier", label_visibility="collapsed")
+
+# Compute Scenario B
+wi_col_info   = COL_DATA.get(wi_location, COL_DATA["National Average"])
+wi_state_abbr = CITY_STATE.get(wi_location)
+wi_federal    = calc_federal_tax(wi_gross)
+wi_state_tax  = calc_state_tax(wi_gross, wi_state_abbr)
+wi_net        = wi_gross - wi_federal - wi_state_tax
+wi_monthly    = wi_net / 12
+wi_weekly     = wi_net / 52
+
+wi_pcts_base  = FRAMEWORKS[wi_fw_name]
+wi_tier_adj   = TIERS[wi_tier]["adj"]
+wi_adj_pcts   = {k: max(0, wi_pcts_base.get(k, 0) + wi_tier_adj.get(k, 0)) for k, _, _ in CATEGORIES}
+_wi_tot = sum(wi_adj_pcts.values())
+if _wi_tot > 0 and _wi_tot != 100:
+    _ws = 100 / _wi_tot
+    wi_adj_pcts = {k: round(v * _ws) for k, v in wi_adj_pcts.items()}
+    _wd = 100 - sum(wi_adj_pcts.values())
+    if _wd != 0:
+        wi_adj_pcts[max(wi_adj_pcts, key=wi_adj_pcts.get)] += _wd
+
+def _wi_col(key, base_weekly):
+    if key == "housing":   return base_weekly * wi_col_info["housing_mult"]
+    if key == "food":      return base_weekly * wi_col_info["food_mult"]
+    if key == "transport": return base_weekly * wi_col_info["transport_mult"]
+    if key == "health":    return base_weekly * wi_col_info["health_mult"]
+    return base_weekly
+
+wi_cat_data = []
+for _k, _lbl, _clr in CATEGORIES:
+    _bw  = wi_weekly * wi_adj_pcts.get(_k, 0) / 100
+    _bw  = _wi_col(_k, _bw)
+    _mo  = _bw * 52 / 12
+    _ann = _mo * 12
+    wi_cat_data.append({"key": _k, "label": _lbl, "color": _clr,
+                         "monthly": _mo, "annual": _ann,
+                         "pct": wi_adj_pcts.get(_k, 0)})
+
+# Side-by-side table
+wi_a, wi_b = st.columns(2, gap="large")
+
+def _wi_header(title, sub, gross_val, net_val, location_val, fw_val, tier_val):
+    return f"""
+<div class="nw-card" style="margin-bottom:14px">
+  <div class="wi-col-head">{title}</div>
+  <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px">{sub}</div>
+  <div style="display:grid;gap:6px;font-size:12px">
+    <div style="display:flex;justify-content:space-between"><span style="color:rgba(255,255,255,.5)">Gross</span><span style="color:#c8a96e;font-weight:600">${gross_val:,.0f}</span></div>
+    <div style="display:flex;justify-content:space-between"><span style="color:rgba(255,255,255,.5)">Take-home</span><span style="color:#7ec8a0;font-weight:600">${net_val:,.0f}/yr</span></div>
+    <div style="display:flex;justify-content:space-between"><span style="color:rgba(255,255,255,.5)">City</span><span style="color:#ffffff">{location_val}</span></div>
+    <div style="display:flex;justify-content:space-between"><span style="color:rgba(255,255,255,.5)">Framework</span><span style="color:#ffffff">{fw_val.split("(")[0].strip()}</span></div>
+    <div style="display:flex;justify-content:space-between"><span style="color:rgba(255,255,255,.5)">Tier</span><span style="color:#ffffff">{tier_val}</span></div>
+  </div>
+</div>"""
+
+with wi_a:
+    st.markdown(_wi_header("Scenario A — Current", "Your active sidebar settings",
+                            gross, net, location, fw_name, tier), unsafe_allow_html=True)
+    for d in cat_data:
+        delta = d["monthly"] - next(x["monthly"] for x in wi_cat_data if x["key"] == d["key"])
+        dcolor = "#7ec8a0" if delta >= 0 else "#d48888"
+        dsign  = "+" if delta >= 0 else ""
+        st.markdown(f'<div class="sub-row"><span style="color:rgba(255,255,255,.7)">{d["label"]}</span><div><span style="color:#ffffff;font-weight:500">${d["monthly"]:,.0f}/mo</span>&nbsp;<span style="font-size:11px;color:{dcolor}">({dsign}${abs(delta):,.0f})</span></div></div>', unsafe_allow_html=True)
+
+with wi_b:
+    st.markdown(_wi_header("Scenario B — Comparison", "Configured in the expander above",
+                            wi_gross, wi_net, wi_location, wi_fw_name, wi_tier), unsafe_allow_html=True)
+    for d in wi_cat_data:
+        st.markdown(f'<div class="sub-row"><span style="color:rgba(255,255,255,.7)">{d["label"]}</span><span style="color:#ffffff;font-weight:500">${d["monthly"]:,.0f}/mo</span></div>', unsafe_allow_html=True)
+
+# Net delta summary
+net_delta = wi_net - net
+st.markdown(f"""
+<div style="margin-top:16px;background:#0f0f17;border:1px solid rgba({"80,180,100" if net_delta >= 0 else "200,80,80"},.2);border-left:3px solid {"#7ec8a0" if net_delta >= 0 else "#d48888"};border-radius:8px;padding:14px 18px;font-size:13px;color:#ffffff;line-height:1.7">
+  Scenario B {"increases" if net_delta >= 0 else "decreases"} your estimated take-home by
+  <b style="color:{"#7ec8a0" if net_delta >= 0 else "#d48888"}">{"+" if net_delta >= 0 else ""}{net_delta:,.0f}/yr</b>
+  (${abs(net_delta)/12:,.0f}/mo) compared to Scenario A.
+  Housing changes by <b>${(next(x["monthly"] for x in wi_cat_data if x["key"]=="housing") - next(x["monthly"] for x in cat_data if x["key"]=="housing")):+,.0f}/mo</b> with cost-of-living adjustments applied.
 </div>""", unsafe_allow_html=True)
 
 
