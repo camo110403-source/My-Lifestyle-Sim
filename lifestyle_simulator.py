@@ -2,6 +2,9 @@ import streamlit as st
 import plotly.graph_objects as go
 from fpdf import FPDF
 import math
+import json
+import os
+import hashlib
 
 st.set_page_config(
     page_title="Lifestyle Budget Simulator",
@@ -274,6 +277,60 @@ hr { border-color: #1c1c2e !important; margin: 28px 0 !important; }
     color: rgba(255,255,255,0.35);
     margin-bottom: 8px;
     margin-top: 22px;
+}
+
+/* ── Auth page ── */
+.auth-wrap {
+    max-width: 440px;
+    margin: 80px auto 0;
+}
+.auth-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+}
+.auth-tagline {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    margin-bottom: 36px;
+    font-weight: 300;
+}
+.auth-card {
+    background: #12121c;
+    border: 1px solid #1c1c2e;
+    border-radius: 14px;
+    padding: 36px 36px 40px;
+}
+.auth-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 8px;
+    margin-top: 20px;
+}
+.auth-error {
+    background: rgba(200, 80, 80, 0.1);
+    border: 1px solid rgba(200, 80, 80, 0.25);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #d48888;
+    margin-top: 12px;
+}
+.auth-success {
+    background: rgba(80, 180, 100, 0.1);
+    border: 1px solid rgba(80, 180, 100, 0.25);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #6ec87e;
+    margin-top: 12px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -842,6 +899,114 @@ def generate_pdf(gross, net, federal_tax, state_tax_amt, state_abbr,
     return bytes(pdf.output())
 
 
+# ── Account / persistence helpers ────────────────────────────────────────────
+_USERS_FILE = os.path.join(os.path.dirname(__file__), "users.json")
+
+def _load_users() -> dict:
+    if os.path.exists(_USERS_FILE):
+        try:
+            with open(_USERS_FILE, "r") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+def _save_users(users: dict):
+    with open(_USERS_FILE, "w") as f:
+        json.dump(users, f, indent=2)
+
+def _hash_pw(pw: str) -> str:
+    return hashlib.sha256(pw.encode()).hexdigest()
+
+_PROFILE_KEYS = [
+    "s_name", "s_gross", "s_income_type", "s_hourly",
+    "s_location", "s_framework", "s_tier", "intro_done",
+]
+
+def _save_profile(username: str):
+    users = _load_users()
+    if username in users:
+        users[username]["profile"] = {
+            k: st.session_state.get(k) for k in _PROFILE_KEYS
+        }
+        _save_users(users)
+
+def _load_profile(username: str):
+    users = _load_users()
+    profile = users.get(username, {}).get("profile", {})
+    for k, v in profile.items():
+        if v is not None:
+            st.session_state[k] = v
+
+
+# ── Auth page ─────────────────────────────────────────────────────────────────
+if not st.session_state.get("auth_done", False):
+    _, mid, _ = st.columns([1, 1.6, 1])
+    with mid:
+        st.markdown("""
+<div class="auth-logo">Lifestyle Budget Simulator</div>
+<div class="auth-tagline">Sign in to save and reload your budget across sessions.</div>
+""", unsafe_allow_html=True)
+
+        tab_in, tab_up = st.tabs(["Sign in", "Create account"])
+
+        with tab_in:
+            st.markdown('<div class="auth-label">Username</div>', unsafe_allow_html=True)
+            si_user = st.text_input("Username", key="si_user", placeholder="your username",
+                                    label_visibility="collapsed")
+            st.markdown('<div class="auth-label">Password</div>', unsafe_allow_html=True)
+            si_pw = st.text_input("Password", key="si_pw", type="password",
+                                  label_visibility="collapsed")
+            if st.button("Sign in", use_container_width=True, type="primary", key="btn_signin"):
+                _users = _load_users()
+                if si_user in _users and _users[si_user]["pw"] == _hash_pw(si_pw):
+                    st.session_state["auth_done"] = True
+                    st.session_state["auth_user"] = si_user
+                    _load_profile(si_user)
+                    st.rerun()
+                else:
+                    st.markdown('<div class="auth-error">Incorrect username or password.</div>',
+                                unsafe_allow_html=True)
+            st.markdown('<div style="height:6px"></div>', unsafe_allow_html=True)
+            if st.button("Continue without an account →", use_container_width=True, key="btn_guest"):
+                st.session_state["auth_done"] = True
+                st.session_state["auth_user"] = None
+                st.rerun()
+
+        with tab_up:
+            st.markdown('<div class="auth-label">Username</div>', unsafe_allow_html=True)
+            su_user = st.text_input("Username", key="su_user", placeholder="pick a username",
+                                    label_visibility="collapsed")
+            st.markdown('<div class="auth-label">Password</div>', unsafe_allow_html=True)
+            su_pw = st.text_input("Password", key="su_pw", type="password",
+                                  label_visibility="collapsed")
+            st.markdown('<div class="auth-label">Confirm password</div>', unsafe_allow_html=True)
+            su_pw2 = st.text_input("Confirm password", key="su_pw2", type="password",
+                                   label_visibility="collapsed")
+            if st.button("Create account", use_container_width=True, type="primary", key="btn_signup"):
+                _users = _load_users()
+                if not su_user.strip():
+                    st.markdown('<div class="auth-error">Please enter a username.</div>',
+                                unsafe_allow_html=True)
+                elif su_user in _users:
+                    st.markdown('<div class="auth-error">That username is already taken.</div>',
+                                unsafe_allow_html=True)
+                elif len(su_pw) < 6:
+                    st.markdown('<div class="auth-error">Password must be at least 6 characters.</div>',
+                                unsafe_allow_html=True)
+                elif su_pw != su_pw2:
+                    st.markdown('<div class="auth-error">Passwords do not match.</div>',
+                                unsafe_allow_html=True)
+                else:
+                    _users[su_user] = {"pw": _hash_pw(su_pw), "profile": {}}
+                    _save_users(_users)
+                    st.session_state["auth_done"] = True
+                    st.session_state["auth_user"] = su_user
+                    st.rerun()
+
+    st.stop()
+
+
 # ── Intro page ────────────────────────────────────────────────────────────────
 if not st.session_state.get("intro_done", False):
 
@@ -919,7 +1084,7 @@ if not st.session_state.get("intro_done", False):
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    s_name = st.session_state.get("s_name", "")
+    s_name = st.session_state.get("s_name", "") or st.session_state.get("auth_user", "")
     greeting = f"Hey, {s_name}" if s_name else "Your Budget"
     st.markdown(f'<p style="font-family:\'DM Serif Display\',serif;font-size:20px;color:#ffffff;margin-bottom:2px;letter-spacing:-0.01em">{greeting}</p>', unsafe_allow_html=True)
     st.markdown('<p style="font-size:12px;color:#ffffff;margin-bottom:20px;font-weight:300;opacity:.5">Adjust any variable below to update your budget.</p>', unsafe_allow_html=True)
@@ -1540,9 +1705,32 @@ with st.sidebar:
     )
 
     st.divider()
-    if st.button("← Start over", use_container_width=True):
-        st.session_state.intro_done = False
-        st.rerun()
+
+    # ── Account controls ──
+    _auth_user = st.session_state.get("auth_user")
+    if _auth_user:
+        st.markdown("#### Account")
+        st.caption(f"Signed in as **{_auth_user}**")
+        if st.button("💾 Save my progress", use_container_width=True):
+            _save_profile(_auth_user)
+            st.success("Progress saved!")
+        if st.button("← Start over", use_container_width=True):
+            st.session_state.intro_done = False
+            st.rerun()
+        if st.button("Log out", use_container_width=True):
+            for k in list(st.session_state.keys()):
+                del st.session_state[k]
+            st.rerun()
+    else:
+        st.markdown("#### Account")
+        st.caption("Guest session — progress won't be saved.")
+        if st.button("← Start over", use_container_width=True):
+            st.session_state.intro_done = False
+            st.rerun()
+        if st.button("Create an account", use_container_width=True):
+            for k in list(st.session_state.keys()):
+                del st.session_state[k]
+            st.rerun()
 
 st.divider()
 st.caption("Tax estimates use 2024 US federal brackets + 7.65% FICA + simplified state income tax rates. Cost of living multipliers are estimates based on composite index data. All figures are for planning purposes only.")
