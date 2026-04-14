@@ -1246,6 +1246,42 @@ with st.sidebar:
         debt_balance = st.number_input("Total debt balance ($)", min_value=0, max_value=2_000_000, value=0, step=500, format="%d")
         debt_rate    = st.slider("Annual interest rate (APR %)", 0.0, 36.0, 18.0, step=0.1)
 
+    st.divider()
+
+    st.markdown("#### Income projections")
+    with st.expander("Add promotions / raises"):
+        num_promos = st.number_input("How many promotions?", min_value=1, max_value=10,
+                                     value=1, step=1, format="%d")
+        promotions = []
+        for _i in range(int(num_promos)):
+            st.markdown(f'<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:{"0" if _i == 0 else "18"}px;margin-bottom:6px">Promotion {_i + 1}</div>', unsafe_allow_html=True)
+            _label = st.text_input("Label", value=f"Promotion {_i + 1}",
+                                   placeholder="e.g. Mid-year raise",
+                                   key=f"promo_label_{_i}", label_visibility="collapsed")
+            _months = st.number_input("Months from now", min_value=1, max_value=240,
+                                      value=12 * (_i + 1), step=1, format="%d",
+                                      key=f"promo_months_{_i}",
+                                      help="How many months until this raise takes effect")
+            _ptype = st.radio("Type", ["% raise", "New salary"],
+                              horizontal=True, key=f"promo_type_{_i}",
+                              label_visibility="collapsed")
+            if _ptype == "% raise":
+                _val = st.number_input("Raise (%)", min_value=0.0, max_value=200.0,
+                                       value=5.0, step=0.5, format="%.1f",
+                                       key=f"promo_val_{_i}", label_visibility="collapsed")
+            else:
+                _val = st.number_input("New salary ($)", min_value=0, max_value=5_000_000,
+                                       value=max(gross + 10_000, 1), step=1_000, format="%d",
+                                       key=f"promo_val_{_i}", label_visibility="collapsed")
+            promotions.append({
+                "label":  _label or f"Promotion {_i + 1}",
+                "months": int(_months),
+                "type":   _ptype,
+                "value":  _val,
+            })
+        # sort by month so the timeline is always in order
+        promotions.sort(key=lambda x: x["months"])
+
 
 # ── Calculations ──────────────────────────────────────────────────────────────
 federal_tax    = calc_federal_tax(gross)
@@ -1679,6 +1715,145 @@ else:
                 showlegend=False,
             )
             st.plotly_chart(fig_debt, use_container_width=True)
+
+
+# ── Income Projections ────────────────────────────────────────────────────────
+st.divider()
+st.markdown('<div class="section-head">Income projections</div>', unsafe_allow_html=True)
+
+if not promotions:
+    st.info("Open the **Income projections** expander in the sidebar to add expected raises.")
+else:
+    # Build step timeline: chain promotions so % raises compound off the previous salary
+    max_month = max(p["months"] for p in promotions) + 18
+    max_month = min(max_month, 240)
+
+    # Compute salary at each promotion, chaining % raises
+    steps = []   # list of (month, gross_salary)
+    cur = float(gross)
+    for p in promotions:
+        if p["type"] == "% raise":
+            cur = cur * (1 + p["value"] / 100)
+        else:
+            cur = float(p["value"])
+        steps.append((p["months"], cur, p["label"]))
+
+    # Build month-by-month gross and net arrays for the chart
+    timeline_months = list(range(max_month + 1))
+    timeline_gross  = []
+    timeline_net    = []
+    for m in timeline_months:
+        g = float(gross)
+        for month, new_g, _ in steps:
+            if m >= month:
+                g = new_g
+        timeline_gross.append(g)
+        timeline_net.append(g - calc_federal_tax(g) - calc_state_tax(g, state_abbr))
+
+    # ── Chart ──
+    ip_left, ip_right = st.columns([1.3, 1], gap="large")
+
+    with ip_left:
+        fig_ip = go.Figure()
+
+        fig_ip.add_trace(go.Scatter(
+            x=timeline_months, y=timeline_gross,
+            mode="lines", name="Gross income",
+            line=dict(color="#c8a96e", width=2),
+            hovertemplate="Month %{x}<br>Gross: $%{y:,.0f}<extra></extra>",
+        ))
+        fig_ip.add_trace(go.Scatter(
+            x=timeline_months, y=timeline_net,
+            mode="lines", name="Est. take-home",
+            line=dict(color="#7ec8a0", width=2, dash="dot"),
+            fill="tozeroy", fillcolor="rgba(126,200,160,0.05)",
+            hovertemplate="Month %{x}<br>Take-home: $%{y:,.0f}<extra></extra>",
+        ))
+
+        # Markers at each promotion
+        marker_x = [s[0] for s in steps]
+        marker_y = [s[1] for s in steps]
+        marker_labels = [s[2] for s in steps]
+        fig_ip.add_trace(go.Scatter(
+            x=marker_x, y=marker_y,
+            mode="markers+text",
+            marker=dict(color="#c8a96e", size=8, symbol="circle"),
+            text=marker_labels,
+            textposition="top center",
+            textfont=dict(color="#c8a96e", size=10),
+            hovertemplate="%{text}<br>Month %{x}<br>$%{y:,.0f}<extra></extra>",
+            showlegend=False,
+        ))
+
+        # Reference line at current gross
+        fig_ip.add_hline(y=gross, line=dict(color="rgba(255,255,255,0.12)", width=1, dash="dash"),
+                         annotation_text="Current salary",
+                         annotation_font=dict(color="rgba(255,255,255,0.4)", size=9))
+
+        fig_ip.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+            height=300, margin=dict(t=20, b=0, l=0, r=10),
+            font=dict(color="#ffffff", size=11, family="DM Sans"),
+            xaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", title="Months from now"),
+            yaxis=dict(gridcolor="#14141f", linecolor="#1c1c2e", tickprefix="$"),
+            legend=dict(font=dict(color="#a0a0b8", size=10), bgcolor="rgba(0,0,0,0)"),
+        )
+        st.plotly_chart(fig_ip, use_container_width=True)
+
+    with ip_right:
+        st.markdown('<div class="section-head" style="margin-top:4px">Promotion summary</div>', unsafe_allow_html=True)
+
+        cur_display = float(gross)
+        for month, new_g, label in steps:
+            prev_net  = cur_display - calc_federal_tax(cur_display) - calc_state_tax(cur_display, state_abbr)
+            new_net   = new_g - calc_federal_tax(new_g) - calc_state_tax(new_g, state_abbr)
+            delta_g   = new_g - cur_display
+            delta_net = new_net - prev_net
+            yrs_disp, mos_disp = divmod(month, 12)
+            time_parts = []
+            if yrs_disp: time_parts.append(f"{yrs_disp} yr{'s' if yrs_disp != 1 else ''}")
+            if mos_disp: time_parts.append(f"{mos_disp} mo")
+            time_str = " ".join(time_parts) or f"{month} mo"
+
+            st.markdown(f"""
+<div class="goal-card" style="margin-bottom:12px;padding:18px 22px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+    <div style="font-size:13px;font-weight:600;color:#ffffff">{label}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);white-space:nowrap;margin-left:12px">in {time_str}</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div>
+      <div style="font-size:18px;font-family:'DM Serif Display',serif;color:#c8a96e">${new_g:,.0f}</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:2px">New gross</div>
+    </div>
+    <div>
+      <div style="font-size:18px;font-family:'DM Serif Display',serif;color:#7ec8a0">${new_net:,.0f}</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:2px">Est. take-home</div>
+    </div>
+    <div>
+      <div style="font-size:14px;color:{"#7ec8a0" if delta_g >= 0 else "#d48888"};font-weight:500">{"+" if delta_g >= 0 else ""}{delta_g:,.0f} gross</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:2px">Change</div>
+    </div>
+    <div>
+      <div style="font-size:14px;color:{"#7ec8a0" if delta_net >= 0 else "#d48888"};font-weight:500">{"+" if delta_net >= 0 else ""}{delta_net:,.0f} take-home</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:2px">Change</div>
+    </div>
+  </div>
+</div>""", unsafe_allow_html=True)
+            cur_display = new_g
+
+        # Overall summary
+        final_gross = steps[-1][1]
+        final_net   = final_gross - calc_federal_tax(final_gross) - calc_state_tax(final_gross, state_abbr)
+        total_delta = final_gross - gross
+        total_pct   = round(total_delta / gross * 100, 1) if gross else 0
+        st.markdown(f"""
+<div style="background:#0f0f17;border:1px solid rgba(200,169,110,0.2);border-left:3px solid #c8a96e;border-radius:8px;padding:14px 18px;font-size:13px;color:#ffffff;line-height:1.7">
+  After all {len(steps)} promotion{"s" if len(steps) != 1 else ""},
+  your salary grows from <b>${gross:,.0f}</b> to <b style="color:#c8a96e">${final_gross:,.0f}</b>
+  — a <b>+{total_pct}%</b> increase. Estimated take-home rises to
+  <b style="color:#7ec8a0">${final_net:,.0f}/yr</b> (${final_net/12:,.0f}/mo).
+</div>""", unsafe_allow_html=True)
 
 
 # ── Sidebar Part 2: PDF export ────────────────────────────────────────────────
