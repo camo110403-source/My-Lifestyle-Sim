@@ -279,6 +279,20 @@ hr { border-color: #1c1c2e !important; margin: 28px 0 !important; }
     margin-top: 22px;
 }
 
+/* ── Net worth / retirement cards ── */
+.nw-card {
+    background: #12121c;
+    border: 1px solid #1c1c2e;
+    border-radius: 10px;
+    padding: 20px 24px;
+}
+.nw-big-pos { font-family: 'DM Serif Display', serif; font-size: 38px; color: #7ec8a0; line-height: 1; letter-spacing: -0.02em; }
+.nw-big-neg { font-family: 'DM Serif Display', serif; font-size: 38px; color: #d48888; line-height: 1; letter-spacing: -0.02em; }
+.nw-big-neu { font-family: 'DM Serif Display', serif; font-size: 38px; color: #ffffff;  line-height: 1; letter-spacing: -0.02em; }
+.ef-bar-wrap { height: 10px; background: #1c1c2e; border-radius: 6px; overflow: hidden; margin: 10px 0 6px; }
+.sub-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #1c1c2e; font-size: 12px; }
+.wi-col-head { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid #1c1c2e; }
+
 /* ── Auth page ── */
 .auth-wrap {
     max-width: 440px;
@@ -1282,6 +1296,83 @@ with st.sidebar:
         # sort by month so the timeline is always in order
         promotions.sort(key=lambda x: x["months"])
 
+    st.divider()
+
+    st.markdown("#### Emergency fund")
+    with st.expander("Current liquid savings"):
+        ef_savings = st.number_input(
+            "Liquid savings ($)", min_value=0, max_value=10_000_000, value=0, step=500, format="%d",
+            help="Cash in checking/savings accounts you could access in an emergency",
+            label_visibility="collapsed",
+        )
+
+    st.divider()
+
+    st.markdown("#### Subscriptions")
+    _PRESET_SUBS = [
+        ("Netflix", 15.49), ("Hulu", 7.99), ("Disney+", 7.99),
+        ("Max (HBO)", 15.99), ("Apple TV+", 9.99), ("Paramount+", 7.99),
+        ("Peacock", 5.99), ("Spotify", 10.99), ("Apple Music", 10.99),
+        ("YouTube Premium", 13.99), ("Amazon Prime", 14.99),
+        ("iCloud+", 2.99), ("Google One", 2.99),
+        ("Xbox Game Pass", 14.99), ("PS Plus", 8.33),
+        ("Adobe Creative Cloud", 54.99), ("Microsoft 365", 9.99),
+        ("Dropbox", 11.99), ("Gym membership", 40.00),
+        ("News subscription", 15.00),
+    ]
+    sub_checked = []
+    sub_total   = 0.0
+    with st.expander("Audit your subscriptions"):
+        for _sname, _sprice in _PRESET_SUBS:
+            _c1, _c2 = st.columns([3, 1.4])
+            with _c1:
+                _on = st.checkbox(_sname, key=f"sub_{_sname}")
+            with _c2:
+                if _on:
+                    _p = st.number_input("$", min_value=0.0, max_value=2000.0,
+                                         value=float(_sprice), step=0.01, format="%.2f",
+                                         key=f"sub_price_{_sname}", label_visibility="collapsed")
+                    sub_total += _p
+                    sub_checked.append((_sname, _p))
+        st.markdown("---")
+        _add_custom = st.checkbox("Add custom subscription", key="sub_custom_on")
+        if _add_custom:
+            _cname = st.text_input("Name", key="sub_custom_name", placeholder="e.g. Duolingo Plus")
+            _camt  = st.number_input("Monthly cost ($)", min_value=0.0, max_value=10_000.0,
+                                     value=0.0, step=1.0, format="%.2f", key="sub_custom_amt")
+            if _cname.strip():
+                sub_total += _camt
+                sub_checked.append((_cname.strip(), _camt))
+        st.caption(f"Total: **${sub_total:,.2f}/mo**  (${sub_total * 12:,.0f}/yr)")
+
+    st.divider()
+
+    st.markdown("#### Net worth")
+    with st.expander("Add assets & liabilities"):
+        st.markdown('<div class="intro-section-label">Assets</div>', unsafe_allow_html=True)
+        nw_checking     = st.number_input("Checking & savings ($)", min_value=0, max_value=100_000_000, value=0, step=1_000, format="%d", key="nw_checking")
+        nw_investments  = st.number_input("Investments — stocks, ETFs ($)", min_value=0, max_value=100_000_000, value=0, step=1_000, format="%d", key="nw_investments")
+        nw_retirement_a = st.number_input("Retirement accounts — 401k, IRA ($)", min_value=0, max_value=100_000_000, value=0, step=1_000, format="%d", key="nw_retirement_a")
+        nw_home         = st.number_input("Home value ($)", min_value=0, max_value=100_000_000, value=0, step=5_000, format="%d", key="nw_home")
+        nw_vehicle      = st.number_input("Vehicle value ($)", min_value=0, max_value=500_000, value=0, step=1_000, format="%d", key="nw_vehicle")
+        nw_other_asset  = st.number_input("Other assets ($)", min_value=0, max_value=100_000_000, value=0, step=1_000, format="%d", key="nw_other_asset")
+        st.markdown('<div class="intro-section-label" style="margin-top:14px">Liabilities</div>', unsafe_allow_html=True)
+        nw_mortgage     = st.number_input("Mortgage balance ($)", min_value=0, max_value=100_000_000, value=0, step=5_000, format="%d", key="nw_mortgage")
+        nw_student      = st.number_input("Student loans ($)", min_value=0, max_value=1_000_000, value=0, step=1_000, format="%d", key="nw_student")
+        nw_car_loan     = st.number_input("Car loan ($)", min_value=0, max_value=500_000, value=0, step=1_000, format="%d", key="nw_car_loan")
+        nw_credit       = st.number_input("Credit card debt ($)", min_value=0, max_value=500_000, value=0, step=500, format="%d", key="nw_credit")
+        nw_other_liab   = st.number_input("Other liabilities ($)", min_value=0, max_value=100_000_000, value=0, step=1_000, format="%d", key="nw_other_liab")
+
+    st.divider()
+
+    st.markdown("#### Retirement")
+    with st.expander("Retirement projector"):
+        ret_age         = st.slider("Your current age", 18, 70, 30, key="ret_age")
+        ret_target_age  = st.slider("Target retirement age", 45, 80, 65, key="ret_target_age")
+        ret_current_ret = st.number_input("Current retirement savings ($)", min_value=0, max_value=100_000_000, value=0, step=1_000, format="%d", key="ret_current_ret")
+        ret_return_rate = st.slider("Expected annual return (%)", 1.0, 15.0, 7.0, step=0.5, key="ret_return")
+        ret_inflation   = st.slider("Assumed inflation (%)", 0.0, 6.0, 2.5, step=0.25, key="ret_inflation")
+
 
 # ── Calculations ──────────────────────────────────────────────────────────────
 federal_tax    = calc_federal_tax(gross)
@@ -1393,6 +1484,45 @@ if debt_balance > 0 and monthly_debt_payment > 0:
             interest_charge = bal * (debt_rate / 100 / 12)
             bal = max(0.0, bal - (monthly_debt_payment - interest_charge))
 
+# ── Emergency fund calc ───────────────────────────────────────────────────────
+monthly_expenses = max(1.0, monthly_net - savings_annual / 12)
+ef_months_covered = ef_savings / monthly_expenses
+
+# ── Net worth calc ────────────────────────────────────────────────────────────
+nw_total_assets      = nw_checking + nw_investments + nw_retirement_a + nw_home + nw_vehicle + nw_other_asset
+nw_total_liabilities = nw_mortgage + nw_student + nw_car_loan + nw_credit + nw_other_liab
+net_worth            = nw_total_assets - nw_total_liabilities
+
+# ── Retirement calc ───────────────────────────────────────────────────────────
+ret_years = max(0, ret_target_age - ret_age)
+_r = ret_return_rate / 100
+if ret_years > 0:
+    if _r > 0:
+        ret_fv = ret_current_ret * (1 + _r) ** ret_years + savings_annual * (((1 + _r) ** ret_years - 1) / _r)
+    else:
+        ret_fv = ret_current_ret + savings_annual * ret_years
+else:
+    ret_fv = float(ret_current_ret)
+# Real (inflation-adjusted) value
+_ri = (1 + _r) / (1 + ret_inflation / 100) - 1
+if ret_years > 0 and _ri > 0:
+    ret_fv_real = ret_current_ret * (1 + _ri) ** ret_years + savings_annual * (((1 + _ri) ** ret_years - 1) / _ri)
+elif ret_years > 0:
+    ret_fv_real = ret_current_ret + savings_annual * ret_years
+else:
+    ret_fv_real = float(ret_current_ret)
+ret_monthly_4pct      = ret_fv * 0.04 / 12        # nominal
+ret_monthly_4pct_real = ret_fv_real * 0.04 / 12   # inflation-adjusted
+
+# Build retirement growth curve (nominal)
+ret_curve_years  = list(range(ret_years + 1))
+ret_curve_values = []
+for _y in ret_curve_years:
+    if _r > 0:
+        _v = ret_current_ret * (1 + _r) ** _y + savings_annual * (((1 + _r) ** _y - 1) / _r)
+    else:
+        _v = ret_current_ret + savings_annual * _y
+    ret_curve_values.append(_v)
 
 # ── Header ────────────────────────────────────────────────────────────────────
 tier_css = TIERS[tier]["css"]
