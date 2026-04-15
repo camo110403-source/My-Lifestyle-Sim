@@ -17,45 +17,32 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap');
 
-/* ══════════════════════════════════════════════════════════════
-   DESIGN TOKENS  —  Light mode is the default.
-   @media (prefers-color-scheme: dark) overrides to dark.
-   ══════════════════════════════════════════════════════════════ */
+/* ── Design tokens ── */
 :root {
-  /* Light palette */
-  --bg:      #F6F7FB;
-  --surface: #FFFFFF;
-  --card:    #FFFFFF;
-  --card-hi: #EEF2FF;
-  --border:  #E3E6EE;
-  --bd-sub:  #ECEEF5;
-  --sidebar: #EDEEF6;
-  /* Text scale */
-  --t1: #111827;
-  --t2: rgba(17,24,39,0.55);
-  --t3: rgba(17,24,39,0.36);
-  --t-12: rgba(17,24,39,0.10);
-  --t-25: rgba(17,24,39,0.25);
-  --t-35: rgba(17,24,39,0.38);
-  --t-60: rgba(17,24,39,0.60);
-  --t-70: rgba(17,24,39,0.70);
-  --t-75: rgba(17,24,39,0.75);
-  /* Accent — deepened for legibility on white */
-  --gold:   #A0720E;
-  --green:  #0B6E42;
-  --red:    #C02020;
-  --purple: #5530BC;
-  --blue:   #1858C0;
-  /* Shadows (only visible in light) */
-  --shadow-card: 0 1px 3px rgba(17,24,39,0.07), 0 0 0 1px rgba(17,24,39,0.05);
-  --shadow-hover: 0 4px 16px rgba(17,24,39,0.10), 0 0 0 1px rgba(17,24,39,0.06);
+  --bg:      #090B12;
+  --surface: #0E1120;
+  --card:    #121726;
+  --card-hi: #18203A;
+  --border:  #1C2340;
+  --bd-sub:  #111526;
+  --sidebar: #0B0D18;
+  --t1: #EEF0FF;
+  --t2: rgba(238,240,255,0.50);
+  --t3: rgba(238,240,255,0.24);
+  --t-12: rgba(238,240,255,0.12);
+  --t-25: rgba(238,240,255,0.25);
+  --t-35: rgba(238,240,255,0.35);
+  --t-60: rgba(238,240,255,0.60);
+  --t-70: rgba(238,240,255,0.70);
+  --t-75: rgba(238,240,255,0.75);
+  --gold:   #C4A35A;
+  --green:  #4BB88A;
+  --red:    #DC6060;
+  --purple: #8B6FD4;
+  --blue:   #5090C4;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   BASE STYLES  —  these apply in BOTH themes via CSS vars
-   ══════════════════════════════════════════════════════════════ */
-
-/* Reset & base */
+/* ── Reset & base ── */
 html, body, [class*="css"] {
   font-family: 'Inter', sans-serif;
   font-size: 14px;
@@ -105,15 +92,15 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
 
 /* Tags */
 .location-tag {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(11,110,66,.08); color: var(--green);
-  border: 1px solid rgba(11,110,66,.20); border-radius: 20px;
-  padding: 4px 13px; font-size: 11.5px; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(75,184,138,.07); color: #4BB88A;
+    border: 1px solid rgba(75,184,138,.18); border-radius: 20px;
+    padding: 4px 13px; font-size: 11.5px; font-weight: 500;
 }
 .tier-tag { display: inline-flex; align-items: center; border-radius: 20px; padding: 4px 13px; font-size: 11.5px; font-weight: 500; margin-left: 8px; }
-.tier-frugal      { background: rgba(11,110,66,.07);  color: var(--green);  border: 1px solid rgba(11,110,66,.20); }
-.tier-comfortable { background: rgba(24,88,192,.07);  color: var(--blue);   border: 1px solid rgba(24,88,192,.20); }
-.tier-lavish      { background: rgba(160,114,14,.07); color: var(--gold);   border: 1px solid rgba(160,114,14,.20); }
+.tier-frugal      { background: rgba(75,184,138,.07);  color: #4BB88A; border: 1px solid rgba(75,184,138,.2); }
+.tier-comfortable { background: rgba(80,144,196,.07);  color: #5090C4; border: 1px solid rgba(80,144,196,.2); }
+.tier-lavish      { background: rgba(196,163,90,.07);  color: #C4A35A; border: 1px solid rgba(196,163,90,.2); }
 
 /* Section headings */
 .section-head {
@@ -124,14 +111,13 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
 
 /* Category rows */
 .cat-row {
-  display: flex; align-items: center; gap: 14px;
-  padding: 13px 16px; border-radius: 10px;
-  background: var(--card); margin-bottom: 5px;
-  border: 1px solid var(--border);
-  border-left: 3px solid transparent;
-  box-shadow: var(--shadow-card);
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 16px; border-radius: 10px;
+    background: var(--card); margin-bottom: 5px;
+    border: 1px solid var(--border);
+    border-left: 3px solid transparent;
 }
-.cat-row:hover { background: var(--card-hi); box-shadow: var(--shadow-hover); }
+.cat-row:hover { background: var(--card-hi); }
 .cat-row-name   { font-size: 13px; font-weight: 500; color: var(--t1); width: 150px; flex-shrink: 0; }
 .cat-row-bar-wrap { flex: 1; height: 3px; background: var(--bd-sub); border-radius: 3px; overflow: hidden; }
 .cat-row-bar-fill { height: 3px; border-radius: 3px; }
@@ -140,14 +126,14 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
 
 /* Insight boxes */
 .insight-box {
-  background: rgba(11,110,66,.05); border: 1px solid rgba(11,110,66,.15);
-  border-left: 3px solid var(--green); border-radius: 10px;
-  padding: 14px 18px; margin-bottom: 10px;
-  font-size: 13px; color: var(--t1); line-height: 1.72;
+    background: rgba(75,184,138,.04); border: 1px solid rgba(75,184,138,.12);
+    border-left: 3px solid #4BB88A; border-radius: 10px;
+    padding: 14px 18px; margin-bottom: 10px;
+    font-size: 13px; color: var(--t1); line-height: 1.72;
 }
 
 /* Goal / debt cards */
-.goal-card  { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-bottom: 16px; box-shadow: var(--shadow-card); }
+.goal-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-bottom: 16px; }
 .goal-big   { font-family: 'DM Serif Display', serif; font-size: 44px; color: var(--purple); line-height: 1; letter-spacing: -0.02em; }
 .goal-label { font-size: 10px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
 .debt-big   { font-family: 'DM Serif Display', serif; font-size: 44px; color: var(--red); line-height: 1; letter-spacing: -0.02em; }
@@ -158,13 +144,13 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
 .intro-sub          { font-size: 15.5px; color: var(--t2); font-weight: 300; line-height: 1.75; margin-bottom: 44px; }
 .intro-feature      { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--t2); margin-bottom: 11px; }
 .intro-feature-dot  { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
-.intro-card         { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 36px 36px 40px; margin-top: 36px; box-shadow: var(--shadow-card); }
+.intro-card      { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 36px 36px 40px; margin-top: 36px; }
 .intro-card-title   { font-size: 18px; font-weight: 600; color: var(--t1); margin-bottom: 4px; }
 .intro-card-sub     { font-size: 13px; color: var(--t2); font-weight: 300; margin-bottom: 26px; }
 .intro-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--t3); margin-bottom: 7px; margin-top: 20px; }
 
 /* NW / EF / retirement cards */
-.nw-card    { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 26px; box-shadow: var(--shadow-card); }
+.nw-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 26px; }
 .nw-big-pos { font-family: 'DM Serif Display', serif; font-size: 38px; color: var(--green);  line-height: 1; letter-spacing: -0.02em; }
 .nw-big-neg { font-family: 'DM Serif Display', serif; font-size: 38px; color: var(--red);    line-height: 1; letter-spacing: -0.02em; }
 .nw-big-neu { font-family: 'DM Serif Display', serif; font-size: 38px; color: var(--t1);     line-height: 1; letter-spacing: -0.02em; }
@@ -175,125 +161,10 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
 /* Auth page */
 .auth-logo    { font-family: 'DM Serif Display', serif; font-size: 30px; color: var(--t1); text-align: center; margin-bottom: 6px; letter-spacing: -0.02em; }
 .auth-tagline { font-size: 13px; color: var(--t2); text-align: center; margin-bottom: 34px; font-weight: 300; }
-.auth-card    { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 36px 36px 40px; box-shadow: var(--shadow-card); }
+.auth-card    { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 36px 36px 40px; }
 .auth-label   { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--t3); margin-bottom: 7px; margin-top: 18px; }
-.auth-error   { background: rgba(192,32,32,.06); border: 1px solid rgba(192,32,32,.20); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--red); margin-top: 12px; }
-.auth-success { background: rgba(11,110,66,.06); border: 1px solid rgba(11,110,66,.20); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--green); margin-top: 12px; }
-
-/* ══════════════════════════════════════════════════════════════
-   DARK MODE  —  overrides applied when OS is set to dark.
-   config.toml base="light" means Streamlit widgets default light;
-   these rules flip our CSS vars and override Streamlit's widgets.
-   ══════════════════════════════════════════════════════════════ */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg:      #090B12;
-    --surface: #0E1120;
-    --card:    #121726;
-    --card-hi: #18203A;
-    --border:  #1C2340;
-    --bd-sub:  #111526;
-    --sidebar: #0B0D18;
-    --t1: #EEF0FF;
-    --t2: rgba(238,240,255,0.50);
-    --t3: rgba(238,240,255,0.24);
-    --t-12: rgba(238,240,255,0.12);
-    --t-25: rgba(238,240,255,0.25);
-    --t-35: rgba(238,240,255,0.35);
-    --t-60: rgba(238,240,255,0.60);
-    --t-70: rgba(238,240,255,0.70);
-    --t-75: rgba(238,240,255,0.75);
-    --gold:   #C4A35A;
-    --green:  #4BB88A;
-    --red:    #DC6060;
-    --purple: #8B6FD4;
-    --blue:   #5090C4;
-    --shadow-card: none;
-    --shadow-hover: 0 4px 20px rgba(0,0,0,0.35);
-  }
-
-  /* Page & layout */
-  html, body { background-color: var(--bg) !important; color: var(--t1) !important; }
-  .stApp, .main,
-  [data-testid="stAppViewContainer"],
-  [data-testid="stAppViewBlockContainer"],
-  .block-container,
-  [data-testid="stMainBlockContainer"],
-  [data-testid="stHeader"],
-  [data-testid="stToolbar"],
-  [data-testid="stDecoration"],
-  [data-testid="stStatusWidget"],
-  section[data-testid="stSidebarContent"] {
-    background-color: var(--bg) !important;
-    color: var(--t1) !important;
-  }
-
-  /* Sidebar */
-  [data-testid="stSidebar"],
-  [data-testid="stSidebar"] > div,
-  [data-testid="stSidebar"] > div:first-child { background-color: var(--sidebar) !important; }
-  [data-testid="stSidebar"] { border-right: 1px solid var(--border) !important; }
-
-  /* Typography */
-  p, span, label, li, td, th { color: var(--t1) !important; }
-  h1, h2, h3, h4, h5, h6     { color: var(--t1) !important; }
-
-  /* Inputs */
-  input, textarea,
-  [data-baseweb="input"], [data-baseweb="textarea"],
-  [data-baseweb="base-input"],
-  [data-testid="stTextInput"] input,
-  [data-testid="stNumberInput"] input {
-    background-color: var(--surface) !important;
-    border-color: var(--border) !important;
-    color: var(--t1) !important;
-  }
-
-  /* Selects */
-  [data-baseweb="select"] > div {
-    background-color: var(--surface) !important;
-    border-color: var(--border) !important;
-    color: var(--t1) !important;
-  }
-  [data-baseweb="menu"],
-  [data-baseweb="popover"] [role="listbox"],
-  ul[data-baseweb="menu"] {
-    background-color: var(--card) !important;
-    border: 1px solid var(--border) !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
-  }
-  [role="option"], li[role="option"] { background-color: var(--card) !important; color: var(--t1) !important; }
-  [role="option"]:hover, li[role="option"]:hover { background-color: var(--card-hi) !important; }
-
-  /* Widgets */
-  [data-testid="stExpander"] { background-color: var(--surface) !important; border-color: var(--border) !important; }
-  [data-testid="stExpander"] details, [data-testid="stExpander"] > div { background-color: var(--surface) !important; }
-  [data-testid="stMetricValue"] { color: var(--t1) !important; }
-  [data-testid="stMetricLabel"] p { color: var(--t3) !important; }
-  hr { border-color: var(--border) !important; }
-
-  /* Buttons */
-  button:not([data-testid="baseButton-primary"]),
-  [data-testid="stSidebar"] button {
-    background-color: var(--card) !important;
-    color: var(--t1) !important;
-    border-color: var(--border) !important;
-  }
-  button:not([data-testid="baseButton-primary"]):hover { background-color: var(--card-hi) !important; }
-
-  /* Tags */
-  .location-tag { background: rgba(75,184,138,.07) !important; color: #4BB88A !important; border-color: rgba(75,184,138,.18) !important; }
-  .tier-frugal      { background: rgba(75,184,138,.07) !important;  color: #4BB88A !important; border-color: rgba(75,184,138,.2) !important; }
-  .tier-comfortable { background: rgba(80,144,196,.07) !important;  color: #5090C4 !important; border-color: rgba(80,144,196,.2) !important; }
-  .tier-lavish      { background: rgba(196,163,90,.07) !important;  color: #C4A35A !important; border-color: rgba(196,163,90,.2) !important; }
-
-  /* Insight boxes */
-  .insight-box { background: rgba(75,184,138,.04) !important; border-color: rgba(75,184,138,.12) !important; border-left-color: #4BB88A !important; }
-
-  /* Plotly SVG */
-  .js-plotly-plot .plotly text { fill: var(--t1) !important; }
-  .js-plotly-plot .plotly .gridlayer path { stroke: rgba(238,240,255,0.05) !important; }
-}
+.auth-error   { background: rgba(220,96,96,.07); border: 1px solid rgba(220,96,96,.22); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--red); margin-top: 12px; }
+.auth-success { background: rgba(75,184,138,.07); border: 1px solid rgba(75,184,138,.22); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--green); margin-top: 12px; }
 
 /* ── Animated entries ── */
 @keyframes fadeSlideUp {
