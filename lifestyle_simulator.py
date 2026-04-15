@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import plotly.graph_objects as go
 from fpdf import FPDF
 import math
@@ -176,125 +175,124 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
 .auth-error   { background: rgba(220,96,96,.07); border: 1px solid rgba(220,96,96,.22); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--red); margin-top: 12px; }
 .auth-success { background: rgba(75,184,138,.07); border: 1px solid rgba(75,184,138,.22); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--green); margin-top: 12px; }
 
-/* ── Light mode (activated via JS data-theme attribute) ── */
-html[data-theme="light"] {
-  --bg:      #F5F7FF;
-  --surface: #FFFFFF;
-  --card:    #FFFFFF;
-  --card-hi: #EEF2FF;
-  --border:  #D8DFF5;
-  --bd-sub:  #EBF0FF;
-  --sidebar: #EEF1FB;
-  --t1: #0D1629;
-  --t2: rgba(13,22,41,0.55);
-  --t3: rgba(13,22,41,0.32);
-  --t-12: rgba(13,22,41,0.10);
-  --t-25: rgba(13,22,41,0.25);
-  --t-35: rgba(13,22,41,0.38);
-  --t-60: rgba(13,22,41,0.60);
-  --t-70: rgba(13,22,41,0.70);
-  --t-75: rgba(13,22,41,0.75);
-  --gold:   #8B6520;
-  --green:  #1A7A52;
-  --red:    #A02828;
-  --purple: #5538AA;
-  --blue:   #2060A0;
-}
+/* ════════════════════════════════════════════════════════════════
+   LIGHT MODE  —  activated by OS/browser "prefer light colours"
+   Every selector here lives in the main Streamlit page <head>,
+   so @media queries respond immediately when the OS setting flips.
+   ════════════════════════════════════════════════════════════════ */
+@media (prefers-color-scheme: light) {
 
-/* Light mode — full Streamlit override */
-html[data-theme="light"],
-html[data-theme="light"] body,
-html[data-theme="light"] .stApp,
-html[data-theme="light"] [class*="css"] {
-  background-color: var(--bg) !important;
-  color: var(--t1) !important;
-}
-html[data-theme="light"] .main,
-html[data-theme="light"] [data-testid="stAppViewContainer"],
-html[data-theme="light"] [data-testid="stAppViewBlockContainer"],
-html[data-theme="light"] .block-container,
-html[data-theme="light"] [data-testid="stMainBlockContainer"],
-html[data-theme="light"] section[data-testid="stSidebarContent"],
-html[data-theme="light"] [data-testid="stHeader"] {
-  background-color: var(--bg) !important;
-  color: var(--t1) !important;
-}
-html[data-theme="light"] [data-testid="stSidebar"],
-html[data-theme="light"] [data-testid="stSidebar"] > div:first-child {
-  background-color: var(--sidebar) !important;
-  border-right: 1px solid var(--border) !important;
-}
-html[data-theme="light"] [data-testid="stSidebar"] * { color: var(--t1) !important; }
-html[data-theme="light"] p,
-html[data-theme="light"] span,
-html[data-theme="light"] label,
-html[data-theme="light"] div { color: var(--t1); }
-html[data-theme="light"] h1, html[data-theme="light"] h2,
-html[data-theme="light"] h3, html[data-theme="light"] h4 { color: var(--t1) !important; }
+  /* ── Token overrides ── */
+  :root {
+    --bg:      #F7F8FC;
+    --surface: #FFFFFF;
+    --card:    #FFFFFF;
+    --card-hi: #EDF1FF;
+    --border:  #E0E4EF;
+    --bd-sub:  #EAEDF6;
+    --sidebar: #EDEEF6;
+    --t1: #0F1628;
+    --t2: rgba(15,22,40,0.54);
+    --t3: rgba(15,22,40,0.36);
+    --t-12: rgba(15,22,40,0.09);
+    --t-25: rgba(15,22,40,0.25);
+    --t-35: rgba(15,22,40,0.35);
+    --t-60: rgba(15,22,40,0.60);
+    --t-70: rgba(15,22,40,0.70);
+    --t-75: rgba(15,22,40,0.75);
+    /* Accent colours deepened for legibility on white */
+    --gold:   #9A6610;
+    --green:  #0E7848;
+    --red:    #C02020;
+    --purple: #5B30C0;
+    --blue:   #1A5DC0;
+  }
 
-/* Inputs & selects */
-html[data-theme="light"] [data-baseweb="input"],
-html[data-theme="light"] [data-baseweb="textarea"],
-html[data-theme="light"] [data-baseweb="base-input"] {
-  background-color: var(--surface) !important;
-  border-color: var(--border) !important;
-}
-html[data-theme="light"] [data-baseweb="input"] input,
-html[data-theme="light"] [data-baseweb="textarea"] textarea,
-html[data-theme="light"] input, html[data-theme="light"] textarea {
-  background-color: var(--surface) !important;
-  color: var(--t1) !important;
-}
-html[data-theme="light"] [data-baseweb="select"] > div,
-html[data-theme="light"] [data-baseweb="select"] [data-baseweb="select"] {
-  background-color: var(--surface) !important;
-  border-color: var(--border) !important;
-  color: var(--t1) !important;
-}
-html[data-theme="light"] [data-baseweb="menu"],
-html[data-theme="light"] [data-baseweb="popover"] [role="listbox"],
-html[data-theme="light"] ul[data-baseweb="menu"] {
-  background-color: var(--surface) !important;
-  border: 1px solid var(--border) !important;
-}
-html[data-theme="light"] [role="option"], html[data-theme="light"] li[role="option"] {
-  background-color: var(--surface) !important;
-  color: var(--t1) !important;
-}
-html[data-theme="light"] [role="option"]:hover { background-color: var(--card-hi) !important; }
+  /* ── Page & layout backgrounds ── */
+  html, body { background-color: var(--bg) !important; color: var(--t1) !important; }
+  .stApp,
+  [data-testid="stAppViewContainer"],
+  [data-testid="stAppViewBlockContainer"],
+  .main, .block-container,
+  [data-testid="stMainBlockContainer"],
+  [data-testid="stHeader"],
+  [data-testid="stToolbar"],
+  [data-testid="stDecoration"],
+  [data-testid="stStatusWidget"],
+  section[data-testid="stSidebarContent"] {
+    background-color: var(--bg) !important;
+    color: var(--t1) !important;
+  }
 
-/* Streamlit native widgets */
-html[data-theme="light"] [data-testid="stExpander"] {
-  background-color: var(--card) !important;
-  border-color: var(--border) !important;
-}
-html[data-theme="light"] [data-testid="stExpander"] details {
-  background-color: var(--card) !important;
-}
-html[data-theme="light"] [data-testid="stMetricValue"] { color: var(--t1) !important; }
-html[data-theme="light"] [data-testid="stMetricLabel"] p { color: var(--t3) !important; }
-html[data-theme="light"] .stCaption p { color: var(--t2) !important; }
-html[data-theme="light"] hr { border-color: var(--border) !important; }
-html[data-theme="light"] [data-testid="stCheckbox"] span,
-html[data-theme="light"] [data-testid="stRadio"] label { color: var(--t1) !important; }
-html[data-theme="light"] [data-testid="stSlider"] p { color: var(--t1) !important; }
-html[data-theme="light"] [data-testid="stAlert"] { background-color: var(--card) !important; }
-html[data-theme="light"] button:not([data-testid="baseButton-primary"]) {
-  background-color: var(--card) !important;
-  color: var(--t1) !important;
-  border-color: var(--border) !important;
-}
-html[data-theme="light"] [data-testid="stToolbar"],
-html[data-theme="light"] [data-testid="stDecoration"],
-html[data-theme="light"] [data-testid="stStatusWidget"] {
-  background-color: var(--bg) !important;
-}
+  /* ── Sidebar ── */
+  [data-testid="stSidebar"],
+  [data-testid="stSidebar"] > div:first-child,
+  [data-testid="stSidebar"] > div { background-color: var(--sidebar) !important; }
+  [data-testid="stSidebar"] * { color: var(--t1) !important; }
+  [data-testid="stSidebar"] { border-right: 1px solid var(--border) !important; }
 
-/* Plotly SVG text (light mode) */
-html[data-theme="light"] .js-plotly-plot .plotly text { fill: var(--t1) !important; }
-html[data-theme="light"] .js-plotly-plot .plotly .gridlayer path { stroke: rgba(0,0,0,0.07) !important; }
-html[data-theme="light"] .js-plotly-plot .plotly .xlines-above path,
-html[data-theme="light"] .js-plotly-plot .plotly .ylines-above path { stroke: rgba(0,0,0,0.15) !important; }
+  /* ── Typography ── */
+  p, span, label, li, td, th, caption { color: var(--t1) !important; }
+  h1, h2, h3, h4, h5, h6 { color: var(--t1) !important; }
+  [class*="css"] { color: var(--t1); }
+
+  /* ── Inputs, textareas, number inputs ── */
+  [data-baseweb="input"], [data-baseweb="textarea"],
+  [data-baseweb="base-input"], [data-testid="stTextInput"] input,
+  [data-testid="stNumberInput"] input {
+    background-color: var(--surface) !important;
+    border-color: var(--border) !important;
+    color: var(--t1) !important;
+  }
+  input, textarea { background-color: var(--surface) !important; color: var(--t1) !important; }
+
+  /* ── Selects & dropdowns ── */
+  [data-baseweb="select"] > div { background-color: var(--surface) !important; border-color: var(--border) !important; color: var(--t1) !important; }
+  [data-baseweb="menu"], [data-baseweb="popover"] [role="listbox"], ul[data-baseweb="menu"] { background-color: var(--surface) !important; border: 1px solid var(--border) !important; box-shadow: 0 4px 16px rgba(0,0,30,0.10) !important; }
+  [role="option"], li[role="option"] { background-color: var(--surface) !important; color: var(--t1) !important; }
+  [role="option"]:hover, li[role="option"]:hover { background-color: var(--card-hi) !important; }
+
+  /* ── Streamlit widgets ── */
+  [data-testid="stExpander"] { background-color: var(--card) !important; border-color: var(--border) !important; box-shadow: 0 1px 3px rgba(0,0,20,0.05) !important; }
+  [data-testid="stExpander"] details, [data-testid="stExpander"] > div { background-color: var(--card) !important; }
+  [data-testid="stMetricValue"] { color: var(--t1) !important; }
+  [data-testid="stMetricLabel"] p { color: var(--t3) !important; }
+  .stCaption p { color: var(--t2) !important; }
+  hr { border-color: var(--border) !important; }
+  [data-testid="stAlert"] { border-color: var(--border) !important; }
+
+  /* Buttons (non-primary) */
+  button:not([data-testid="baseButton-primary"]),
+  [data-testid="stSidebar"] button {
+    background-color: var(--surface) !important;
+    color: var(--t1) !important;
+    border-color: var(--border) !important;
+  }
+  button:not([data-testid="baseButton-primary"]):hover { background-color: var(--card-hi) !important; }
+
+  /* ── Cards: lift with shadow instead of dark border ── */
+  .cat-row, .nw-card, .goal-card, .health-card, .equiv-row,
+  .auth-card, .intro-card {
+    box-shadow: 0 1px 3px rgba(0,0,30,0.07), 0 0 0 1px rgba(0,0,30,0.04) !important;
+    border-color: transparent !important;
+  }
+  .cat-row:hover { box-shadow: 0 3px 10px rgba(0,0,30,0.10), 0 0 0 1px rgba(0,0,30,0.05) !important; background-color: var(--card-hi) !important; }
+
+  /* ── Insight boxes ── */
+  .insight-box { background: rgba(14,120,72,.05) !important; border-color: rgba(14,120,72,.18) !important; border-left-color: var(--green) !important; }
+
+  /* ── Tier & location pills ── */
+  .tier-frugal      { background: rgba(14,120,72,.08)  !important; color: #0E7848 !important; border-color: rgba(14,120,72,.25) !important; }
+  .tier-comfortable { background: rgba(26,93,192,.08)  !important; color: #1A5DC0 !important; border-color: rgba(26,93,192,.25) !important; }
+  .tier-lavish      { background: rgba(154,102,16,.08) !important; color: #9A6610 !important; border-color: rgba(154,102,16,.25) !important; }
+  .location-tag     { background: rgba(14,120,72,.07)  !important; color: #0E7848 !important; border-color: rgba(14,120,72,.20) !important; }
+
+  /* ── Plotly SVG text ── */
+  .js-plotly-plot .plotly text { fill: var(--t1) !important; }
+  .js-plotly-plot .plotly .gridlayer path { stroke: rgba(0,0,30,0.06) !important; }
+  .js-plotly-plot .plotly .xlines-above path,
+  .js-plotly-plot .plotly .ylines-above path { stroke: rgba(0,0,30,0.12) !important; }
+}
 
 /* ── Animated entries ── */
 @keyframes fadeSlideUp {
@@ -368,22 +366,6 @@ html[data-theme="light"] .js-plotly-plot .plotly .ylines-above path { stroke: rg
 .equiv-delta { font-size: 11px; margin-left: 6px; flex-shrink: 0; }
 </style>
 """, unsafe_allow_html=True)
-
-# ── OS theme detector (sets data-theme on <html> so our CSS vars flip) ───────
-components.html("""
-<script>
-(function(){
-  function setTheme(dark){
-    window.parent.document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-  }
-  var mq = window.matchMedia('(prefers-color-scheme: dark)');
-  setTheme(mq.matches);
-  try { mq.addEventListener('change', function(e){ setTheme(e.matches); }); }
-  catch(e){ mq.addListener(function(e){ setTheme(e.matches); }); }
-})();
-</script>
-""", height=0, scrolling=False)
-
 
 # ── Cost of living index data (national average = 100) ──────────────────────
 _CITIES_RAW = {
