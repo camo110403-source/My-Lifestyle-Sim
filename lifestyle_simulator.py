@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import plotly.graph_objects as go
 from fpdf import FPDF
 import math
@@ -175,76 +176,213 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
 .auth-error   { background: rgba(220,96,96,.07); border: 1px solid rgba(220,96,96,.22); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--red); margin-top: 12px; }
 .auth-success { background: rgba(75,184,138,.07); border: 1px solid rgba(75,184,138,.22); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--green); margin-top: 12px; }
 
-/* ── Light mode ── */
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg:      #F5F7FF;
-    --surface: #FFFFFF;
-    --card:    #FFFFFF;
-    --card-hi: #EEF2FF;
-    --border:  #D8DFF5;
-    --bd-sub:  #EBF0FF;
-    --sidebar: #EEF1FB;
-    --t1: #0D1629;
-    --t2: rgba(13,22,41,0.55);
-    --t3: rgba(13,22,41,0.32);
-    --t-12: rgba(13,22,41,0.10);
-    --t-25: rgba(13,22,41,0.25);
-    --t-35: rgba(13,22,41,0.38);
-    --t-60: rgba(13,22,41,0.60);
-    --t-70: rgba(13,22,41,0.70);
-    --t-75: rgba(13,22,41,0.75);
-    --gold:   #8B6520;
-    --green:  #1A7A52;
-    --red:    #A02828;
-    --purple: #5538AA;
-    --blue:   #2060A0;
-  }
-
-  /* Streamlit base */
-  html, body, [class*="css"] { background: var(--bg); color: var(--t1); }
-  .main, [data-testid="stAppViewContainer"] { background: var(--bg) !important; }
-  [data-testid="stSidebar"] { background: var(--sidebar) !important; border-right: 1px solid var(--border) !important; }
-
-  /* Inputs */
-  [data-baseweb="input"], [data-baseweb="textarea"] {
-    background: var(--surface) !important; border-color: var(--border) !important;
-  }
-  [data-baseweb="input"] input, [data-baseweb="textarea"] textarea {
-    background: var(--surface) !important; color: var(--t1) !important;
-  }
-  [data-baseweb="select"] > div {
-    background: var(--surface) !important; border-color: var(--border) !important; color: var(--t1) !important;
-  }
-  [data-baseweb="popover"] [role="listbox"] { background: var(--surface) !important; border-color: var(--border) !important; }
-  [data-baseweb="popover"] [role="option"]  { color: var(--t1) !important; }
-  [data-baseweb="popover"] [role="option"]:hover { background: var(--card-hi) !important; }
-  [data-testid="stNumberInput"] input { background: var(--surface) !important; color: var(--t1) !important; }
-
-  /* Expanders */
-  [data-testid="stExpander"] { background: var(--card) !important; border-color: var(--border) !important; }
-
-  /* Metrics & captions */
-  [data-testid="stMetricValue"] { color: var(--t1) !important; }
-  [data-testid="stMetricLabel"] p { color: var(--t3) !important; }
-  .stCaption p { color: var(--t2) !important; }
-
-  /* Divider */
-  hr { border-color: var(--border) !important; }
-
-  /* Plotly SVG text */
-  .js-plotly-plot .plotly .xaxislayer-above text,
-  .js-plotly-plot .plotly .yaxislayer-above text,
-  .js-plotly-plot .plotly .xaxislayer text,
-  .js-plotly-plot .plotly .yaxislayer text,
-  .js-plotly-plot .plotly .infolayer text { fill: var(--t1) !important; }
-  .js-plotly-plot .plotly .gridlayer path { stroke: rgba(0,0,0,0.06) !important; }
-  .js-plotly-plot .plotly .zerolinelayer path { stroke: rgba(0,0,0,0.12) !important; }
-  .js-plotly-plot .plotly .xlines-above path,
-  .js-plotly-plot .plotly .ylines-above path { stroke: rgba(0,0,0,0.12) !important; }
+/* ── Light mode (activated via JS data-theme attribute) ── */
+html[data-theme="light"] {
+  --bg:      #F5F7FF;
+  --surface: #FFFFFF;
+  --card:    #FFFFFF;
+  --card-hi: #EEF2FF;
+  --border:  #D8DFF5;
+  --bd-sub:  #EBF0FF;
+  --sidebar: #EEF1FB;
+  --t1: #0D1629;
+  --t2: rgba(13,22,41,0.55);
+  --t3: rgba(13,22,41,0.32);
+  --t-12: rgba(13,22,41,0.10);
+  --t-25: rgba(13,22,41,0.25);
+  --t-35: rgba(13,22,41,0.38);
+  --t-60: rgba(13,22,41,0.60);
+  --t-70: rgba(13,22,41,0.70);
+  --t-75: rgba(13,22,41,0.75);
+  --gold:   #8B6520;
+  --green:  #1A7A52;
+  --red:    #A02828;
+  --purple: #5538AA;
+  --blue:   #2060A0;
 }
+
+/* Light mode — full Streamlit override */
+html[data-theme="light"],
+html[data-theme="light"] body,
+html[data-theme="light"] .stApp,
+html[data-theme="light"] [class*="css"] {
+  background-color: var(--bg) !important;
+  color: var(--t1) !important;
+}
+html[data-theme="light"] .main,
+html[data-theme="light"] [data-testid="stAppViewContainer"],
+html[data-theme="light"] [data-testid="stAppViewBlockContainer"],
+html[data-theme="light"] .block-container,
+html[data-theme="light"] [data-testid="stMainBlockContainer"],
+html[data-theme="light"] section[data-testid="stSidebarContent"],
+html[data-theme="light"] [data-testid="stHeader"] {
+  background-color: var(--bg) !important;
+  color: var(--t1) !important;
+}
+html[data-theme="light"] [data-testid="stSidebar"],
+html[data-theme="light"] [data-testid="stSidebar"] > div:first-child {
+  background-color: var(--sidebar) !important;
+  border-right: 1px solid var(--border) !important;
+}
+html[data-theme="light"] [data-testid="stSidebar"] * { color: var(--t1) !important; }
+html[data-theme="light"] p,
+html[data-theme="light"] span,
+html[data-theme="light"] label,
+html[data-theme="light"] div { color: var(--t1); }
+html[data-theme="light"] h1, html[data-theme="light"] h2,
+html[data-theme="light"] h3, html[data-theme="light"] h4 { color: var(--t1) !important; }
+
+/* Inputs & selects */
+html[data-theme="light"] [data-baseweb="input"],
+html[data-theme="light"] [data-baseweb="textarea"],
+html[data-theme="light"] [data-baseweb="base-input"] {
+  background-color: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="light"] [data-baseweb="input"] input,
+html[data-theme="light"] [data-baseweb="textarea"] textarea,
+html[data-theme="light"] input, html[data-theme="light"] textarea {
+  background-color: var(--surface) !important;
+  color: var(--t1) !important;
+}
+html[data-theme="light"] [data-baseweb="select"] > div,
+html[data-theme="light"] [data-baseweb="select"] [data-baseweb="select"] {
+  background-color: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--t1) !important;
+}
+html[data-theme="light"] [data-baseweb="menu"],
+html[data-theme="light"] [data-baseweb="popover"] [role="listbox"],
+html[data-theme="light"] ul[data-baseweb="menu"] {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+}
+html[data-theme="light"] [role="option"], html[data-theme="light"] li[role="option"] {
+  background-color: var(--surface) !important;
+  color: var(--t1) !important;
+}
+html[data-theme="light"] [role="option"]:hover { background-color: var(--card-hi) !important; }
+
+/* Streamlit native widgets */
+html[data-theme="light"] [data-testid="stExpander"] {
+  background-color: var(--card) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="light"] [data-testid="stExpander"] details {
+  background-color: var(--card) !important;
+}
+html[data-theme="light"] [data-testid="stMetricValue"] { color: var(--t1) !important; }
+html[data-theme="light"] [data-testid="stMetricLabel"] p { color: var(--t3) !important; }
+html[data-theme="light"] .stCaption p { color: var(--t2) !important; }
+html[data-theme="light"] hr { border-color: var(--border) !important; }
+html[data-theme="light"] [data-testid="stCheckbox"] span,
+html[data-theme="light"] [data-testid="stRadio"] label { color: var(--t1) !important; }
+html[data-theme="light"] [data-testid="stSlider"] p { color: var(--t1) !important; }
+html[data-theme="light"] [data-testid="stAlert"] { background-color: var(--card) !important; }
+html[data-theme="light"] button:not([data-testid="baseButton-primary"]) {
+  background-color: var(--card) !important;
+  color: var(--t1) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="light"] [data-testid="stToolbar"],
+html[data-theme="light"] [data-testid="stDecoration"],
+html[data-theme="light"] [data-testid="stStatusWidget"] {
+  background-color: var(--bg) !important;
+}
+
+/* Plotly SVG text (light mode) */
+html[data-theme="light"] .js-plotly-plot .plotly text { fill: var(--t1) !important; }
+html[data-theme="light"] .js-plotly-plot .plotly .gridlayer path { stroke: rgba(0,0,0,0.07) !important; }
+html[data-theme="light"] .js-plotly-plot .plotly .xlines-above path,
+html[data-theme="light"] .js-plotly-plot .plotly .ylines-above path { stroke: rgba(0,0,0,0.15) !important; }
+
+/* ── Animated entries ── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes scalePop {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.cat-row { animation: fadeSlideUp 0.32s ease-out both; }
+.cat-row:nth-child(1) { animation-delay: 0.04s; }
+.cat-row:nth-child(2) { animation-delay: 0.08s; }
+.cat-row:nth-child(3) { animation-delay: 0.12s; }
+.cat-row:nth-child(4) { animation-delay: 0.16s; }
+.cat-row:nth-child(5) { animation-delay: 0.20s; }
+.cat-row:nth-child(6) { animation-delay: 0.24s; }
+.cat-row:nth-child(7) { animation-delay: 0.28s; }
+.cat-row:nth-child(8) { animation-delay: 0.32s; }
+.cat-row:nth-child(9) { animation-delay: 0.36s; }
+[data-testid="stMetricValue"] { animation: fadeSlideUp 0.4s ease-out both; }
+.nw-big-pos, .nw-big-neg, .nw-big-neu, .goal-big, .debt-big {
+  animation: scalePop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.nw-card { animation: fadeSlideUp 0.35s ease-out both; }
+.insight-box { animation: fadeSlideUp 0.3s ease-out both; }
+
+/* ── Health score card ── */
+.health-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 22px 26px; margin-bottom: 0;
+}
+.health-score-ring {
+  font-family: 'DM Serif Display', serif;
+  font-size: 52px; line-height: 1; letter-spacing: -0.03em;
+}
+.health-sub-bar {
+  height: 5px; background: var(--bd-sub); border-radius: 4px; overflow: hidden; margin: 6px 0 3px;
+}
+.health-sub-label {
+  font-size: 9.5px; font-weight: 700; letter-spacing: .10em;
+  text-transform: uppercase; color: var(--t3); margin-bottom: 4px;
+}
+
+/* ── Archetype card ── */
+.archetype-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  border-radius: 24px; padding: 5px 14px 5px 10px;
+  font-size: 12px; font-weight: 600;
+  border: 1px solid; margin-left: 10px;
+  vertical-align: middle;
+  animation: fadeSlideUp 0.5s ease-out both;
+  animation-delay: 0.15s;
+}
+
+/* ── Salary equivalency ── */
+.equiv-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border-radius: 9px;
+  background: var(--card); border: 1px solid var(--border);
+  margin-bottom: 5px; font-size: 12.5px;
+  animation: fadeSlideUp 0.3s ease-out both;
+}
+.equiv-city { color: var(--t1); font-weight: 500; flex: 1; }
+.equiv-col-badge {
+  font-size: 10px; font-weight: 600; letter-spacing: .05em;
+  padding: 2px 7px; border-radius: 10px; margin: 0 12px;
+  flex-shrink: 0;
+}
+.equiv-salary { color: var(--t1); font-weight: 700; font-size: 13px; text-align: right; flex-shrink: 0; }
+.equiv-delta { font-size: 11px; margin-left: 6px; flex-shrink: 0; }
 </style>
 """, unsafe_allow_html=True)
+
+# ── OS theme detector (sets data-theme on <html> so our CSS vars flip) ───────
+components.html("""
+<script>
+(function(){
+  function setTheme(dark){
+    window.parent.document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  }
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  setTheme(mq.matches);
+  try { mq.addEventListener('change', function(e){ setTheme(e.matches); }); }
+  catch(e){ mq.addListener(function(e){ setTheme(e.matches); }); }
+})();
+</script>
+""", height=0, scrolling=False)
 
 
 # ── Cost of living index data (national average = 100) ──────────────────────
@@ -1506,29 +1644,133 @@ for _y in ret_curve_years:
         _v = ret_current_ret + savings_annual * _y
     ret_curve_values.append(_v)
 
+# ── Financial Archetype ───────────────────────────────────────────────────────
+savings_pct_val      = next(d["pct"] for d in cat_data if d["key"] == "savings")
+housing_pct_val      = next(d["pct"] for d in cat_data if d["key"] == "housing")
+entertainment_pct_val = next((d["pct"] for d in cat_data if d["key"] == "entertainment"), 0)
+debt_income_ratio    = (monthly_debt_payment / monthly_net * 100) if monthly_net > 0 else 0
+
+if savings_pct_val >= 20 and debt_income_ratio < 15:
+    archetype       = "The Builder"
+    archetype_desc  = "You prioritize long-term wealth. Your savings rate puts you on track to retire well ahead of most Americans."
+    archetype_color = "#4BB88A"
+    archetype_icon  = "🏗"
+elif housing_pct_val >= 36:
+    archetype       = "The Urban Dweller"
+    archetype_desc  = "A large share of income goes to housing — typical of high-COL cities. Reducing this one category would unlock significant cash flow."
+    archetype_color = "#5090C4"
+    archetype_icon  = "🏙"
+elif entertainment_pct_val >= 15 or (savings_pct_val < 8 and debt_income_ratio < 8):
+    archetype       = "The Experiencer"
+    archetype_desc  = "You spend richly on the present. There's joy in that — just make sure future-you has a seat at the table too."
+    archetype_color = "#C4A35A"
+    archetype_icon  = "✦"
+elif ef_months_covered >= 6 and savings_pct_val >= 10:
+    archetype       = "The Security-Seeker"
+    archetype_desc  = "You've built a solid safety net and keep it well-stocked. Stability is your financial superpower."
+    archetype_color = "#8B6FD4"
+    archetype_icon  = "🛡"
+elif debt_income_ratio >= 20:
+    archetype       = "The Overextended"
+    archetype_desc  = "Debt is claiming a significant share of your income. Paying it down aggressively now will unlock major breathing room within a few years."
+    archetype_color = "#DC6060"
+    archetype_icon  = "⚡"
+else:
+    archetype       = "The Balancer"
+    archetype_desc  = "You're managing a healthy spread across all categories — not chasing any single extreme, just building steadily across the board."
+    archetype_color = "#4BB88A"
+    archetype_icon  = "⚖"
+
+# ── Budget Health Score ───────────────────────────────────────────────────────
+# Savings rate (0–25 pts)
+if savings_pct_val >= 20:    _sc_sav = 25
+elif savings_pct_val >= 15:  _sc_sav = 20
+elif savings_pct_val >= 10:  _sc_sav = 15
+elif savings_pct_val >= 5:   _sc_sav = 8
+else:                        _sc_sav = 2
+
+# Emergency fund (0–25 pts)
+if ef_months_covered >= 6:    _sc_ef = 25
+elif ef_months_covered >= 3:  _sc_ef = 18
+elif ef_months_covered >= 1:  _sc_ef = 10
+else:                         _sc_ef = 0
+
+# Debt-to-income (0–25 pts)
+if debt_income_ratio == 0:      _sc_debt = 25
+elif debt_income_ratio < 10:    _sc_debt = 20
+elif debt_income_ratio < 20:    _sc_debt = 13
+elif debt_income_ratio < 30:    _sc_debt = 6
+else:                           _sc_debt = 0
+
+# Housing affordability (0–25 pts)
+if housing_pct_val <= 25:    _sc_house = 25
+elif housing_pct_val <= 30:  _sc_house = 20
+elif housing_pct_val <= 35:  _sc_house = 12
+else:                        _sc_house = 5
+
+health_score = _sc_sav + _sc_ef + _sc_debt + _sc_house
+if health_score >= 85:    health_grade, health_color = "A", "#4BB88A"
+elif health_score >= 70:  health_grade, health_color = "B", "#7ec8a0"
+elif health_score >= 55:  health_grade, health_color = "C", "#C4A35A"
+elif health_score >= 40:  health_grade, health_color = "D", "#DC8050"
+else:                     health_grade, health_color = "F", "#DC6060"
+
+# ── Salary Equivalency ────────────────────────────────────────────────────────
+# For each comparison city, estimate what gross salary you'd need to maintain
+# the same lifestyle (same net spending power after COL adjustment).
+_EQUIV_CITIES = [
+    "New York City, NY", "San Francisco, CA", "Los Angeles, CA", "Seattle, WA",
+    "Austin, TX", "Chicago, IL", "Miami, FL", "Denver, CO",
+    "Nashville, TN", "Phoenix, AZ", "Atlanta, GA", "Dallas, TX",
+]
+_eff_tax_rate = (total_tax / gross) if gross > 0 else 0.28
+_col_affected_share = sum(d["pct"] for d in cat_data if d["key"] in COL_AFFECTED) / 100
+
+equiv_data = []
+for _ecity in _EQUIV_CITIES:
+    if _ecity == location:
+        continue
+    _ei = COL_DATA.get(_ecity, {})
+    if not _ei:
+        continue
+    _dest_col = _ei["index"]
+    _curr_col = col_idx if col_idx > 0 else 100
+    # Scale only COL-affected portion of spending; back-solve for gross
+    _dest_net_needed = net * (_col_affected_share * (_dest_col / _curr_col) + (1 - _col_affected_share))
+    _dest_gross = _dest_net_needed / max(0.01, 1 - _eff_tax_rate)
+    _delta = _dest_gross - gross
+    equiv_data.append({
+        "city":  _ecity,
+        "col":   _dest_col,
+        "gross": _dest_gross,
+        "delta": _delta,
+    })
+equiv_data.sort(key=lambda x: x["gross"])
+
 # ── Header ────────────────────────────────────────────────────────────────────
 tier_css = TIERS[tier]["css"]
 s_name   = st.session_state.get("s_name", "")
 headline = f"{s_name}'s financial life at" if s_name else "Your financial life at"
 
 st.markdown(f"""
-<div style="padding:36px 0 28px;border-bottom:1px solid #1C2340;margin-bottom:32px">
-  <div style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(238,240,255,0.28);margin-bottom:18px">Lifestyle Budget Simulator</div>
+<div style="padding:36px 0 28px;border-bottom:1px solid var(--border);margin-bottom:32px">
+  <div style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--t3);margin-bottom:18px">Lifestyle Budget Simulator</div>
   <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px">
     <div>
-      <div style="font-size:13px;color:rgba(238,240,255,0.45);font-weight:400;margin-bottom:6px">{headline}</div>
-      <div style="font-family:'DM Serif Display',serif;font-size:42px;color:#EEF0FF;letter-spacing:-0.025em;line-height:1">
-        <span style="color:#C4A35A">${gross:,.0f}</span><span style="font-size:18px;color:rgba(238,240,255,0.4);font-family:'Inter',sans-serif;font-weight:300;margin-left:6px">/ yr gross</span>
+      <div style="font-size:13px;color:var(--t2);font-weight:400;margin-bottom:6px">{headline}</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:42px;color:var(--t1);letter-spacing:-0.025em;line-height:1">
+        <span style="color:var(--gold)">${gross:,.0f}</span><span style="font-size:18px;color:var(--t3);font-family:'Inter',sans-serif;font-weight:300;margin-left:6px">/ yr gross</span>
       </div>
     </div>
     <div style="text-align:right;padding-bottom:4px">
-      <div style="font-size:11px;color:rgba(238,240,255,0.3);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Take-home</div>
-      <div style="font-family:'DM Serif Display',serif;font-size:28px;color:#4BB88A;letter-spacing:-0.02em">${net:,.0f}<span style="font-size:14px;color:rgba(238,240,255,0.35);font-family:'Inter',sans-serif;font-weight:300;margin-left:5px">/ yr</span></div>
+      <div style="font-size:11px;color:var(--t3);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Take-home</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--green);letter-spacing:-0.02em">${net:,.0f}<span style="font-size:14px;color:var(--t3);font-family:'Inter',sans-serif;font-weight:300;margin-left:5px">/ yr</span></div>
     </div>
   </div>
-  <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+  <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
     <span class="location-tag">📍 {location} &nbsp;·&nbsp; COL {col_idx}</span>
     <span class="tier-tag {tier_css}">{tier}</span>
+    <span class="archetype-pill" style="color:{archetype_color};background:{archetype_color}18;border-color:{archetype_color}35">{archetype_icon} {archetype}</span>
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1550,6 +1792,50 @@ with c4:
     st.metric("Take-home (annual)", f"${net:,.0f}", delta=f"-{total_tax_rate}% total", delta_color="inverse")
 with c5:
     st.metric("Take-home (monthly)", f"${monthly_net:,.0f}", help="Annual take-home ÷ 12")
+
+st.divider()
+
+# ── Budget Health Score ───────────────────────────────────────────────────────
+st.markdown('<div class="section-head">Budget health score</div>', unsafe_allow_html=True)
+
+_hs_cols = st.columns([1, 2.2], gap="large")
+with _hs_cols[0]:
+    st.markdown(f"""
+<div class="health-card" style="text-align:center">
+  <div class="health-score-ring" style="color:{health_color}">{health_score}</div>
+  <div style="font-size:36px;font-weight:800;color:{health_color};line-height:1;margin-top:2px">{health_grade}</div>
+  <div style="font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-top:10px">out of 100</div>
+  <div style="font-size:12px;color:var(--t2);margin-top:10px;line-height:1.5">{archetype_icon} {archetype}<br><span style="font-size:11px">{archetype_desc}</span></div>
+</div>""", unsafe_allow_html=True)
+
+with _hs_cols[1]:
+    def _score_bar(label, score, max_score, color):
+        pct = round(score / max_score * 100)
+        return f"""
+<div style="margin-bottom:14px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+    <div class="health-sub-label">{label}</div>
+    <div style="font-size:11px;font-weight:700;color:{color}">{score}/{max_score}</div>
+  </div>
+  <div class="health-sub-bar"><div style="height:5px;width:{pct}%;background:{color};border-radius:4px"></div></div>
+</div>"""
+
+    st.markdown(
+        _score_bar("Savings rate", _sc_sav, 25, "#4BB88A") +
+        _score_bar("Emergency fund", _sc_ef, 25, "#8B6FD4") +
+        _score_bar("Debt load", _sc_debt, 25, "#5090C4") +
+        _score_bar("Housing cost", _sc_house, 25, "#C4A35A"),
+        unsafe_allow_html=True
+    )
+    _tips = []
+    if _sc_sav < 15:    _tips.append(f"Boost savings above 15% of take-home to unlock the full score.")
+    if _sc_ef < 18:     _tips.append(f"Build your emergency fund to 3–6 months of expenses.")
+    if _sc_debt < 20:   _tips.append(f"Paying down high-interest debt would quickly improve your score.")
+    if _sc_house >= 12: pass
+    else:               _tips.append(f"Housing above 35% of income limits flexibility — consider if this is right for your goals.")
+    if _tips:
+        for _tip in _tips[:2]:
+            st.markdown(f'<div class="insight-box" style="margin-bottom:8px;font-size:12px">💡 {_tip}</div>', unsafe_allow_html=True)
 
 st.divider()
 
@@ -2269,6 +2555,32 @@ with rp_right:
   </div>
 </div>""", unsafe_allow_html=True)
     st.caption("Projections use compound interest. 4% rule estimates safe annual withdrawal as 4% of nest egg. Not financial advice.")
+
+
+# ── Salary Equivalency ────────────────────────────────────────────────────────
+st.divider()
+st.markdown('<div class="section-head">What would I need to earn?</div>', unsafe_allow_html=True)
+st.caption(f"To maintain your exact lifestyle from **{location}**, here's what you'd need to earn in other cities — adjusted for local cost of living.")
+
+_eq_left, _eq_right = st.columns(2, gap="large")
+_eq_half = len(equiv_data) // 2 + len(equiv_data) % 2
+for _ei, _ed in enumerate(equiv_data):
+    _col = _eq_left if _ei < _eq_half else _eq_right
+    _col_delta = _ed["col"] - col_idx
+    _col_label = f"+{_col_delta}" if _col_delta >= 0 else str(_col_delta)
+    _col_badge_bg  = "rgba(220,96,96,.10)"  if _col_delta > 0 else "rgba(75,184,138,.10)"
+    _col_badge_fg  = "#DC6060" if _col_delta > 0 else "#4BB88A"
+    _delta_sign    = "+" if _ed["delta"] >= 0 else ""
+    _delta_color   = "#DC6060" if _ed["delta"] > 0 else "#4BB88A"
+    with _col:
+        st.markdown(f"""
+<div class="equiv-row">
+  <div class="equiv-city">{_ed["city"]}</div>
+  <div class="equiv-col-badge" style="background:{_col_badge_bg};color:{_col_badge_fg}">COL {_ed["col"]} ({_col_label})</div>
+  <div class="equiv-salary">${_ed["gross"]:,.0f}<span class="equiv-delta" style="color:{_delta_color}">({_delta_sign}${abs(_ed["delta"]):,.0f})</span></div>
+</div>""", unsafe_allow_html=True)
+
+st.markdown(f'<div style="font-size:11px;color:var(--t3);margin-top:10px">Based on your current gross of <b style="color:var(--t1)">${gross:,.0f}</b> in {location} (COL {col_idx}). COL-sensitive categories (housing, food, transport, health) are scaled to destination city; savings, debt, and other categories are held constant.</div>', unsafe_allow_html=True)
 
 
 # ── What-If Scenario Comparison ───────────────────────────────────────────────
