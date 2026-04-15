@@ -261,14 +261,50 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
   hr { border-color: var(--border) !important; }
   [data-testid="stAlert"] { border-color: var(--border) !important; }
 
-  /* Buttons (non-primary) */
+  /* ── Buttons — black fill, white text ── */
   button:not([data-testid="baseButton-primary"]),
   [data-testid="stSidebar"] button {
-    background-color: var(--surface) !important;
-    color: var(--t1) !important;
-    border-color: var(--border) !important;
+    background-color: #111827 !important;
+    color: #FFFFFF !important;
+    border-color: #111827 !important;
   }
-  button:not([data-testid="baseButton-primary"]):hover { background-color: var(--card-hi) !important; }
+  button:not([data-testid="baseButton-primary"]):hover,
+  [data-testid="stSidebar"] button:hover {
+    background-color: #1F2937 !important;
+    border-color: #1F2937 !important;
+  }
+  /* Download button keeps same treatment */
+  [data-testid="stDownloadButton"] button {
+    background-color: #111827 !important;
+    color: #FFFFFF !important;
+    border-color: #111827 !important;
+  }
+
+  /* ── Dropdowns/selects — black fill, white text ── */
+  [data-baseweb="select"] > div {
+    background-color: #111827 !important;
+    border-color: #111827 !important;
+    color: #FFFFFF !important;
+  }
+  /* Chevron/arrow icon inside select */
+  [data-baseweb="select"] svg { fill: #FFFFFF !important; color: #FFFFFF !important; }
+  /* Dropdown option list */
+  [data-baseweb="menu"], [data-baseweb="popover"] [role="listbox"],
+  ul[data-baseweb="menu"] {
+    background-color: #111827 !important;
+    border-color: #1F2937 !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25) !important;
+  }
+  [role="option"], li[role="option"] {
+    background-color: #111827 !important;
+    color: #FFFFFF !important;
+  }
+  [role="option"]:hover, li[role="option"]:hover {
+    background-color: #1F2937 !important;
+  }
+  /* Selected value text */
+  [data-baseweb="select"] [data-testid="stSelectbox"] span,
+  [data-baseweb="select"] span { color: #FFFFFF !important; }
 
   /* ── Cards: lift with shadow instead of dark border ── */
   .cat-row, .nw-card, .goal-card, .health-card, .equiv-row,
@@ -303,6 +339,18 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
   from { opacity: 0; transform: scale(0.94); }
   to   { opacity: 1; transform: scale(1); }
 }
+@keyframes pieSpinIn {
+  0%   { opacity: 0; transform: rotate(-270deg) scale(0.35); }
+  60%  { opacity: 1; transform: rotate(18deg)   scale(1.04); }
+  80%  { transform: rotate(-6deg)  scale(0.98); }
+  100% { opacity: 1; transform: rotate(0deg)    scale(1); }
+}
+/* Targets only the pie layer SVG group inside Plotly */
+.js-plotly-plot .pielayer {
+  transform-origin: center;
+  animation: pieSpinIn 0.85s cubic-bezier(0.34, 1.1, 0.64, 1) both;
+}
+
 .cat-row { animation: fadeSlideUp 0.32s ease-out both; }
 .cat-row:nth-child(1) { animation-delay: 0.04s; }
 .cat-row:nth-child(2) { animation-delay: 0.08s; }
@@ -319,6 +367,36 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
 }
 .nw-card { animation: fadeSlideUp 0.35s ease-out both; }
 .insight-box { animation: fadeSlideUp 0.3s ease-out both; }
+
+/* ── Section hover grow ── */
+/* Cards & rows */
+.cat-row, .nw-card, .goal-card, .health-card, .equiv-row, .insight-box, .sub-row {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.12s ease;
+}
+.nw-card:hover, .goal-card:hover, .health-card:hover {
+  transform: scale(1.012);
+  box-shadow: 0 8px 28px rgba(139,111,212,.13), 0 0 0 1px var(--border);
+}
+.insight-box:hover { transform: scale(1.008); }
+.equiv-row:hover   { transform: scale(1.008); background: var(--card-hi); }
+
+/* Plotly chart containers — lift & grow slightly on hover */
+[data-testid="stPlotlyChart"] {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  border-radius: 12px;
+}
+[data-testid="stPlotlyChart"]:hover {
+  transform: scale(1.018);
+  box-shadow: 0 10px 34px rgba(80,144,196,.12);
+}
+
+/* Section-level blocks — very subtle scale so the whole section breathes */
+[data-testid="stVerticalBlockBorderWrapper"] {
+  transition: transform 0.2s ease;
+}
+[data-testid="stVerticalBlockBorderWrapper"]:hover {
+  transform: scale(1.004);
+}
 
 /* ── Health score card ── */
 .health-card {
