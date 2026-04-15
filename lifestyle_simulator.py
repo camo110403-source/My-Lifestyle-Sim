@@ -246,31 +246,11 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
   }
   input, textarea { background-color: var(--surface) !important; color: var(--t1) !important; }
 
-  /* ── Selects & dropdowns: black with white text ── */
-  [data-baseweb="select"] > div {
-    background-color: #000000 !important;
-    border-color: #000000 !important;
-    color: #FFFFFF !important;
-  }
-  [data-baseweb="select"] * {
-    color: #FFFFFF !important;
-    fill: #FFFFFF !important;
-  }
-  [data-baseweb="menu"],
-  [data-baseweb="popover"] [role="listbox"],
-  ul[data-baseweb="menu"] {
-    background-color: #000000 !important;
-    border: 1px solid #000000 !important;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.18) !important;
-  }
-  [role="option"], li[role="option"] {
-    background-color: #000000 !important;
-    color: #FFFFFF !important;
-  }
-  [role="option"]:hover, li[role="option"]:hover {
-    background-color: #222222 !important;
-    color: #FFFFFF !important;
-  }
+  /* ── Selects & dropdowns ── */
+  [data-baseweb="select"] > div { background-color: var(--surface) !important; border-color: var(--border) !important; color: var(--t1) !important; }
+  [data-baseweb="menu"], [data-baseweb="popover"] [role="listbox"], ul[data-baseweb="menu"] { background-color: var(--surface) !important; border: 1px solid var(--border) !important; box-shadow: 0 4px 16px rgba(0,0,30,0.10) !important; }
+  [role="option"], li[role="option"] { background-color: var(--surface) !important; color: var(--t1) !important; }
+  [role="option"]:hover, li[role="option"]:hover { background-color: var(--card-hi) !important; }
 
   /* ── Streamlit widgets ── */
   [data-testid="stExpander"] { background-color: var(--card) !important; border-color: var(--border) !important; box-shadow: 0 1px 3px rgba(0,0,20,0.05) !important; }
@@ -281,32 +261,14 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
   hr { border-color: var(--border) !important; }
   [data-testid="stAlert"] { border-color: var(--border) !important; }
 
-  /* ── Buttons: black with white text ── */
+  /* Buttons (non-primary) */
   button:not([data-testid="baseButton-primary"]),
-  [data-testid="stSidebar"] button,
-  [data-testid="baseButton-secondary"] {
-    background-color: #000000 !important;
-    color: #FFFFFF !important;
-    border: 1px solid #000000 !important;
+  [data-testid="stSidebar"] button {
+    background-color: var(--surface) !important;
+    color: var(--t1) !important;
+    border-color: var(--border) !important;
   }
-  button:not([data-testid="baseButton-primary"]):hover,
-  [data-testid="stSidebar"] button:hover,
-  [data-testid="baseButton-secondary"]:hover {
-    background-color: #1a1a1a !important;
-    color: #FFFFFF !important;
-    border-color: #1a1a1a !important;
-  }
-
-  [data-testid="baseButton-primary"] {
-    background-color: #000000 !important;
-    color: #FFFFFF !important;
-    border: 1px solid #000000 !important;
-  }
-  [data-testid="baseButton-primary"]:hover {
-    background-color: #1a1a1a !important;
-    color: #FFFFFF !important;
-    border-color: #1a1a1a !important;
-  }
+  button:not([data-testid="baseButton-primary"]):hover { background-color: var(--card-hi) !important; }
 
   /* ── Cards: lift with shadow instead of dark border ── */
   .cat-row, .nw-card, .goal-card, .health-card, .equiv-row,
@@ -340,28 +302,6 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
 @keyframes scalePop {
   from { opacity: 0; transform: scale(0.94); }
   to   { opacity: 1; transform: scale(1); }
-}
-@keyframes pieSpinIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.78) rotate(-140deg);
-  }
-  70% {
-    opacity: 1;
-    transform: scale(1.03) rotate(8deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
-}
-.pie-wrap {
-  animation: pieSpinIn 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
-  transform-origin: center center;
-}
-.pie-wrap:hover {
-  transform: scale(1.01);
-  transition: transform 0.18s ease;
 }
 .cat-row { animation: fadeSlideUp 0.32s ease-out both; }
 .cat-row:nth-child(1) { animation-delay: 0.04s; }
@@ -1913,44 +1853,31 @@ with left:
 
 with right:
     st.markdown('<div class="section-head">Allocation</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pie-wrap">', unsafe_allow_html=True)
 
     fig = go.Figure(go.Pie(
         labels=[d["label"] for d in cat_data],
         values=[d["pct"] for d in cat_data],
         hole=0.62,
-        marker=dict(
-            colors=[d["color"] for d in cat_data],
-            line=dict(color="rgba(255,255,255,0.10)", width=1.5)
-        ),
-        sort=False,
-        direction="clockwise",
+        marker=dict(colors=[d["color"] for d in cat_data], line=dict(color="#0a0a0f", width=2)),
         textinfo="none",
-        hovertemplate="<b>%{label}</b><br>%{value}%<extra></extra>",
-        hoverlabel=dict(
-            bgcolor="#000000",
-            bordercolor="#000000",
-            font=dict(color="#FFFFFF", size=14, family="Inter")
-        ),
-        pull=[0.00 for _ in cat_data]
+        hovertemplate="<b>%{label}</b><br>%{value}% — $%{customdata:,.0f}/" + period_label + "<extra></extra>",
+        customdata=[d["monthly"] if view_mode == "Monthly" else d["weekly"] for d in cat_data],
     ))
-
-    fig.update_traces(rotation=210)
-
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        margin=dict(t=10, b=10, l=10, r=10),
-        height=430,
-        showlegend=False
+        margin=dict(t=0, b=0, l=0, r=0),
+        height=280,
+        showlegend=True,
+        legend=dict(font=dict(color="rgba(238,240,255,0.6)", size=11, family="Inter"),
+                    bgcolor="rgba(0,0,0,0)", bordercolor="rgba(0,0,0,0)"),
+        annotations=[dict(
+            text=f"<b>${monthly_net:,.0f}</b><br><span style='font-size:11px'>/month</span>" if view_mode == "Monthly" else f"<b>${weekly_net:,.0f}</b><br><span style='font-size:11px'>/week</span>",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(color="#EEF0FF", size=16, family="Inter"),
+        )],
     )
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True,
-        config={"displayModeBar": False}
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.plotly_chart(fig, use_container_width=True)
 
     st.markdown('<div class="section-head" style="margin-top:8px">Cost of living impact</div>', unsafe_allow_html=True)
 
