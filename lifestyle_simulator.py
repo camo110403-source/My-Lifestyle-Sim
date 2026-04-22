@@ -6,11 +6,12 @@ import json
 import os
 import hashlib
 
+_sidebar_state = "expanded" if st.session_state.get("intro_done", False) else "collapsed"
 st.set_page_config(
     page_title="Lifestyle Budget Simulator",
     page_icon="💰",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state=_sidebar_state,
 )
 
 st.markdown("""
@@ -278,6 +279,36 @@ hr { border-color: var(--border) !important; margin: 32px 0 !important; }
 }
 .equiv-salary { color: var(--t1); font-weight: 700; font-size: 13px; text-align: right; flex-shrink: 0; }
 .equiv-delta { font-size: 11px; margin-left: 6px; flex-shrink: 0; }
+
+/* ── Mobile layout ── */
+@media (max-width: 768px) {
+  [data-testid="stAppViewBlockContainer"] { padding: 1rem 0.75rem !important; }
+  /* Stack all horizontal column groups */
+  [data-testid="stHorizontalBlock"] {
+    flex-direction: column !important;
+    flex-wrap: wrap !important;
+  }
+  [data-testid="stHorizontalBlock"] > [data-testid="column"] {
+    width: 100% !important;
+    min-width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+  /* Scale down large typography */
+  .intro-title { font-size: 32px !important; }
+  .auth-logo   { font-size: 22px !important; }
+  .health-score-ring { font-size: 36px !important; }
+  .nw-big-pos, .nw-big-neg, .nw-big-neu { font-size: 28px !important; }
+  .goal-big, .debt-big { font-size: 32px !important; }
+  /* Tighten category rows for narrow screens */
+  .cat-row-name { width: 100px !important; }
+  .cat-row-amount { width: 60px !important; font-size: 12px !important; }
+  /* Top metrics — smaller */
+  [data-testid="stMetricValue"] { font-size: 15px !important; }
+  /* Sidebar full-width on mobile */
+  [data-testid="stSidebar"] { width: 88vw !important; max-width: 320px !important; }
+  /* About page stats grid */
+  div[style*="display:grid;gap:20px"] { grid-template-columns: 1fr !important; }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -722,6 +753,14 @@ LIFESTYLE_TO_TIER = {
 }
 
 
+# ── Colour helpers ────────────────────────────────────────────────────────────
+def _hex_to_rgb(hex_color):
+    h = hex_color.lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
+
 # ── PDF generation ───────────────────────────────────────────────────────────
 def generate_pdf(gross, net, federal_tax, state_tax_amt, state_abbr,
                  location, fw_name, tier_name, cat_data,
@@ -729,117 +768,291 @@ def generate_pdf(gross, net, federal_tax, state_tax_amt, state_abbr,
                  debt_balance, debt_rate, monthly_debt_payment, debt_months, debt_interest):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_auto_page_break(auto=True, margin=20)
+    pdf.set_auto_page_break(auto=True, margin=18)
+    pdf.set_left_margin(14)
+    pdf.set_right_margin(14)
+
     weekly_net = net / 52
-    total_tax = federal_tax + state_tax_amt
-
-    pdf.set_fill_color(15, 15, 15)
-    pdf.rect(0, 0, 220, 38, "F")
-    pdf.set_xy(20, 10)
-    pdf.set_font("Helvetica", "B", 18)
-    pdf.set_text_color(240, 234, 214)
-    pdf.cell(0, 8, "Lifestyle Budget Simulator", ln=True)
-    pdf.set_xy(20, 22)
-    pdf.set_font("Helvetica", "", 9)
-    pdf.set_text_color(140, 140, 140)
-    short_fw = fw_name.split("(")[0].strip()
+    total_tax  = federal_tax + state_tax_amt
+    eff_rate   = round(total_tax / gross * 100) if gross else 0
+    fed_rate   = round(federal_tax / gross * 100) if gross else 0
+    st_rate    = round(state_tax_amt / gross * 100) if gross else 0
+    short_fw   = fw_name.split("(")[0].strip()
     short_tier = tier_name.split(" ", 1)[-1]
-    pdf.cell(0, 6, f"{location}  |  {short_fw}  |  {short_tier}", ln=True)
-    pdf.set_y(46)
 
+    # ── Header banner ─────────────────────────────────────────────────────────
+    pdf.set_fill_color(12, 14, 28)
+    pdf.rect(0, 0, 220, 44, "F")
+    # Gold left accent strip
+    pdf.set_fill_color(196, 163, 90)
+    pdf.rect(0, 0, 4, 44, "F")
+    # App title
+    pdf.set_xy(12, 9)
+    pdf.set_font("Helvetica", "B", 16)
+    pdf.set_text_color(238, 240, 255)
+    pdf.cell(0, 7, "Lifestyle Budget Simulator")
+    # Subtitle
+    pdf.set_xy(12, 21)
+    pdf.set_font("Helvetica", "", 8)
+    pdf.set_text_color(130, 135, 165)
+    pdf.cell(0, 5, f"{location}  |  {short_fw}  |  {short_tier}")
+    # Take-home callout (right side)
+    pdf.set_xy(140, 10)
+    pdf.set_font("Helvetica", "", 7)
+    pdf.set_text_color(100, 105, 140)
+    pdf.cell(56, 4, "ESTIMATED TAKE-HOME")
+    pdf.set_xy(140, 16)
+    pdf.set_font("Helvetica", "B", 14)
+    pdf.set_text_color(75, 184, 138)
+    pdf.cell(56, 7, f"${net:,.0f} / yr")
+    pdf.set_y(50)
+
+    # ── Section + row helpers ──────────────────────────────────────────────────
     def section(title):
-        pdf.set_font("Helvetica", "B", 12)
-        pdf.set_text_color(30, 30, 30)
-        pdf.cell(0, 7, title, ln=True)
-        pdf.set_draw_color(210, 210, 210)
-        pdf.line(20, pdf.get_y(), 190, pdf.get_y())
-        pdf.ln(3)
-
-    def kv(label, value):
-        pdf.set_font("Helvetica", "", 9)
-        pdf.set_text_color(100, 100, 100)
-        pdf.cell(80, 5.5, label)
         pdf.set_font("Helvetica", "B", 9)
-        pdf.set_text_color(30, 30, 30)
+        pdf.set_text_color(196, 163, 90)
+        pdf.cell(0, 6, title.upper(), ln=True)
+        pdf.set_draw_color(196, 163, 90)
+        pdf.set_line_width(0.4)
+        pdf.line(14, pdf.get_y(), 196, pdf.get_y())
+        pdf.set_line_width(0.2)
+        pdf.set_draw_color(180, 180, 210)
+        pdf.ln(4)
+
+    def kv(label, value, val_rgb=None):
+        pdf.set_font("Helvetica", "", 9)
+        pdf.set_text_color(110, 115, 145)
+        pdf.cell(82, 5.5, label)
+        pdf.set_font("Helvetica", "B", 9)
+        if val_rgb:
+            pdf.set_text_color(*val_rgb)
+        else:
+            pdf.set_text_color(35, 40, 65)
         pdf.cell(0, 5.5, value, ln=True)
 
-    eff_rate = round(total_tax / gross * 100) if gross else 0
-    fed_rate  = round(federal_tax / gross * 100) if gross else 0
-    st_rate   = round(state_tax_amt / gross * 100) if gross else 0
-
+    # ── Income Summary ────────────────────────────────────────────────────────
     section("Income Summary")
-    kv("Gross Income", f"${gross:,.0f}")
-    kv("Federal Tax (incl. FICA)", f"${federal_tax:,.0f}  ({fed_rate}% of gross)")
+    kv("Gross Income",              f"${gross:,.0f}",                     (196, 163, 90))
+    kv("Federal Tax (incl. FICA)",  f"${federal_tax:,.0f}  ({fed_rate}% of gross)", (200, 90, 90))
     state_label = f"{state_abbr} State Tax" if state_abbr else "State Tax"
     if state_abbr in NO_INCOME_TAX_STATES:
-        kv(state_label, "No state income tax")
+        kv(state_label,             "No state income tax")
     else:
-        kv(state_label, f"${state_tax_amt:,.0f}  ({st_rate}% of gross)")
-    kv("Total Tax Burden", f"${total_tax:,.0f}  ({eff_rate}% effective rate)")
-    kv("Take-Home (Annual)", f"${net:,.0f}")
-    kv("Take-Home (Weekly)", f"${weekly_net:,.0f}")
-    pdf.ln(6)
+        kv(state_label,             f"${state_tax_amt:,.0f}  ({st_rate}% of gross)", (200, 90, 90))
+    kv("Total Tax Burden",          f"${total_tax:,.0f}  ({eff_rate}% effective rate)", (200, 90, 90))
+    kv("Take-Home (Annual)",        f"${net:,.0f}",                       (75, 184, 138))
+    kv("Take-Home (Monthly)",       f"${net/12:,.0f}",                    (75, 184, 138))
+    kv("Take-Home (Weekly)",        f"${weekly_net:,.0f}",                (75, 184, 138))
+    pdf.ln(5)
 
-    section("Weekly Budget Breakdown")
-    pdf.set_fill_color(235, 235, 235)
+    # ── Budget Breakdown ──────────────────────────────────────────────────────
+    section("Budget Breakdown")
+    # Table header
+    pdf.set_fill_color(236, 237, 248)
     pdf.set_font("Helvetica", "B", 8)
-    pdf.set_text_color(80, 80, 80)
-    pdf.cell(72, 6, "Category", fill=True)
-    pdf.cell(20, 6, "Alloc.", fill=True, align="R")
-    pdf.cell(42, 6, "Weekly", fill=True, align="R")
-    pdf.cell(0,  6, "Annual", fill=True, align="R", ln=True)
-    for i, d in enumerate(cat_data):
-        bg = (248, 248, 248) if i % 2 == 0 else (255, 255, 255)
-        pdf.set_fill_color(*bg)
-        pdf.set_font("Helvetica", "", 9)
-        pdf.set_text_color(30, 30, 30)
-        pdf.cell(72, 5.5, d["label"], fill=True)
-        pdf.cell(20, 5.5, f"{d['pct']}%", fill=True, align="R")
-        pdf.cell(42, 5.5, f"${d['weekly']:,.0f}", fill=True, align="R")
-        pdf.cell(0,  5.5, f"${d['annual']:,.0f}", fill=True, align="R", ln=True)
-    pdf.ln(7)
+    pdf.set_text_color(75, 80, 120)
+    pdf.cell(3,  6, "",        fill=True)           # swatch
+    pdf.cell(67, 6, "Category", fill=True)
+    pdf.cell(20, 6, "Alloc.",  fill=True, align="R")
+    pdf.cell(38, 6, "Monthly", fill=True, align="R")
+    pdf.cell(0,  6, "Annual",  fill=True, align="R", ln=True)
 
+    for i, d in enumerate(cat_data):
+        # Alternating row background
+        pdf.set_fill_color(*(248, 249, 253) if i % 2 == 0 else (255, 255, 255))
+        # Colour swatch
+        r, g, b = _hex_to_rgb(d["color"])
+        _y = pdf.get_y()
+        pdf.set_fill_color(r, g, b)
+        pdf.rect(14, _y, 2.5, 5.5, "F")
+        pdf.set_fill_color(*(248, 249, 253) if i % 2 == 0 else (255, 255, 255))
+        # Row data
+        pdf.set_x(17)
+        pdf.set_font("Helvetica", "", 9)
+        pdf.set_text_color(35, 40, 65)
+        pdf.cell(67, 5.5, d["label"], fill=True)
+        pdf.set_text_color(100, 105, 140)
+        pdf.cell(20, 5.5, f"{d['pct']}%",          fill=True, align="R")
+        pdf.set_text_color(35, 40, 65)
+        pdf.cell(38, 5.5, f"${d['monthly']:,.0f}",  fill=True, align="R")
+        pdf.cell(0,  5.5, f"${d['annual']:,.0f}",   fill=True, align="R", ln=True)
+
+    # Totals row
+    pdf.set_fill_color(236, 237, 248)
+    pdf.set_font("Helvetica", "B", 9)
+    pdf.set_x(17)
+    pdf.set_text_color(35, 40, 65)
+    pdf.cell(67, 6, "Take-Home Total",   fill=True)
+    pdf.cell(20, 6, "100%",              fill=True, align="R")
+    pdf.set_text_color(75, 184, 138)
+    pdf.cell(38, 6, f"${net/12:,.0f}",  fill=True, align="R")
+    pdf.cell(0,  6, f"${net:,.0f}",     fill=True, align="R", ln=True)
+    pdf.ln(5)
+
+    # ── Savings Goal ──────────────────────────────────────────────────────────
     if goal_amount > 0:
-        section(f"Savings Goal - {goal_name}")
+        section(f"Savings Goal — {goal_name}")
         remaining = max(0, goal_amount - goal_current)
-        kv("Target Amount", f"${goal_amount:,.0f}")
-        kv("Already Saved", f"${goal_current:,.0f}")
-        kv("Remaining", f"${remaining:,.0f}")
+        kv("Target Amount",    f"${goal_amount:,.0f}",  (160, 126, 200))
+        kv("Already Saved",    f"${goal_current:,.0f}")
+        kv("Remaining",        f"${remaining:,.0f}")
         if goal_months == 0:
-            kv("Status", "Goal already reached!")
+            kv("Status", "Goal already reached!", (75, 184, 138))
         elif goal_months is not None:
             yrs, mos = divmod(int(goal_months), 12)
             parts = []
             if yrs: parts.append(f"{yrs} yr{'s' if yrs != 1 else ''}")
             if mos: parts.append(f"{mos} mo")
-            kv("Estimated Timeline", " ".join(parts) or "< 1 month")
+            kv("Estimated Timeline", " ".join(parts) or "< 1 month", (160, 126, 200))
         else:
-            kv("Status", "No savings allocated - adjust your framework.")
-        pdf.ln(6)
+            kv("Status", "No savings allocated — adjust your framework.", (200, 90, 90))
+        pdf.ln(5)
 
+    # ── Debt Payoff ───────────────────────────────────────────────────────────
     if debt_balance > 0:
         section("Debt Payoff Estimate")
-        kv("Current Balance", f"${debt_balance:,.0f}")
-        kv("APR", f"{debt_rate:.1f}%")
-        kv("Monthly Payment (from allocation)", f"${monthly_debt_payment:,.0f}")
+        kv("Current Balance",  f"${debt_balance:,.0f}",         (200, 90, 90))
+        kv("APR",              f"{debt_rate:.1f}%")
+        kv("Monthly Payment",  f"${monthly_debt_payment:,.0f}")
         if debt_months is None or debt_months == float("inf"):
-            kv("Status", "Payment does not cover interest - increase debt allocation.")
+            kv("Status", "Payment does not cover interest — increase debt allocation.", (200, 90, 90))
         else:
             yrs, mos = divmod(int(debt_months), 12)
             parts = []
             if yrs: parts.append(f"{yrs} yr{'s' if yrs != 1 else ''}")
             if mos: parts.append(f"{mos} mo")
-            kv("Payoff Timeline", " ".join(parts) or "< 1 month")
-            kv("Total Interest Paid", f"${debt_interest:,.0f}")
-        pdf.ln(6)
+            kv("Payoff Timeline",    " ".join(parts) or "< 1 month", (75, 184, 138))
+            kv("Total Interest Paid", f"${debt_interest:,.0f}",      (200, 90, 90))
+        pdf.ln(5)
 
-    pdf.set_y(-18)
+    # ── Footer ────────────────────────────────────────────────────────────────
+    pdf.set_y(-16)
+    pdf.set_draw_color(190, 192, 220)
+    pdf.set_line_width(0.3)
+    pdf.line(14, pdf.get_y(), 196, pdf.get_y())
+    pdf.ln(2)
     pdf.set_font("Helvetica", "I", 7)
-    pdf.set_text_color(160, 160, 160)
+    pdf.set_text_color(150, 155, 180)
     pdf.multi_cell(0, 4,
         "Tax estimates use 2024 US federal brackets + 7.65% FICA + simplified state income tax rates. "
         "Cost of living multipliers are estimates. All figures are for planning purposes only.",
         align="C")
+
+    return bytes(pdf.output())
+
+
+# ── Shareable budget card ─────────────────────────────────────────────────────
+def generate_budget_card(gross, net, location, tier_name, fw_name,
+                          health_score, health_grade, health_color,
+                          archetype, archetype_icon, archetype_color,
+                          cat_data, s_name):
+    """Single-page A6 landscape PDF designed to be screenshot and shared."""
+    pdf = FPDF(orientation="L", unit="mm", format="A6")   # 148 × 105 mm
+    pdf.add_page()
+    pdf.set_auto_page_break(auto=False)
+    pdf.set_margins(0, 0, 0)
+
+    W, H = 148, 105
+
+    # ── Background ────────────────────────────────────────────────────────────
+    pdf.set_fill_color(9, 11, 18)
+    pdf.rect(0, 0, W, H, "F")
+
+    # ── Top bar ───────────────────────────────────────────────────────────────
+    pdf.set_fill_color(18, 23, 38)
+    pdf.rect(0, 0, W, 26, "F")
+    # Gold left strip
+    pdf.set_fill_color(196, 163, 90)
+    pdf.rect(0, 0, 3, 26, "F")
+
+    # App name
+    pdf.set_xy(7, 7)
+    pdf.set_font("Helvetica", "B", 7)
+    pdf.set_text_color(120, 115, 85)
+    pdf.cell(80, 4, "LIFESTYLE BUDGET SIMULATOR")
+
+    # Archetype (top-right)
+    ar_r, ar_g, ar_b = _hex_to_rgb(archetype_color)
+    pdf.set_text_color(ar_r, ar_g, ar_b)
+    pdf.set_font("Helvetica", "B", 8)
+    arch_text = f"{archetype_icon}  {archetype}"
+    pdf.set_xy(W - 55, 6)
+    pdf.cell(50, 5, arch_text, align="R")
+
+    # Name + gross
+    name_str = f"{s_name} — " if s_name else ""
+    pdf.set_xy(7, 14)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.set_text_color(238, 240, 255)
+    pdf.cell(80, 6, f"{name_str}${gross:,.0f} / yr")
+
+    # City / tier sub-line
+    short_tier = tier_name.split(" ", 1)[-1] if " " in tier_name else tier_name
+    pdf.set_xy(7, 20)
+    pdf.set_font("Helvetica", "", 7)
+    pdf.set_text_color(100, 105, 140)
+    pdf.cell(0, 4, f"{location}  ·  {short_tier}")
+
+    # ── Health score block (left) ─────────────────────────────────────────────
+    hs_r, hs_g, hs_b = _hex_to_rgb(health_color)
+    pdf.set_xy(7, 33)
+    pdf.set_font("Helvetica", "B", 30)
+    pdf.set_text_color(hs_r, hs_g, hs_b)
+    pdf.cell(28, 18, str(health_score))
+    pdf.set_xy(30, 35)
+    pdf.set_font("Helvetica", "B", 18)
+    pdf.cell(12, 12, health_grade)
+    pdf.set_xy(7, 51)
+    pdf.set_font("Helvetica", "", 6)
+    pdf.set_text_color(80, 85, 115)
+    pdf.cell(40, 4, "BUDGET HEALTH / 100")
+
+    # Take-home
+    pdf.set_xy(7, 58)
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(75, 184, 138)
+    pdf.cell(50, 5, f"${net:,.0f}")
+    pdf.set_xy(7, 63)
+    pdf.set_font("Helvetica", "", 6)
+    pdf.set_text_color(80, 85, 115)
+    pdf.cell(50, 4, "TAKE-HOME / YR")
+
+    # ── Divider ───────────────────────────────────────────────────────────────
+    pdf.set_draw_color(28, 35, 64)
+    pdf.set_line_width(0.3)
+    pdf.line(58, 30, 58, 95)
+
+    # ── Top categories (right) ────────────────────────────────────────────────
+    top_cats = sorted(cat_data, key=lambda x: x["pct"], reverse=True)[:6]
+    y0 = 30
+    for i, d in enumerate(top_cats):
+        y = y0 + i * 11
+        # Label
+        pdf.set_xy(63, y)
+        pdf.set_font("Helvetica", "", 7)
+        pdf.set_text_color(170, 175, 210)
+        pdf.cell(35, 4, d["label"])
+        # Bar track
+        pdf.set_fill_color(22, 28, 50)
+        pdf.rect(100, y + 1, 34, 2.5, "F")
+        # Bar fill
+        cr, cg, cb = _hex_to_rgb(d["color"])
+        pdf.set_fill_color(cr, cg, cb)
+        bar_w = max(1.0, d["pct"] / 100 * 34)
+        pdf.rect(100, y + 1, bar_w, 2.5, "F")
+        # Pct
+        pdf.set_xy(135, y)
+        pdf.set_font("Helvetica", "B", 7)
+        pdf.set_text_color(238, 240, 255)
+        pdf.cell(0, 4, f"{d['pct']}%")
+
+    # ── Footer ────────────────────────────────────────────────────────────────
+    pdf.set_fill_color(14, 17, 32)
+    pdf.rect(0, H - 9, W, 9, "F")
+    pdf.set_xy(7, H - 7)
+    pdf.set_font("Helvetica", "I", 6)
+    pdf.set_text_color(50, 55, 85)
+    pdf.cell(0, 4, "Lifestyle Budget Simulator — estimates for planning purposes only")
 
     return bytes(pdf.output())
 
@@ -1388,6 +1601,15 @@ with st.sidebar:
         ret_current_ret = st.number_input("Current retirement savings ($)", min_value=0, max_value=100_000_000, value=0, step=1_000, format="%d", key="ret_current_ret")
         ret_return_rate = st.slider("Expected annual return (%)", 1.0, 15.0, 7.0, step=0.5, key="ret_return")
         ret_inflation   = st.slider("Assumed inflation (%)", 0.0, 6.0, 2.5, step=0.25, key="ret_inflation")
+
+    # ── Sync profile keys so auto-save picks up sidebar changes ───────────────
+    st.session_state["s_gross"]       = gross
+    st.session_state["s_income_type"] = income_type
+    if income_type == "Hourly wage":
+        st.session_state["s_hourly"]  = hourly
+    st.session_state["s_location"]    = location
+    st.session_state["s_framework"]   = fw_name
+    st.session_state["s_tier"]        = tier
 
 
 # ── Calculations ──────────────────────────────────────────────────────────────
@@ -2604,16 +2826,35 @@ with st.sidebar:
         use_container_width=True,
     )
 
+    # ── Share card download ──
+    _card_bytes = generate_budget_card(
+        gross=gross, net=net, location=location,
+        tier_name=tier, fw_name=fw_name,
+        health_score=health_score, health_grade=health_grade, health_color=health_color,
+        archetype=archetype, archetype_icon=archetype_icon, archetype_color=archetype_color,
+        cat_data=cat_data, s_name=st.session_state.get("s_name", ""),
+    )
+    st.download_button(
+        label="🪄 Download budget card",
+        data=_card_bytes,
+        file_name="budget_card.pdf",
+        mime="application/pdf",
+        use_container_width=True,
+        help="A compact shareable summary card of your budget",
+    )
+
     st.divider()
 
     # ── Account controls ──
     _auth_user = st.session_state.get("auth_user")
     if _auth_user:
         st.markdown("#### Account")
-        st.caption(f"Signed in as **{_auth_user}**")
-        if st.button("💾 Save my progress", use_container_width=True):
+        # Auto-save: compare current profile snapshot to last saved
+        _snap_now = {k: st.session_state.get(k) for k in _PROFILE_KEYS}
+        if _snap_now != st.session_state.get("_autosave_snap", {}):
             _save_profile(_auth_user)
-            st.success("Progress saved!")
+            st.session_state["_autosave_snap"] = _snap_now
+        st.caption(f"Signed in as **{_auth_user}** · auto-saved")
         if st.button("← Start over", use_container_width=True):
             st.session_state.intro_done = False
             st.rerun()
@@ -2631,6 +2872,16 @@ with st.sidebar:
             for k in list(st.session_state.keys()):
                 del st.session_state[k]
             st.rerun()
+
+    st.divider()
+    st.markdown("#### Deploy & share")
+    st.markdown("""<div style="font-size:12px;color:rgba(238,240,255,0.5);line-height:1.7">
+To add a <b style="color:rgba(238,240,255,0.75)">custom domain</b> on Streamlit Community Cloud:<br>
+1. Go to your app's <b>Settings</b> (⋮ menu)<br>
+2. Click <b>General → Custom domain</b><br>
+3. Enter your domain and add the CNAME record shown to your DNS provider<br>
+No code changes needed.
+</div>""", unsafe_allow_html=True)
 
 st.divider()
 st.caption("Tax estimates use 2024 US federal brackets + 7.65% FICA + simplified state income tax rates. Cost of living multipliers are estimates based on composite index data. All figures are for planning purposes only.")
